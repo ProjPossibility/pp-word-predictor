@@ -1,7 +1,4 @@
 package org.ss12.wordprediction;
-/**
- * 
- */
 
 /**
  * A pairing of a word and a frequency.
