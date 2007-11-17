@@ -1,6 +1,7 @@
 package org.ss12.wordprediction.utilities;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -15,36 +16,29 @@ import java.util.TreeMap;
  * (Word) (Occurrences)
  * Sorted lexicographically
  */
-public class ProcessCorpus {
+public class ProcessFrequencylessCorpus {
 	public static void main(String args[]){
 		try {
 			TreeMap<String,Integer> tm = new TreeMap<String,Integer>();
-			BufferedReader in = new BufferedReader(new FileReader("resources/dictionaries/frequencyDictionary.txt"));
-			in.readLine();
-			while(in.ready()){
-				String s = in.readLine();
-				String[] items = s.split(" ");
-				String word="";
-				Integer value;
-				for(int i=1;i<items.length;i++){
-					if(items[i].length()>0){
-						if(word.equals("")){
-							word=items[i];
-						}
-						else{
-							value=Integer.parseInt(items[i]);
-							tm.put(word.toLowerCase(), value);
-							//System.out.println(""+word+" "+value);
-							break;
-						}
-					}
-					//System.out.println(""+i+":"+items[i]);
+			File d = new File("resources/dictionaries/plain");
+			String[] files = d.list();
+			for(int j=0;j<files.length;j++){
+				if(files[j].charAt(0)=='.')
+					continue;
+				System.out.println(files[j]);
+				BufferedReader in = new BufferedReader(new FileReader("resources/dictionaries/plain/"+files[j]));
+				in.readLine();
+				while(in.ready()){
+					String s = in.readLine();
+					String[] items = s.split("/");
+					String word=items[0];
+					tm.put(word.toLowerCase(), 0);
 				}
 			}
 			Object[] keys = tm.keySet().toArray();
-			FileWriter w = new FileWriter("resources/dictionaries/converted/freq.dat");
+			FileWriter w = new FileWriter("resources/dictionaries/converted/plain.dat");
 			for(int i=0;i<keys.length;i++){
-				String t = ""+keys[i]+" "+tm.get((String)keys[i]);
+				String t = ""+keys[i];
 				w.write(t+"\n");
 //				System.out.println(t);
 			}
