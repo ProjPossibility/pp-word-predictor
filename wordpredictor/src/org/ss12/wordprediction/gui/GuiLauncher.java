@@ -2,12 +2,13 @@ package org.ss12.wordprediction.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.InputMethodListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -35,13 +36,88 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 	JButton predictButton;
 	JTextField input;
 	JList output;
+	JList outputBi;
+	JList outputTri;
 	JPopupMenu menuOutput;
 	JMenuItem[] items;
 	PredictionModel predictor;
 	JScrollPane jScrollPane1;
+	JScrollPane jScrollPane2;
+	JScrollPane jScrollPane3;
 	public GuiLauncher(PredictionModel wp) {
-		predictor = wp;
 		JPanel main = new JPanel();
+
+		addWindowListener(new WindowAdapter() {
+		      public void windowClosing(WindowEvent e) {
+		    	  cleanup();
+		    	  System.exit(0);
+		      }
+		    });
+        input = new JTextField();
+        input.addKeyListener(this);
+        jScrollPane1 = new javax.swing.JScrollPane();
+        output = new javax.swing.JList();
+        output.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2 = new javax.swing.JScrollPane();
+        outputBi = new javax.swing.JList();    
+        outputBi.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane3 = new javax.swing.JScrollPane();
+        outputTri = new javax.swing.JList();
+        outputTri.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        output.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = {};
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(output);
+
+        outputBi.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = {};
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(outputBi);
+
+        outputTri.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = {};
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane3.setViewportView(outputTri);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(main);
+        main.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addComponent(input, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3)))
+                .addContainerGap(158, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addComponent(input, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(115, Short.MAX_VALUE))
+        );
+
+		predictor = wp;
 		predictButton = new JButton("Predict");
 		menuOutput = new JPopupMenu();
 		
@@ -51,47 +127,8 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 			items[i].addActionListener(this);
 			menuOutput.add(items[i]);
 		}
-        input = new JTextField();
-        input.addKeyListener(this);
-        jScrollPane1 = new javax.swing.JScrollPane();
-        output = new javax.swing.JList();
-        output.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 
-        output.setModel(new javax.swing.AbstractListModel() {
-            /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			String[] strings = {};
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(output);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(main);
-        main.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(input, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(input, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(57, 57, 57))
-        );
 		//String[] results = {"cat","cats","cattle","cattles","cattled"};
 		predictButton.addActionListener(this);
 //		input.addTextListener(this);
@@ -101,6 +138,9 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		//main.add(new JLabel(""));
 		//main.add(predictButton);
 		this.getContentPane().add(main);
+	}
+	public void cleanup(){
+		predictor.cleanup();
 	}
 
 
@@ -115,8 +155,13 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		File uni,bi,tri;
+		uni = new File("resources/dictionaries/user/uni.dat");
+		bi = new File("resources/dictionaries/user/bi.dat");
+		tri = new File("resources/dictionaries/user/tri.dat");
+		PredictionModel wp;
+		wp = new WordPredictor(wl.getWords(),wl.loadNgram(uni),wl.loadNgram(bi),wl.loadNgram(tri));
 		
-		PredictionModel wp = new WordPredictor(wl.getWords(),null,null,null);
 		GuiLauncher gl = new GuiLauncher(wp);
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setSize(300,200);
@@ -133,7 +178,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 				output.setListData(results);
 			}
 			else{
-				String[] results = {"Please","Enter","Some","Text","First"};
+				String[] results = {};
 				output.setListData(results);
 			}
 		}
@@ -277,17 +322,34 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 	}
 	public void updateList(){
 		String beginning = input.getText();
-		if(beginning.length()>0 && beginning.charAt(beginning.length()-1)!=' '){
+		if(beginning.length()>0){
 			jScrollPane1.setVisible(true);
 			String[] text = input.getText().split(" ");
-			String[] results = predictor.getSuggestions(text[text.length-1], 5);
-
-			output.setListData(results);
+			String[][] results = new String[3][5];
+			int startIndex=text.length-3;
+			if(startIndex<0) startIndex=0;
+			int j=0;
+			for(int i=startIndex;i<text.length;i++){
+				String[] outputdata = new String[5];
+				outputdata = Arrays.copyOfRange(text, i, text.length);
+				results[j++] = predictor.getSuggestionsGramBased(outputdata, 5);				
+			}
+			
+			output.setListData(results[0]);
+			String[] empty = new String[5];
+			if(j>1)
+				outputBi.setListData(results[1]);
+			else
+				outputBi.setListData(empty);
+			if(j>2)
+				outputTri.setListData(results[2]);
+			else
+				outputTri.setListData(empty);
 			input.requestFocus();
 		}
 		else{
 			jScrollPane1.setVisible(false);
-			String[] results = {"Please","Enter","Some","Text","First"};
+			String[] results = {};
 			output.setListData(results);
 		}
 	}
