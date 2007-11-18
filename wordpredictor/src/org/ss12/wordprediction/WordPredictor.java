@@ -52,7 +52,7 @@ public class WordPredictor implements PredictionModel
 	public String[] getSuggestions(String begin_seq, int numOfSuggestions)
 	{
 		SortedMap<String, Integer> suggestions_candidates=words.subMap(begin_seq, getUpperBound(begin_seq));
-		Entry<String,Integer>[] cnd_set= (Entry<String,Integer>[])suggestions_candidates.entrySet().toArray();
+		Entry<String,Integer>[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
 		cmpSortedMap sortedMap = new cmpSortedMap();
 		Arrays.sort(cnd_set, 0, cnd_set.length, sortedMap);
 		String[] suggestions=new String[numOfSuggestions];

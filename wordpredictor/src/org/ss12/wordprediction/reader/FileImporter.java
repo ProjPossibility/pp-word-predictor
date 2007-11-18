@@ -21,7 +21,6 @@ public class FileImporter {
 				wr.nextWords(br.readLine().split(" "));
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return true;
