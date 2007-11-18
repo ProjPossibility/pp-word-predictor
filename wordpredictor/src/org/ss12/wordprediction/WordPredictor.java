@@ -1,5 +1,6 @@
 package org.ss12.wordprediction;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.SortedMap;
 import java.util.Map.Entry;
@@ -12,12 +13,28 @@ public class WordPredictor implements PredictionModel
 	private SortedMap<String, Integer> unigrams;
 	private SortedMap<String, Integer> bigrams;
 	private SortedMap<String, Integer> trigrams;
+	private int wordCount;
+	private int unigramCount;
+	private int bigramCount;
+	private int trigramCount;
 	public WordPredictor(SortedMap<String,Integer> sm,SortedMap<String, Integer> uni,SortedMap<String,Integer> bi,SortedMap<String,Integer> tri)
 	{
 		 this.words=sm;
 		 this.bigrams = bi;
 		 this.trigrams = tri;
 		 this.unigrams = uni;
+		 wordCount = sumValues(words);
+		 bigramCount = sumValues(bigrams);
+		 trigramCount = sumValues(trigrams);
+		 unigramCount = sumValues(unigrams);
+	}
+	public int sumValues(SortedMap<String,Integer> sm){
+		Collection<Integer> c = sm.values();
+		int sum=0;
+		for(Integer i:c){
+			sum+=i;
+		}
+		return sum;
 	}
 	
 	/**
