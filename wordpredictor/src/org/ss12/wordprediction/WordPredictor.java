@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.Map.Entry;
 
@@ -78,13 +80,10 @@ public class WordPredictor implements PredictionModel
 	/* (non-Javadoc)
 	 * @see org.ss12.wordprediction.PredictionModel#getSuggestions(java.lang.String, int)
 	 */
-	public String[] getSuggestions(String begin_seq, int numOfSuggestions)
+	public String[] getSuggestionsFromDic(String begin_seq, int numOfSuggestions)
 	{
-		SortedMap<String, Integer> suggestions_candidates=words.subMap(begin_seq, getUpperBound(begin_seq));
-		Entry<String,Integer>[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
-		cmpSortedMap sortedMapComparator = new cmpSortedMap();
-		Arrays.sort(cnd_set, 0, cnd_set.length, sortedMapComparator);
 		String[] suggestions=new String[numOfSuggestions];
+		Entry<String, Integer>[] cnd_set=foo(begin_seq, getUpperBound(begin_seq), numOfSuggestions,words);
 		numOfSuggestions = Math.min(numOfSuggestions, cnd_set.length);
 		for (int rank=0; rank<numOfSuggestions;rank++)
 		{
@@ -92,56 +91,124 @@ public class WordPredictor implements PredictionModel
 		}
 		return suggestions;
 	}
-
+	/*****************************
+	 * 
+	 * @param begin_seq: the user input
+	 * @param end_seq: the maximum range we will retrieve suggestions from
+	 * @param numOfSuggestions
+	 * @param map: words or unigrams or bigrams or trigrams
+	 * @return: exactly "numOfSuggestions" items of suggestions in the form of Entry<String, Integer>
+	 */
+    public Entry<String, Integer>[] foo(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String,Integer> map)
+    {
+    	SortedMap<String, Integer> suggestions_candidates=map.subMap(begin_seq, end_seq);
+		Entry<String,Integer>[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
+		cmpSortedMap sortedMapComparator = new cmpSortedMap();
+		Arrays.sort(cnd_set, 0, cnd_set.length, sortedMapComparator);
+		
+		
+		
+		return cnd_set;
+    }
     public String[] getSuggestionsGramBased(String[]tokens,int numOfSuggestions)
     {
+    	
     	String begin_seq,end_seq;
-    	SortedMap<String, Integer> suggestions_candidates;
-    	//test tokens first
+    	String[] suggestions=null;
+    	//SortedMap<String, Integer> suggestions_candidates;
+    	Entry<String, Integer>[] suggestions_candidates=null;
+    	//these variables are designed specially for unigram case
+    	Entry<String, Integer>[] unigram_suggestions, dictionary_suggestions;
+    	int numOfHints_unigram, numOfHints_dictionary;
+    	
         switch(tokens.length)
         {
         	case 3:
         		begin_seq=tokens[0]+" "+tokens[1];
         		end_seq=begin_seq+getUpperBound(tokens[2]);
-        		suggestions_candidates=trigrams.subMap(begin_seq, end_seq);
+        		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, trigrams);
+        		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
         	case 2:
         		begin_seq=tokens[0];
         		end_seq=begin_seq+getUpperBound(tokens[1]);
-        		suggestions_candidates=bigrams.subMap(begin_seq, end_seq);
+        		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, bigrams);
+        		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
         	case 1:
+        		// m is used as a temporary structure to remove duplicate suggestions from two lists
+        		Map<String,Integer> m=new HashMap<String,Integer>();
         		begin_seq=tokens[0];
-        		end_seq=getUpperBound(tokens[0]);
-        		suggestions_candidates=unigrams.subMap(begin_seq, end_seq);
+        		end_seq=getUpperBound(begin_seq);
+        		//built  suggestion list from unigram map
+        		unigram_suggestions=foo(begin_seq, end_seq, numOfSuggestions,unigrams);
+        		dictionary_suggestions = foo(begin_seq, end_seq, numOfSuggestions, words);
+        		numOfHints_unigram = Math.min(numOfSuggestions, unigram_suggestions.length);
+        		numOfHints_dictionary = Math.min(numOfSuggestions, dictionary_suggestions.length);
+        		//for suggestions from dictionary map and from uni-gram map
+        		//modify the entry value from counts to counts percentage
+        		//so that their frequencies are comparable
+        		for(int i=0;i<numOfHints_unigram;i++)
+        		{
+        			unigram_suggestions[i].setValue(unigram_suggestions[i].getValue()/unigramCount);
+        			//after the modification, put that into Map
+        			m.put(unigram_suggestions[i].getKey(), unigram_suggestions[i].getValue());
+        			
+        		}
+        		//built list from dictionary map
+        		
+        		
+        		for(int j=0; j<numOfHints_dictionary;j++)
+        		{
+        			//if unigram suggestions do not contain current item in dictionary suggestions
+        			//insert current item as new hint
+        			if(!m.containsKey(dictionary_suggestions[j].getKey()))
+        				m.put(dictionary_suggestions[j].getKey(), dictionary_suggestions[j].getValue());
+        			else 
+        			{
+        				int oldVal=m.get(dictionary_suggestions[j].getKey());
+        				int newVal=dictionary_suggestions[j].getValue();
+        				//unigram suggestions contain the current item, then it's a duplicate
+            			//if the current item has a higher count (value), then update the 
+            		    //count of the item in unigram suggestions
+            				if(oldVal<newVal)
+            				{
+            				    //update
+            					m.put(dictionary_suggestions[j].getKey(), newVal);
+            				}
+            				else
+            				{
+            					//just skip it!
+            				}
+        			}
+        			
+        			
+        			
+        		}
+        		//convert the temporary map to our suggestions_candidates;
+        		suggestions_candidates=m.entrySet().toArray(new Entry[0]);
+        		//then I sort the results
+        		cmpSortedMap sortedMapComparator = new cmpSortedMap();
+        		//sort the merged suggestions (10 items), and we are gonna pick the top 5, 
+        		Arrays.sort(suggestions_candidates, 0, suggestions_candidates.length, sortedMapComparator);
+        		
+        		//finally, update the numOfSuggestions before further processing
+        		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         	    break;
         	default:
-        		begin_seq=null;
-        	    end_seq=null;
+        		
         	    suggestions_candidates=null;
+        	    
         }
-        if(begin_seq==null && end_seq==null && suggestions_candidates==null)
-        	return null;
         
-    		
-    		Entry<String,Integer>[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
-    		cmpSortedMap sortedMapComparator = new cmpSortedMap();
-    		for(int i=0;i<cnd_set.length;i++){
-    			System.out.println(cnd_set[i].getKey());
-    		}
-    		Arrays.sort(cnd_set, 0, cnd_set.length, sortedMapComparator);
-    		for(int i=0;i<cnd_set.length;i++){
-    			System.out.println(cnd_set[i].getKey());
-    		}
-    		String[] suggestions=new String[numOfSuggestions];
-    		numOfSuggestions = Math.min(numOfSuggestions, cnd_set.length);
-    		for (int rank=0; rank<numOfSuggestions;rank++)
-    		{
-    			suggestions[rank]=cnd_set[rank].getKey().toString();
-    		}
-    		return suggestions;
-    	
-    }
+
+        for(int rank=0;rank<numOfSuggestions;rank++)
+		{
+			suggestions[rank]=suggestions_candidates[rank].toString();
+		}
+    		    		return suggestions;
+    }    
+ 
     public void cleanup(){
     	String path = "resources/dictionaries/user/";
 		try {
@@ -167,7 +234,7 @@ public class WordPredictor implements PredictionModel
 		    ex.printStackTrace();
 		}
 	}
-	@Override
+	
 	public void addTrigram(String s1, String s2, String s3) {
 		String t = s1+" "+s2+" "+s3;
 		addNgram(t,trigrams,"resources/dictionaries/user/tri.dat");
@@ -184,8 +251,16 @@ public class WordPredictor implements PredictionModel
 		if(sm.containsKey(t))
 			sm.put(t, sm.get(t)+1);
 		else
-			sm.put(t,1);
-	}
+			trigrams.put(t, 1);
+		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
+		File f = new File("resources/dictionaries/user/tri.dat");
+		try {
+			saveMap(trigrams,new FileOutputStream(f));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}	
+
 
 }
 
