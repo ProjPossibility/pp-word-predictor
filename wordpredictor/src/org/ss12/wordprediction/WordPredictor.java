@@ -1,5 +1,12 @@
 package org.ss12.wordprediction;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.SortedMap;
 import java.util.Map.Entry;
@@ -9,13 +16,33 @@ import org.ss12.wordprediction.model.PredictionModel;
 public class WordPredictor implements PredictionModel
 {
 	private SortedMap<String, Integer> words;
-	private SortedMap<String, Integer> unigramMap;
-	private SortedMap<String, Integer> bigramMap;
-	private SortedMap<String, Integer> trigramMap;
-	public WordPredictor(SortedMap<String,Integer> sm)
+	private SortedMap<String, Integer> unigrams;
+	private SortedMap<String, Integer> bigrams;
+	private SortedMap<String, Integer> trigrams;
+	private int wordCount;
+	private int bigramCount;
+	private int trigramCount;
+	private int unigramCount;
+	public WordPredictor(SortedMap<String,Integer> sm,SortedMap<String, Integer> uni,SortedMap<String,Integer> bi,SortedMap<String,Integer> tri)
 	{
 		 this.words=sm;
+		 this.bigrams = bi;
+		 this.trigrams = tri;
+		 this.unigrams = uni;
+		 wordCount = sumValues(words);
+		 bigramCount = sumValues(bigrams);
+		 trigramCount = sumValues(trigrams);
+		 unigramCount = sumValues(unigrams);
 	}
+	public int sumValues(SortedMap<String,Integer> sm){
+		Collection<Integer> c = sm.values();
+		int sum=0;
+		for(Integer i:c){
+			sum+=i;
+		}
+		return sum;
+	}
+
 	
 	/**
 	 * Gets the upper bound of a string s
@@ -76,17 +103,17 @@ public class WordPredictor implements PredictionModel
         	case 3:
         		begin_seq=tokens[0]+" "+tokens[1];
         		end_seq=begin_seq+getUpperBound(tokens[2]);
-        		suggestions_candidates=trigramMap.subMap(begin_seq, end_seq);
+        		suggestions_candidates=trigrams.subMap(begin_seq, end_seq);
         		break;
         	case 2:
         		begin_seq=tokens[0];
         		end_seq=begin_seq+getUpperBound(tokens[1]);
-        		suggestions_candidates=bigramMap.subMap(begin_seq, end_seq);
+        		suggestions_candidates=bigrams.subMap(begin_seq, end_seq);
         		break;
         	case 1:
         		begin_seq=tokens[0];
         		end_seq=getUpperBound(tokens[0]);
-        		suggestions_candidates=unigramMap.subMap(begin_seq, end_seq);
+        		suggestions_candidates=unigrams.subMap(begin_seq, end_seq);
         	    break;
         	default:
         		begin_seq=null;
@@ -116,21 +143,74 @@ public class WordPredictor implements PredictionModel
     	
     }
 
+	private void saveMap(SortedMap<String,Integer> sm,OutputStream os){
+		ObjectOutputStream out = null;
+		try
+		{			
+			out = new ObjectOutputStream(os);
+			out.writeObject(unigrams);
+			out.writeObject(bigrams);
+			out.writeObject(trigrams);
+			out.close();
+		}
+		catch(IOException ex)
+		{
+		    ex.printStackTrace();
+		}
+	}
+	
+	@Override
 	public void addBigram(String s1, String s2) {
-		// TODO Auto-generated method stub
-		
+		String t = s1+" "+s2;
+		if(bigrams.containsKey(t))
+			bigrams.put(t, bigrams.get(t)+1);
+		else
+			bigrams.put(t, 1);
+		File f = new File("resources/dictionaries/user/bi.dat");
+		FileOutputStream fos=null;
+		try {
+			f.createNewFile();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			fos = new FileOutputStream(f);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		saveMap(bigrams,fos);
+		//System.out.println("bigram: "+s1+" "+s2);
 	}
 
+	@Override
 	public void addTrigram(String s1, String s2, String s3) {
-		// TODO Auto-generated method stub
-		
+		String t = s1+" "+s2+" "+s3;
+		if(trigrams.containsKey(t))
+			trigrams.put(t, trigrams.get(t)+1);
+		else
+			trigrams.put(t, 1);
+		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
+		File f = new File("resources/dictionaries/user/tri.dat");
+		try {
+			saveMap(trigrams,new FileOutputStream(f));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}	
+	@Override
+	public void addUnigram(String t) {
+		if(unigrams.containsKey(t))
+			unigrams.put(t, unigrams.get(t)+1);
+		else
+			unigrams.put(t,1);
+		//System.out.println("unigram: "+t);
+		File f = new File("resources/dictionaries/user/uni.dat");
+		try {
+			saveMap(unigrams,new FileOutputStream(f));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
-
-	public void addUnigram(String s1) {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 }
 
