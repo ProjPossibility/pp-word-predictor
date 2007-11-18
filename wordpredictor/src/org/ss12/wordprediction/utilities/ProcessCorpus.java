@@ -19,7 +19,7 @@ public class ProcessCorpus {
 	public static void main(String args[]){
 		try {
 			TreeMap<String,Integer> tm = new TreeMap<String,Integer>();
-			BufferedReader in = new BufferedReader(new FileReader("resources/dictionaries/frequencyDictionary.txt"));
+			BufferedReader in = new BufferedReader(new FileReader("resources/frequencyDictionary.txt"));
 			in.readLine();
 			while(in.ready()){
 				String s = in.readLine();
@@ -42,7 +42,7 @@ public class ProcessCorpus {
 				}
 			}
 			Object[] keys = tm.keySet().toArray();
-			FileWriter w = new FileWriter("resources/dictionaries/converted/freq.dat");
+			FileWriter w = new FileWriter("resources/freq.dat");
 			for(int i=0;i<keys.length;i++){
 				String t = ""+keys[i]+" "+tm.get((String)keys[i]);
 				w.write(t+"\n");
