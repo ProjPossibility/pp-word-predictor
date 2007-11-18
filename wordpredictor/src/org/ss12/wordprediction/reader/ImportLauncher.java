@@ -1,6 +1,7 @@
 package org.ss12.wordprediction.reader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.ss12.wordprediction.WordLoader;
@@ -19,10 +20,11 @@ public class ImportLauncher {
 			e.printStackTrace();
 		}
 		
-		PredictionModel pm = new WordPredictor(wl.getWords());
-		WordReader wr = new WordReader(pm);
 		FileImporter fi = new FileImporter();
-		String t = "this is a string of words.";
-		wr.nextWords(t.split(" "));
+		try {
+			fi.readFile(new File("resources/sample/test.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 }
