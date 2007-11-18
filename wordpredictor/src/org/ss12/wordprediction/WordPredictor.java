@@ -9,9 +9,15 @@ import org.ss12.wordprediction.model.PredictionModel;
 public class WordPredictor implements PredictionModel
 {
 	private SortedMap<String, Integer> words;
-	public WordPredictor(SortedMap<String,Integer> sm)
+	private SortedMap<String, Integer> unigrams;
+	private SortedMap<String, Integer> bigrams;
+	private SortedMap<String, Integer> trigrams;
+	public WordPredictor(SortedMap<String,Integer> sm,SortedMap<String, Integer> uni,SortedMap<String,Integer> bi,SortedMap<String,Integer> tri)
 	{
 		 this.words=sm;
+		 this.bigrams = bi;
+		 this.trigrams = tri;
+		 this.unigrams = uni;
 	}
 	
 	/**
@@ -66,19 +72,27 @@ public class WordPredictor implements PredictionModel
 
 	@Override
 	public void addBigram(String s1, String s2) {
-
+		String t = s1+" "+s2;
+		if(bigrams.containsKey(t))
+			bigrams.put(t, bigrams.get(t)+1);
+		else
+			bigrams.put(t, 1);
 	}
 
 	@Override
 	public void addTrigram(String s1, String s2, String s3) {
-		// TODO Auto-generated method stub
-		
-	}
-
+		String t = s1+" "+s2+" "+s3;
+		if(trigrams.containsKey(t))
+			trigrams.put(t, trigrams.get(t)+1);
+		else
+			trigrams.put(t, 1);
+	}	
 	@Override
-	public void addUnigram(String s1) {
-		// TODO Auto-generated method stub
-		
+	public void addUnigram(String t) {
+		if(unigrams.containsKey(t))
+			unigrams.put(t, unigrams.get(t)+1);
+		else
+			unigrams.put(t,1);
 	}
 }
 
