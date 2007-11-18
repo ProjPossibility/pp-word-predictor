@@ -116,7 +116,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 			e.printStackTrace();
 		}
 		
-		PredictionModel wp = new WordPredictor(wl.getWords());
+		PredictionModel wp = new WordPredictor(wl.getWords(),null,null,null);
 		GuiLauncher gl = new GuiLauncher(wp);
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setSize(300,200);
