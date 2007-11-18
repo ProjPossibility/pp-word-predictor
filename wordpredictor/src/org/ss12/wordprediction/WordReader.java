@@ -4,40 +4,31 @@ import org.ss12.wordprediction.model.PredictionModel;
 
 public class WordReader
 {
-	private String last1;
-	private String last2;
+	private String prePreWord;
+	private String preWord;
 	private PredictionModel wp;
 	
 	public WordReader(PredictionModel wp)
 	{
 		this.wp = wp;
-		last1 = null;
-		last2 = null;
+		prePreWord = null;
+		preWord = null;
 	}
+	
 	public void nextWords(String[] nw)
-	{
-		int len = nw.length;
-		
-		for(int i = 0; i < len; i++)
+	{	
+		for(int i = 0; i < nw.length; i++)
 		{	
-			if(i == 0 && last2 != null)
-				wp.addBigram(last1, nw[0]);
+			wp.addUnigram(nw[i]);
 			
-			if(i == 0 && last1 != null && last2 != null)
-				wp.addTrigram(last1, last2, nw[0]);
+			if(preWord != null)
+				wp.addBigram(preWord, nw[i]);
 			
-			if(i > 0)
-			{
-				wp.addBigram(nw[i-1], nw[i]);
-				
-				if(i == 1 && last2 != null)
-					wp.addTrigram(last2, nw[i-1], nw[i]);
-				else
-					wp.addTrigram(nw[i-2], nw[i-1], nw[i]);
-			}
+			if(prePreWord != null && preWord != null)
+				wp.addTrigram(prePreWord, preWord, nw[i]);
 			
+			prePreWord = preWord;
+			preWord = nw[i];
 		}
-		last1 = nw[i-1];
-		last2 = nw[i];
 	}
 }
