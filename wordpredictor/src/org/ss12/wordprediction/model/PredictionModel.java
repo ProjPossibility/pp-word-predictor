@@ -1,6 +1,6 @@
-package org.ss12.wordprediction;
+package org.ss12.wordprediction.model;
 
-interface PredictionModel {
+public interface PredictionModel {
 
 	public abstract String[] getSuggestions(String begin_seq,
 			int numOfSuggestions);
