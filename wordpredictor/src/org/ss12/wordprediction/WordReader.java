@@ -6,7 +6,7 @@ public class WordReader
 {
 	private String prePreWord;
 	private String preWord;
-	private PredictionModel wp;
+	private final PredictionModel wp;
 	boolean endSentence;
 	public WordReader(PredictionModel wp)
 	{
@@ -22,10 +22,11 @@ public class WordReader
 		{	
 			endSentence=false;
 			nw[i]=nw[i].toLowerCase();
-			if((nw[i]=isWord(nw[i])).equals("")){
+			if((nw[i]=wordify(nw[i])).equals("")){
 				prePreWord = preWord= null;
 				continue;
 			}
+			System.out.print(nw[i]+" ");
 			wp.addUnigram(nw[i]);
 			
 			if(preWord != null)
@@ -38,24 +39,36 @@ public class WordReader
 				prePreWord = preWord;
 				preWord = nw[i];
 			}
-			else
+			else{
 				prePreWord=preWord=null;
+				System.out.println();
+			}
 		}
 	}
-	public String isWord(String word){
+	public String wordify(String word){
 		word.trim();
 		for(int i=0;i<word.length()-1;i++){
 			char c = word.charAt(i);
-			if((c>='a' && c<='z')||(c>='A' && c<='Z')){
+			if((c>='a' && c<='z')||(c>='A' && c<='Z')||(c=='\'')||(c=='-')){
 				continue;
 			}
 			else
 				return "";
 		}
-		char c = word.charAt(word.length()-1);
-		if(!((c>='a' && c<='z')||(c>='A' && c<='Z'))){
-			word = word.substring(0, word.length()-1);
-			endSentence=true;
+		if(word.length()>0){
+			char c = word.charAt(word.length()-1);
+			if(!(
+				(c>='a' && c<='z')
+					||
+				(c>='A' && c<='Z')
+					||
+				(c=='\'')
+					||
+				(c=='-')
+				)){
+				word = word.substring(0, word.length()-1);
+				endSentence=true;
+			}
 		}
 		return word;
 	}

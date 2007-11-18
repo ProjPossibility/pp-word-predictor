@@ -142,11 +142,20 @@ public class WordPredictor implements PredictionModel
     		return suggestions;
     	
     }
-
+    public void cleanup(){
+    	String path = "resources/dictionaries/user/";
+		try {
+			saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
+			saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
+			saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+    }
 	private void saveMap(SortedMap<String,Integer> sm,OutputStream os){
 		ObjectOutputStream out = null;
 		try
-		{			
+		{
 			out = new ObjectOutputStream(os);
 			out.writeObject(unigrams);
 			out.writeObject(bigrams);
@@ -158,58 +167,24 @@ public class WordPredictor implements PredictionModel
 		    ex.printStackTrace();
 		}
 	}
-	
-	@Override
-	public void addBigram(String s1, String s2) {
-		String t = s1+" "+s2;
-		if(bigrams.containsKey(t))
-			bigrams.put(t, bigrams.get(t)+1);
-		else
-			bigrams.put(t, 1);
-		File f = new File("resources/dictionaries/user/bi.dat");
-		FileOutputStream fos=null;
-		try {
-			f.createNewFile();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			fos = new FileOutputStream(f);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		saveMap(bigrams,fos);
-		//System.out.println("bigram: "+s1+" "+s2);
-	}
-
 	@Override
 	public void addTrigram(String s1, String s2, String s3) {
 		String t = s1+" "+s2+" "+s3;
-		if(trigrams.containsKey(t))
-			trigrams.put(t, trigrams.get(t)+1);
-		else
-			trigrams.put(t, 1);
-		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
-		File f = new File("resources/dictionaries/user/tri.dat");
-		try {
-			saveMap(trigrams,new FileOutputStream(f));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		addNgram(t,trigrams,"resources/dictionaries/user/tri.dat");
 	}	
-	@Override
+	public void addBigram(String s1, String s2) {
+		String t = s1+" "+s2;
+		addNgram(t,bigrams,"resources/dictionaries/user/bi.dat");
+	}	
 	public void addUnigram(String t) {
-		if(unigrams.containsKey(t))
-			unigrams.put(t, unigrams.get(t)+1);
+		addNgram(t,unigrams,"resources/dictionaries/user/uni.dat");
+	}	
+
+	private void addNgram(String t, SortedMap<String,Integer> sm,String filename) {
+		if(sm.containsKey(t))
+			sm.put(t, sm.get(t)+1);
 		else
-			unigrams.put(t,1);
-		//System.out.println("unigram: "+t);
-		File f = new File("resources/dictionaries/user/uni.dat");
-		try {
-			saveMap(unigrams,new FileOutputStream(f));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+			sm.put(t,1);
 	}
 
 }

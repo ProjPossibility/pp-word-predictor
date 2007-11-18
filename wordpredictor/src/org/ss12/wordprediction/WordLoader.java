@@ -1,8 +1,10 @@
 package org.ss12.wordprediction;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -95,6 +97,23 @@ public class WordLoader {
 			}
 			set = tm.entrySet();
 		}
+	}
+	public TreeMap<String, Integer> loadNgram(File file)
+	{
+		TreeMap<String,Integer> retval = new TreeMap<String,Integer>();
+		try{
+			FileInputStream objReader = new FileInputStream(file);
+			ObjectInputStream in = new ObjectInputStream(objReader);
+			retval = (TreeMap<String, Integer>)in.readObject();
+			in.close();
+		}
+		catch(IOException e){
+			System.out.println("File not found, creating empty Ngram entry instead");
+		}
+		catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}
+		return retval;
 	}
 	
 	/**
