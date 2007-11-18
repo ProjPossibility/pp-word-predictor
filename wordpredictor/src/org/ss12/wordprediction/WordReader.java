@@ -18,7 +18,8 @@ public class WordReader
 	{	
 		for(int i = 0; i < nw.length; i++)
 		{	
-			if(!isWord(nw[i].toLowerCase()))
+			nw[i]=nw[i].toLowerCase();
+			if((nw[i]=isWord(nw[i])).equals(""))
 				continue;
 			wp.addUnigram(nw[i]);
 			
@@ -32,7 +33,7 @@ public class WordReader
 			preWord = nw[i];
 		}
 	}
-	public boolean isWord(String word){
+	public String isWord(String word){
 		word.trim();
 		for(int i=0;i<word.length()-1;i++){
 			char c = word.charAt(i);
@@ -40,12 +41,12 @@ public class WordReader
 				continue;
 			}
 			else
-				return false;
+				return "";
 		}
 		char c = word.charAt(word.length()-1);
 		if(!((c>='a' && c<='z')||(c>='A' && c<='Z'))){
 			word = word.substring(0, word.length()-1);
 		}
-		return true;
+		return word;
 	}
 }

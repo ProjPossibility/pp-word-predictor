@@ -66,8 +66,7 @@ public class WordPredictor implements PredictionModel
 
 	@Override
 	public void addBigram(String s1, String s2) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
