@@ -1,12 +1,14 @@
 package org.ss12.wordprediction;
 
+import org.ss12.wordprediction.model.PredictionModel;
+
 public class WordReader
 {
 	private String last1;
 	private String last2;
-	private WordPredictor wp;
+	private PredictionModel wp;
 	
-	public WordReader(WordPredictor wp)
+	public WordReader(PredictionModel wp)
 	{
 		this.wp = wp;
 		last1 = null;

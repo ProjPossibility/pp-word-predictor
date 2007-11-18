@@ -26,7 +26,6 @@ public class WordPredictor implements PredictionModel
 		char[] ch = s.toCharArray();
 		int len = ch.length;
 		StringBuilder sb = new StringBuilder();
-		
 		for(int i = len - 1; i >= 0; i--)
 		{
 			if(ch[i] != 'z')
@@ -53,15 +52,9 @@ public class WordPredictor implements PredictionModel
 	public String[] getSuggestions(String begin_seq, int numOfSuggestions)
 	{
 		SortedMap<String, Integer> suggestions_candidates=words.subMap(begin_seq, getUpperBound(begin_seq));
-		Entry[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
+		Entry<String,Integer>[] cnd_set= (Entry<String,Integer>[])suggestions_candidates.entrySet().toArray();
 		cmpSortedMap sortedMap = new cmpSortedMap();
-		for(int i=0;i<cnd_set.length;i++){
-			System.out.println(cnd_set[i].getKey());
-		}
 		Arrays.sort(cnd_set, 0, cnd_set.length, sortedMap);
-		for(int i=0;i<cnd_set.length;i++){
-			System.out.println(cnd_set[i].getKey());
-		}
 		String[] suggestions=new String[numOfSuggestions];
 		numOfSuggestions = Math.min(numOfSuggestions, cnd_set.length);
 		for (int rank=0; rank<numOfSuggestions;rank++)
@@ -70,20 +63,37 @@ public class WordPredictor implements PredictionModel
 		}
 		return suggestions;
 	}
+
+	@Override
+	public void addBigram(String s1, String s2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addTrigram(String s1, String s2, String s3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addUnigram(String s1) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
-class cmpSortedMap implements Comparator
+class cmpSortedMap implements Comparator<Entry<String,Integer>>
 {
 	public cmpSortedMap()
 	{
 		
 	}
 	
-	public int compare(Object o1, Object o2)
+	public int compare(Entry<String,Integer> o1, Entry<String,Integer> o2)
 	{
-		int v1=(Integer)((Entry)o1).getValue();
-		int v2=(Integer)((Entry)o2).getValue();
-		System.out.println("v1="+v1+" v2="+v2);
+		int v1=o1.getValue();
+		int v2=o2.getValue();
 		if(v1<v2)
 		  return 1;
 		else if(v1>v2)
