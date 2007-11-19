@@ -99,9 +99,9 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
                         .addComponent(input, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(31, 31, 31)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3)))
                 .addContainerGap(158, Short.MAX_VALUE))
@@ -136,6 +136,8 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 //		input.addTextListener(this);
 		input.getDocument().addDocumentListener(this);
 		output.addListSelectionListener(this);
+		outputBi.addListSelectionListener(this);
+		outputTri.addListSelectionListener(this);
 		//main.add(input);
 		//main.add(new JLabel(""));
 		//main.add(predictButton);
@@ -179,7 +181,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		
 		GuiLauncher gl = new GuiLauncher(wp);
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		gl.setSize(300,400);
+		gl.setSize(600,400);
 		gl.setVisible(true);
 	}
 
@@ -246,8 +248,8 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 	boolean clicked=true;
 	@Override
 	public void valueChanged(ListSelectionEvent arg0) {
-		if(arg0.getSource()==output && clicked){
-			String t = (String)output.getSelectedValue();
+		if(arg0.getSource().getClass().isInstance(output) && clicked){
+			String t = (String)((JList)arg0.getSource()).getSelectedValue();
 			if(t!=null){
 				int j = input.getText().lastIndexOf(" ");
 				if(j==-1){
@@ -260,7 +262,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 				input.requestFocus();
 				//input.setCaretPosition(input.getText().length());
 			}
-		}
+		}		
 	}
 
 
@@ -339,10 +341,17 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		String beginning = input.getText();
 		if(beginning.length()>0){
 			jScrollPane1.setVisible(true);
-			String[] text = input.getText().split(" ");
+			String[] text;
+			boolean unigram=true;
+			if(input.getText().charAt(input.getText().length()-1)==' '){
+				String t = input.getText();
+				unigram=false;
+				//t+="z";
+				text = t.split(" ");
+			}
+			else
+				text = input.getText().split(" ");
 			System.out.println("Last char"+input.getText().charAt(input.getText().length()-1));
-			if(input.getText().charAt(input.getText().length()-1)==' ')
-				text[text.length-1]+=" ";
 			String[][] results = new String[3][5];
 			int startIndex=text.length-3;
 			if(startIndex<0) startIndex=0;
@@ -363,18 +372,22 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 			output.setListData(results[0]);
 			String[] empty = new String[5];
 			System.out.println("j="+j);
+			output.setListData(empty);
+			outputBi.setListData(empty);
+			outputTri.setListData(empty);
+			if(unigram)
 			if(j==1){
 				output.setListData(results[0]);
 				outputBi.setListData(empty);
 				outputTri.setListData(empty);
 			}
 			else if(j==2){
-				output.setListData(results[1]);
+					output.setListData(results[1]);
 				outputBi.setListData(results[0]);
 				outputTri.setListData(empty);
 			}
 			else if(j==3){
-				output.setListData(results[2]);
+					output.setListData(results[2]);
 				outputBi.setListData(results[1]);
 				outputTri.setListData(results[0]);
 			}

@@ -1,5 +1,4 @@
 package org.ss12.wordprediction;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -109,7 +108,7 @@ public class WordPredictor implements PredictionModel
     {
     	SortedMap<String, Integer> suggestions_candidates;
     	System.out.println(end_seq);
-    	if(end_seq==null)
+    	if(end_seq==null || end_seq.compareTo(begin_seq)<0)
     		suggestions_candidates=map.tailMap(begin_seq);
     	else
     		suggestions_candidates=map.subMap(begin_seq, end_seq);
