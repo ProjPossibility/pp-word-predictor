@@ -139,8 +139,9 @@ public class WordPredictor implements PredictionModel
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
         	case 2:
+        		
         		begin_seq=tokens[0]+" "+tokens[1];
-        		end_seq=begin_seq+getUpperBound(tokens[1]);
+        		end_seq=tokens[0]+" "+getUpperBound(tokens[1]);
         		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, bigrams);
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
@@ -206,12 +207,13 @@ public class WordPredictor implements PredictionModel
         	    break;    
         }
         
-
+        String[] str_arr;
         for(int rank=0;rank<numOfSuggestions;rank++)
 		{
-			suggestions[rank]=suggestions_candidates[rank].toString();
+			str_arr=suggestions_candidates[rank].toString().split(" ");
+			suggestions[rank]=str_arr[str_arr.length-1];
 		}
-    		    		return suggestions;
+        return suggestions;
     }    
  
     public void cleanup(){
