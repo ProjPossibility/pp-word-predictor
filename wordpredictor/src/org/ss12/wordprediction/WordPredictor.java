@@ -108,8 +108,9 @@ public class WordPredictor implements PredictionModel
     public Entry<String, Integer>[] foo(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String,Integer> map)
     {
     	SortedMap<String, Integer> suggestions_candidates;
+    	System.out.println(end_seq);
     	if(end_seq==null)
-    		suggestions_candidates=map.headMap(begin_seq);
+    		suggestions_candidates=map.tailMap(begin_seq);
     	else
     		suggestions_candidates=map.subMap(begin_seq, end_seq);
 		Entry<String,Integer>[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
@@ -135,20 +136,10 @@ public class WordPredictor implements PredictionModel
         {
         	case 3:
         		String tmp_begin=tokens[0]+" "+tokens[1];
-        		if(tokens[2].isEmpty())
-        		{
-        			begin_seq=tmp_begin+" a";
-        			System.out.println("the begin_seq is:"+begin_seq);
-        			end_seq=tmp_begin+" "+getUpperBound("z");
-            		System.out.println("and the end_seq is:"+end_seq);
-        		}
-        		else
-        		{
-        			begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
-            		System.out.println("the begin_seq is:"+begin_seq);
-            		end_seq=tmp_begin+" "+getUpperBound(tokens[2]);
-            		System.out.println("and the end_seq is:"+end_seq);
-        		}
+        		begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
+        		System.out.println("the begin_seq is:"+begin_seq);
+        		end_seq=tmp_begin+" "+getUpperBound(tokens[2]);
+        		System.out.println("and the end_seq is:"+end_seq);
         		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, trigrams);
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
@@ -205,6 +196,7 @@ public class WordPredictor implements PredictionModel
             					//just skip it!
             				}
         			}
+        			
         			
         			
         		}

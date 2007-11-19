@@ -179,7 +179,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		
 		GuiLauncher gl = new GuiLauncher(wp);
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		gl.setSize(300,200);
+		gl.setSize(300,400);
 		gl.setVisible(true);
 	}
 
