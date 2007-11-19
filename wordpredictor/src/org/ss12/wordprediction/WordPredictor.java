@@ -125,7 +125,9 @@ public class WordPredictor implements PredictionModel
         {
         	case 3:
         		begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
+        		System.out.println("the begin_seq is:"+begin_seq);
         		end_seq=begin_seq+getUpperBound(tokens[2]);
+        		System.out.println("and the end_seq is:"+end_seq);
         		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, trigrams);
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
