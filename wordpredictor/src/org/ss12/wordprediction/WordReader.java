@@ -40,7 +40,7 @@ public class WordReader {
 				prePreWord = preWord = null;
 				continue;
 			}
-			System.out.print(words[i] + " ");
+			//System.out.print(words[i] + " ");
 			// System.out.println(wp);
 			wp.addUnigram(words[i]);
 
