@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.ss12.wordpredicton.servlet;
+package org.ss12.wordprediction.servlet;
 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.servlet.Context;

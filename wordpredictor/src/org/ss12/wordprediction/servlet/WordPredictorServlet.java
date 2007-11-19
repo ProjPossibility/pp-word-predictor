@@ -1,4 +1,4 @@
-package org.ss12.wordpredicton.servlet;
+package org.ss12.wordprediction.servlet;
 
 import java.io.File;
 import java.io.IOException;
