@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.ss12.wordprediction.model.PredictionModel;
@@ -25,6 +26,11 @@ public class WordPredictor implements PredictionModel
 	private int bigramCount;
 	private int trigramCount;
 	private int unigramCount;
+	
+	public WordPredictor(SortedMap<String, Integer> sm) {
+		this(sm, new TreeMap<String, Integer>(), new TreeMap<String, Integer>(), new TreeMap<String, Integer>());
+	}
+	
 	public WordPredictor(SortedMap<String,Integer> sm,SortedMap<String, Integer> uni,SortedMap<String,Integer> bi,SortedMap<String,Integer> tri)
 	{
 		 this.words=sm;
