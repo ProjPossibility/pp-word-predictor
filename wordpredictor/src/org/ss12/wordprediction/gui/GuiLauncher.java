@@ -268,7 +268,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 
 	@Override
 	public void keyPressed(KeyEvent arg0) {
-		System.out.println(arg0.getKeyCode());
+		//System.out.println(arg0.getKeyCode());
 		if(arg0.getKeyCode()==40){
 			input.getKeymap();
 			System.out.println(output.getModel().getSize());
@@ -279,7 +279,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 			clicked=true;
 		}
 		else if(arg0.getKeyCode()==38){
-			System.out.println(output.getModel().getSize());
+			//System.out.println(output.getModel().getSize());
 			if(output.getSelectedIndex()>0){
 				clicked=false;
 				output.setSelectedIndex(output.getSelectedIndex()-1);
@@ -303,6 +303,9 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 				input.requestFocus();
 				//input.setCaretPosition(input.getText().length());
 			}
+		}
+		else if(arg0.getKeyCode()==10){
+			input.setText("");
 		}
 	}
 
@@ -347,10 +350,10 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 				String t = input.getText();
 				unigram=false;
 				//t+="z";
-				text = t.split(" ");
+				text = t.toLowerCase().split(" ");
 			}
 			else
-				text = input.getText().split(" ");
+				text = input.getText().toLowerCase().split(" ");
 			System.out.println("Last char"+input.getText().charAt(input.getText().length()-1));
 			String[][] results = new String[3][5];
 			int startIndex=text.length-3;
