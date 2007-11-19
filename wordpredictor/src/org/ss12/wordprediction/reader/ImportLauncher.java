@@ -23,6 +23,7 @@ public class ImportLauncher {
 		FileImporter fi = new FileImporter();
 		try {
 			fi.readFile(new File("resources/sample/test.txt"));
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -27,6 +28,7 @@ import javax.swing.event.ListSelectionListener;
 import org.ss12.wordprediction.WordLoader;
 import org.ss12.wordprediction.WordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.reader.FileImporter;
 
 public class GuiLauncher extends JFrame implements ActionListener, ListSelectionListener, KeyListener, DocumentListener{
 	/**
@@ -140,7 +142,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		this.getContentPane().add(main);
 	}
 	public void cleanup(){
-		predictor.cleanup();
+		//predictor.cleanup();
 	}
 
 
@@ -155,12 +157,25 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		File uni,bi,tri;
+		/*File uni,bi,tri;
 		uni = new File("resources/dictionaries/user/uni.dat");
 		bi = new File("resources/dictionaries/user/bi.dat");
-		tri = new File("resources/dictionaries/user/tri.dat");
+		tri = new File("resources/dictionaries/user/tri.dat");*/
+		FileImporter fi = new FileImporter();
 		PredictionModel wp;
-		wp = new WordPredictor(wl.getWords(),wl.loadNgram(uni),wl.loadNgram(bi),wl.loadNgram(tri));
+		try {
+			fi.readFile(new File("resources/sample/test.txt"));
+			fi.readFile(new File("resources/sample/essays"));
+			fi.readFile(new File("resources/sample/henryvi1.txt"));
+			fi.readFile(new File("resources/sample/henryvi2.txt"));
+			fi.readFile(new File("resources/sample/henryvi3.txt"));
+			fi.readFile(new File("resources/sample/henryviii.txt"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		wp = fi.pm;
+//		wp = new WordPredictor(wl.getWords(),wl.loadNgram(uni),wl.loadNgram(bi),wl.loadNgram(tri));
 		
 		GuiLauncher gl = new GuiLauncher(wp);
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -174,7 +189,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		if(arg0.getSource()==predictButton){
 			String beginning = input.getText();
 			if(beginning.length()>0){
-				String[] results = predictor.getSuggestions(input.getText(), 10);
+				String[] results = predictor.getSuggestionsFromDic(input.getText(), 10);
 				output.setListData(results);
 			}
 			else{
@@ -243,7 +258,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 					input.setText(beginning+" "+t+" ");
 				}
 				input.requestFocus();
-				input.setCaretPosition(input.getText().length());
+				//input.setCaretPosition(input.getText().length());
 			}
 		}
 	}
@@ -284,7 +299,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 					input.setText(beginning+" "+t);
 				}
 				input.requestFocus();
-				input.setCaretPosition(input.getText().length());
+				//input.setCaretPosition(input.getText().length());
 			}
 		}
 	}
@@ -325,26 +340,44 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		if(beginning.length()>0){
 			jScrollPane1.setVisible(true);
 			String[] text = input.getText().split(" ");
+			System.out.println("Last char"+input.getText().charAt(input.getText().length()-1));
+			if(input.getText().charAt(input.getText().length()-1)==' ')
+				text[text.length-1]+=" ";
 			String[][] results = new String[3][5];
 			int startIndex=text.length-3;
 			if(startIndex<0) startIndex=0;
 			int j=0;
 			for(int i=startIndex;i<text.length;i++){
-				String[] outputdata = new String[5];
+				String[] outputdata = new String[3];
 				outputdata = Arrays.copyOfRange(text, i, text.length);
+				//System.out.println("i="+i+" j="+j+" "+outputdata[0]+" "+outputdata.length);
+				System.out.println("Sending...");
+				for(String s:outputdata)
+					System.out.println(s);
 				results[j++] = predictor.getSuggestionsGramBased(outputdata, 5);				
+				System.out.println((3-j)+"gram Results: "+results[j-1].length);
+				for(int a=0;a<results[j-1].length;a++){
+					System.out.println(results[j-1][a]);
+				}
 			}
-			
 			output.setListData(results[0]);
 			String[] empty = new String[5];
-			if(j>1)
-				outputBi.setListData(results[1]);
-			else
+			System.out.println("j="+j);
+			if(j==1){
+				output.setListData(results[0]);
 				outputBi.setListData(empty);
-			if(j>2)
-				outputTri.setListData(results[2]);
-			else
 				outputTri.setListData(empty);
+			}
+			else if(j==2){
+				output.setListData(results[1]);
+				outputBi.setListData(results[0]);
+				outputTri.setListData(empty);
+			}
+			else if(j==3){
+				output.setListData(results[2]);
+				outputBi.setListData(results[1]);
+				outputTri.setListData(results[0]);
+			}
 			input.requestFocus();
 		}
 		else{

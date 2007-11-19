@@ -45,8 +45,8 @@ public class WordPredictor implements PredictionModel
 	public int sumValues(SortedMap<String,Integer> sm){
 		Collection<Integer> c = sm.values();
 		int sum=0;
-		for(Integer i:c){
-			sum+=i;
+		for(Integer f:c){
+			sum+=f;
 		}
 		return sum;
 	}
@@ -107,7 +107,11 @@ public class WordPredictor implements PredictionModel
 	 */
     public Entry<String, Integer>[] foo(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String,Integer> map)
     {
-    	SortedMap<String, Integer> suggestions_candidates=map.subMap(begin_seq, end_seq);
+    	SortedMap<String, Integer> suggestions_candidates;
+    	if(end_seq==null)
+    		suggestions_candidates=map.headMap(begin_seq);
+    	else
+    		suggestions_candidates=map.subMap(begin_seq, end_seq);
 		Entry<String,Integer>[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
 		cmpSortedMap sortedMapComparator = new cmpSortedMap();
 		Arrays.sort(cnd_set, 0, cnd_set.length, sortedMapComparator);
@@ -118,15 +122,15 @@ public class WordPredictor implements PredictionModel
     }
     public String[] getSuggestionsGramBased(String[]tokens,int numOfSuggestions)
     {
-    	
+    	System.out.println("getSuggestions started");
     	String begin_seq,end_seq;
-    	String[] suggestions=null;
+    	String[] suggestions=new String[10];
     	//SortedMap<String, Integer> suggestions_candidates;
     	Entry<String, Integer>[] suggestions_candidates=null;
     	//these variables are designed specially for unigram case
     	Entry<String, Integer>[] unigram_suggestions, dictionary_suggestions;
     	int numOfHints_unigram, numOfHints_dictionary;
-    	
+    	System.out.println("Tokens: "+tokens.length);
         switch(tokens.length)
         {
         	case 3:
@@ -210,10 +214,12 @@ public class WordPredictor implements PredictionModel
         String[] str_arr;
         for(int rank=0;rank<numOfSuggestions;rank++)
 		{
-			str_arr=suggestions_candidates[rank].toString().split(" ");
+        	//System.out.println("Suggestion: "+suggestions_candidates[rank].toString());
+			//suggestions[rank]=suggestions_candidates[rank].getKey().toString();
+			str_arr=suggestions_candidates[rank].getKey().toString().split(" ");
 			suggestions[rank]=str_arr[str_arr.length-1];
 		}
-        return suggestions;
+		return suggestions;
     }    
  
     public void cleanup(){
@@ -244,28 +250,26 @@ public class WordPredictor implements PredictionModel
 	
 	public void addTrigram(String s1, String s2, String s3) {
 		String t = s1+" "+s2+" "+s3;
+		trigramCount++;
 		addNgram(t,trigrams,"resources/dictionaries/user/tri.dat");
 	}	
 	public void addBigram(String s1, String s2) {
 		String t = s1+" "+s2;
+		bigramCount++;
 		addNgram(t,bigrams,"resources/dictionaries/user/bi.dat");
 	}	
 	public void addUnigram(String t) {
+		unigramCount++;
 		addNgram(t,unigrams,"resources/dictionaries/user/uni.dat");
 	}	
 
 	private void addNgram(String t, SortedMap<String,Integer> sm,String filename) {
 		if(sm.containsKey(t))
 			sm.put(t, sm.get(t)+1);
-		else
-			trigrams.put(t, 1);
-		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
-		File f = new File("resources/dictionaries/user/tri.dat");
-		try {
-			saveMap(trigrams,new FileOutputStream(f));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		else{
+			sm.put(t, 1);
 		}
+		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
 	}	
 
 

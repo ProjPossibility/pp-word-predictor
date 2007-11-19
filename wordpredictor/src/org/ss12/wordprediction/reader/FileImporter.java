@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
+import java.util.TreeMap;
 
 import org.ss12.wordprediction.WordLoader;
 import org.ss12.wordprediction.WordPredictor;
@@ -14,18 +15,25 @@ import org.ss12.wordprediction.model.PredictionModel;
 
 public class FileImporter {
 	WordLoader wl;
-	PredictionModel pm;
+	public PredictionModel pm;
 	WordReader wr;
 	public FileImporter(){
 		wl = new WordLoader(1);
-		File uni = new File("resources/dictionaries/user/uni.dat");
+		try {
+			wl.loadDictionary(new File("resources/dictionaries/converted/plain.dat"));
+			wl.loadFrequenciess(new File("resources/dictionaries/converted/freq.dat"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		/*File uni = new File("resources/dictionaries/user/uni.dat");
 		File bi = new File("resources/dictionaries/user/bi.dat");
 		File tri = new File("resources/dictionaries/user/tri.dat");
-		pm = new WordPredictor(wl.getWords(),wl.loadNgram(uni),wl.loadNgram(bi),wl.loadNgram(tri));
+		*/
+		pm = new WordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
 	}
 	public boolean readFile(File f) throws FileNotFoundException{
 		boolean b = readFileAndNotCleanup(f);
-		pm.cleanup();
+		//pm.cleanup();
 		return b;
 	}
 	private boolean readFileAndNotCleanup(File f) throws FileNotFoundException{

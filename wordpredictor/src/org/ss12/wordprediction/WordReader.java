@@ -27,6 +27,7 @@ public class WordReader
 				continue;
 			}
 			System.out.print(nw[i]+" ");
+//			System.out.println(wp);
 			wp.addUnigram(nw[i]);
 			
 			if(preWord != null)
