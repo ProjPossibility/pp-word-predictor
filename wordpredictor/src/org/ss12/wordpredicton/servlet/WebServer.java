@@ -8,8 +8,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
- * @author mgp
- *
+ * Creates a web server and adds a {@link WordPredictorServlet}.
  */
 public class WebServer {
 	public static void main(String[] args) throws Exception {

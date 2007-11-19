@@ -13,10 +13,16 @@ import org.ss12.wordprediction.WordLoader;
 import org.ss12.wordprediction.WordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
 
+/**
+ * Receives a request from the user and outputs the top 5 words.
+ */
 public class WordPredictorServlet extends HttpServlet {
 
 	private PredictionModel wp;
 
+	/**
+	 * This creates a new servlet.
+	 */
 	public WordPredictorServlet() {
 		WordLoader wl = new WordLoader(1);
 		try {
