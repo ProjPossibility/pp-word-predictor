@@ -135,10 +135,20 @@ public class WordPredictor implements PredictionModel
         {
         	case 3:
         		String tmp_begin=tokens[0]+" "+tokens[1];
-        		begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
-        		System.out.println("the begin_seq is:"+begin_seq);
-        		end_seq=tmp_begin+" "+getUpperBound(tokens[2]);
-        		System.out.println("and the end_seq is:"+end_seq);
+        		if(tokens[2].isEmpty())
+        		{
+        			begin_seq=tmp_begin+" a";
+        			System.out.println("the begin_seq is:"+begin_seq);
+        			end_seq=tmp_begin+" "+getUpperBound("z");
+            		System.out.println("and the end_seq is:"+end_seq);
+        		}
+        		else
+        		{
+        			begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
+            		System.out.println("the begin_seq is:"+begin_seq);
+            		end_seq=tmp_begin+" "+getUpperBound(tokens[2]);
+            		System.out.println("and the end_seq is:"+end_seq);
+        		}
         		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, trigrams);
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
@@ -195,7 +205,6 @@ public class WordPredictor implements PredictionModel
             					//just skip it!
             				}
         			}
-        			
         			
         			
         		}
