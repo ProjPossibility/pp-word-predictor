@@ -124,13 +124,13 @@ public class WordPredictor implements PredictionModel
         switch(tokens.length)
         {
         	case 3:
-        		begin_seq=tokens[0]+" "+tokens[1];
+        		begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
         		end_seq=begin_seq+getUpperBound(tokens[2]);
         		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, trigrams);
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
         	case 2:
-        		begin_seq=tokens[0];
+        		begin_seq=tokens[0]+" "+tokens[1];
         		end_seq=begin_seq+getUpperBound(tokens[1]);
         		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, bigrams);
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
@@ -194,11 +194,7 @@ public class WordPredictor implements PredictionModel
         		
         		//finally, update the numOfSuggestions before further processing
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
-        	    break;
-        	default:
-        		
-        	    suggestions_candidates=null;
-        	    
+        	    break;    
         }
         
 
