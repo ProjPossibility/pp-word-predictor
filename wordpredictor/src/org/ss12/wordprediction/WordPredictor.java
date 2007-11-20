@@ -122,7 +122,7 @@ public class WordPredictor implements PredictionModel
     }
     public String[] getSuggestionsGramBased(String[]tokens,int numOfSuggestions)
     {
-    	System.out.println("getSuggestions started");
+    	//System.out.println("getSuggestions started");
     	String begin_seq,end_seq;
     	String[] suggestions=new String[10];
     	//SortedMap<String, Integer> suggestions_candidates;
@@ -130,7 +130,7 @@ public class WordPredictor implements PredictionModel
     	//these variables are designed specially for unigram case
     	Entry<String, Integer>[] unigram_suggestions, dictionary_suggestions;
     	int numOfHints_unigram, numOfHints_dictionary;
-    	System.out.println("Tokens: "+tokens.length);
+    	//System.out.println("Tokens: "+tokens.length);
         switch(tokens.length)
         {
         	case 3:

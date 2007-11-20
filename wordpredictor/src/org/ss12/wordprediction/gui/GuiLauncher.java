@@ -26,7 +26,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.ss12.wordprediction.WordLoader;
-import org.ss12.wordprediction.WordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
 import org.ss12.wordprediction.reader.FileImporter;
 
