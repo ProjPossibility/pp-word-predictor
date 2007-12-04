@@ -1,0 +1,45 @@
+<!-- An ANT build file for Geomancer application-->
+
+<!-- $Id: build.xml,v 1.4 2007/07/19 22:18:27 dlrichar Exp $ -->
+
+<!-- David Richardson -->
+<!-- Created on December 3, 2007 -->
+
+<project name="wordpredictor" default="all" basedir=".">
+	<property name="wordpredictor.name" value="wordpredictor" />
+	<property name="wordpredictor.version" value="0.1.0" />
+	<property name="builddir" value="${basedir}/build" />
+	<property name="src" value="${basedir}/src" />
+	<property name="dest" value="${basedir}/bin" />
+	<property name="dist" value="${basedir}/dist" />
+
+	<path id="build.classpath">
+		<pathelement location="bin"/>	
+	</path>
+	<path id="run.classpath">
+		<pathelement location="bin"/>	
+	</path>
+
+	<!-- Initialization -->
+	<!-- Mostly unnecessary for now; will eventually use for more complex builds -->
+	<target name="init" description="Initialize required settings">
+		<tstamp />
+	</target>
+
+	<!-- ALL -->
+	<target name="all" description="Will perform all build tasks">
+	</target>
+
+	<!-- RUN -->
+	<target name="run">
+		<java classname="org.ss12.wordprediction.gui.GuiLauncher" classpathref="run.classpath" fork="true">
+			<jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+			<jvmarg value='-Djava.compiler="none"'/><!-- JIT REALLY sucks -->
+			<jvmarg value='-Djava.library.path=lib/'/>
+		</java>
+	</target>
+	<!-- Compile without eclipse -->
+	<target name="compile" description="Compile the scec_vdo">
+		<javac srcdir="${src}" destdir="${dest}" classpathref="build.classpath"/>
+	</target>
+</project>

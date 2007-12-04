@@ -139,7 +139,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		outputTri.addListSelectionListener(this);
 		//main.add(input);
 		//main.add(new JLabel(""));
-		//main.add(predictButton);
+		main.add(predictButton);
 		this.getContentPane().add(main);
 	}
 	public void cleanup(){
@@ -163,18 +163,31 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		bi = new File("resources/dictionaries/user/bi.dat");
 		tri = new File("resources/dictionaries/user/tri.dat");*/
 		FileImporter fi = new FileImporter();
-		PredictionModel wp;
-		try {
-			fi.readFile(new File("resources/sample/test.txt"));
-			fi.readFile(new File("resources/sample/essays"));
-			fi.readFile(new File("resources/sample/henryvi1.txt"));
-			fi.readFile(new File("resources/sample/henryvi2.txt"));
-			fi.readFile(new File("resources/sample/henryvi3.txt"));
-			fi.readFile(new File("resources/sample/henryviii.txt"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		try{
+			File d = new File("resources/sample");
+			String[] files = d.list();
+			for(int j=0;j<files.length;j++){
+				if(files[j].charAt(0)=='.')
+					continue;
+				System.out.println(d.getAbsolutePath()+"/"+files[j]);
+				fi.readFile(new File(d.getAbsolutePath()+"/"+files[j]));
+			}
+		}catch(Exception e){
 			e.printStackTrace();
 		}
+		PredictionModel wp;
+//		try {
+//			fi.readFile(new File("resources/sample/test.txt"));
+//			fi.readFile(new File("resources/sample/essays"));
+//			fi.readFile(new File("resources/sample/henryvi1.txt"));
+//			fi.readFile(new File("resources/sample/henryvi2.txt"));
+//			fi.readFile(new File("resources/sample/henryvi3.txt"));
+//			fi.readFile(new File("resources/sample/henryviii.txt"));
+//			fi.readFile(new File("resources/sample/bible.txt"));
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		wp = fi.pm;
 //		wp = new WordPredictor(wl.getWords(),wl.loadNgram(uni),wl.loadNgram(bi),wl.loadNgram(tri));
 		

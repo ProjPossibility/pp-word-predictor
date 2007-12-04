@@ -252,15 +252,18 @@ public class WordPredictor implements PredictionModel
 		String t = s1+" "+s2+" "+s3;
 		trigramCount++;
 		addNgram(t,trigrams,"resources/dictionaries/user/tri.dat");
+		System.out.println("Trigrams: "+trigrams.size());;
 	}	
 	public void addBigram(String s1, String s2) {
 		String t = s1+" "+s2;
 		bigramCount++;
 		addNgram(t,bigrams,"resources/dictionaries/user/bi.dat");
+		System.out.println("Bigrams: "+bigrams.size());;
 	}	
 	public void addUnigram(String t) {
 		unigramCount++;
 		addNgram(t,unigrams,"resources/dictionaries/user/uni.dat");
+		System.out.println("Unigrams: "+unigrams.size());;
 	}	
 
 	private void addNgram(String t, SortedMap<String,Integer> sm,String filename) {
