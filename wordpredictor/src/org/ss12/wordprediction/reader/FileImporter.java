@@ -31,6 +31,10 @@ public class FileImporter {
 		*/
 		pm = new WordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
 	}
+	public FileImporter(WordLoader wl){
+		this.wl = wl;
+		pm = new WordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
+	}
 	public boolean readFile(File f) throws FileNotFoundException{
 		boolean b = readFileAndNotCleanup(f);
 		//pm.cleanup();

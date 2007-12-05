@@ -38,6 +38,14 @@
 			<jvmarg value='-Djava.library.path=lib/'/>
 		</java>
 	</target>
+   <!-- IMPORT -->
+    <target name="import">
+        <java classname="org.ss12.wordprediction.reader.ImportLauncher" classpathref="run.classpath" fork="true">
+            <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+            <jvmarg value='-Djava.compiler="none"'/><!-- JIT REALLY sucks -->
+            <jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
 	<!-- Compile without eclipse -->
 	<target name="compile" description="Compile the scec_vdo">
 		<javac srcdir="${src}" destdir="${dest}" classpathref="build.classpath"/>

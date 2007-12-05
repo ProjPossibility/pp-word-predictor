@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.ss12.wordprediction.WordLoader;
+import org.ss12.wordprediction.WordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
 import org.ss12.wordprediction.reader.FileImporter;
 
@@ -151,47 +152,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		WordLoader wl = new WordLoader(1);
-		try {
-			wl.loadDictionary(new File("resources/dictionaries/converted/plain.dat"));
-			wl.loadFrequenciess(new File("resources/dictionaries/converted/freq.dat"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		/*File uni,bi,tri;
-		uni = new File("resources/dictionaries/user/uni.dat");
-		bi = new File("resources/dictionaries/user/bi.dat");
-		tri = new File("resources/dictionaries/user/tri.dat");*/
-		FileImporter fi = new FileImporter();
-		try{
-			File d = new File("resources/sample");
-			String[] files = d.list();
-			for(int j=0;j<files.length;j++){
-				if(files[j].charAt(0)=='.')
-					continue;
-				System.out.println(d.getAbsolutePath()+"/"+files[j]);
-				fi.readFile(new File(d.getAbsolutePath()+"/"+files[j]));
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		PredictionModel wp;
-//		try {
-//			fi.readFile(new File("resources/sample/test.txt"));
-//			fi.readFile(new File("resources/sample/essays"));
-//			fi.readFile(new File("resources/sample/henryvi1.txt"));
-//			fi.readFile(new File("resources/sample/henryvi2.txt"));
-//			fi.readFile(new File("resources/sample/henryvi3.txt"));
-//			fi.readFile(new File("resources/sample/henryviii.txt"));
-//			fi.readFile(new File("resources/sample/bible.txt"));
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		wp = fi.pm;
-//		wp = new WordPredictor(wl.getWords(),wl.loadNgram(uni),wl.loadNgram(bi),wl.loadNgram(tri));
-		
-		GuiLauncher gl = new GuiLauncher(wp);
+		GuiLauncher gl = new GuiLauncher(new WordPredictor());
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setSize(600,400);
 		gl.setVisible(true);

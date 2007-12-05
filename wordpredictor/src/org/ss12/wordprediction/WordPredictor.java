@@ -1,4 +1,5 @@
 package org.ss12.wordprediction;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +27,22 @@ public class WordPredictor implements PredictionModel
 	private int trigramCount;
 	private int unigramCount;
 	
+	public WordPredictor(){
+		WordLoader wl = new WordLoader(1);		
+		File uni,bi,tri,dict;
+		uni = new File("resources/dictionaries/user/uni.dat");
+		bi = new File("resources/dictionaries/user/bi.dat");
+		tri = new File("resources/dictionaries/user/tri.dat");
+		dict = new File("resources/dictionaries/user/dict.dat");
+		this.words = wl.loadNgram(dict);
+		this.bigrams = wl.loadNgram(bi);
+		this.trigrams = wl.loadNgram(tri);
+		this.unigrams = wl.loadNgram(uni);
+		wordCount = sumValues(words);
+		bigramCount = sumValues(bigrams);
+		trigramCount = sumValues(trigrams);
+		unigramCount = sumValues(unigrams);
+	}
 	public WordPredictor(SortedMap<String, Integer> sm) {
 		this(sm, new TreeMap<String, Integer>(), new TreeMap<String, Integer>(), new TreeMap<String, Integer>());
 	}
@@ -228,6 +245,7 @@ public class WordPredictor implements PredictionModel
 			saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
 			saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
 			saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
+			saveMap(words,new FileOutputStream(path+"dict.dat"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -237,9 +255,7 @@ public class WordPredictor implements PredictionModel
 		try
 		{
 			out = new ObjectOutputStream(os);
-			out.writeObject(unigrams);
-			out.writeObject(bigrams);
-			out.writeObject(trigrams);
+			out.writeObject(sm);
 			out.close();
 		}
 		catch(IOException ex)
@@ -251,22 +267,22 @@ public class WordPredictor implements PredictionModel
 	public void addTrigram(String s1, String s2, String s3) {
 		String t = s1+" "+s2+" "+s3;
 		trigramCount++;
-		addNgram(t,trigrams,"resources/dictionaries/user/tri.dat");
+		addNgram(t,trigrams);
 		System.out.println("Trigrams: "+trigrams.size());;
 	}	
 	public void addBigram(String s1, String s2) {
 		String t = s1+" "+s2;
 		bigramCount++;
-		addNgram(t,bigrams,"resources/dictionaries/user/bi.dat");
+		addNgram(t,bigrams);
 		System.out.println("Bigrams: "+bigrams.size());;
 	}	
 	public void addUnigram(String t) {
 		unigramCount++;
-		addNgram(t,unigrams,"resources/dictionaries/user/uni.dat");
+		addNgram(t,unigrams);
 		System.out.println("Unigrams: "+unigrams.size());;
 	}	
 
-	private void addNgram(String t, SortedMap<String,Integer> sm,String filename) {
+	private void addNgram(String t, SortedMap<String,Integer> sm) {
 		if(sm.containsKey(t))
 			sm.put(t, sm.get(t)+1);
 		else{

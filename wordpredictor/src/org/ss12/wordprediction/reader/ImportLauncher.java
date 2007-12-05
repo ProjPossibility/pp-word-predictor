@@ -12,6 +12,7 @@ import org.ss12.wordprediction.model.PredictionModel;
 public class ImportLauncher {
 	public static void main(String args[]){
 		WordLoader wl = new WordLoader(1);
+		long t = System.nanoTime();
 		try {
 			wl.loadDictionary(new File("resources/dictionaries/converted/plain.dat"));
 			wl.loadFrequenciess(new File("resources/dictionaries/converted/freq.dat"));
@@ -20,12 +21,20 @@ public class ImportLauncher {
 			e.printStackTrace();
 		}
 		
-		FileImporter fi = new FileImporter();
-		try {
-			fi.readFile(new File("resources/sample/test.txt"));
-			
-		} catch (FileNotFoundException e) {
+		FileImporter fi = new FileImporter(wl);
+		try{
+			File d = new File("resources/sample");
+			String[] files = d.list();
+			for(int j=0;j<files.length;j++){
+				if(files[j].charAt(0)=='.')
+					continue;
+				System.out.println(d.getAbsolutePath()+"/"+files[j]);
+				fi.readFile(new File(d.getAbsolutePath()+"/"+files[j]));
+			}
+		}catch(Exception e){
 			e.printStackTrace();
 		}
+		fi.pm.cleanup();
+		System.out.println("Time elapsed: "+(float)(System.nanoTime()-t)/1000000000.0);
 	}
 }
