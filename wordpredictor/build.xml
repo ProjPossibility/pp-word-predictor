@@ -11,13 +11,17 @@
 	<property name="builddir" value="${basedir}/build" />
 	<property name="src" value="${basedir}/src" />
 	<property name="dest" value="${basedir}/bin" />
-	<property name="dist" value="${basedir}/dist" />
 
 	<path id="build.classpath">
 		<pathelement location="bin"/>	
 	</path>
 	<path id="run.classpath">
 		<pathelement location="bin"/>	
+	</path>
+	<path id="server.classpath">
+		<pathelement location="bin"/>
+		<pathelement location="lib/gwt-dev-windows.jar"/>
+		<pathelement location="lib/gwt-user.jar"/>
 	</path>
 
 	<!-- Initialization -->
