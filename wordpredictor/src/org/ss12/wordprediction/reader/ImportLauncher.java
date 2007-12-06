@@ -1,13 +1,9 @@
 package org.ss12.wordprediction.reader;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.ss12.wordprediction.WordLoader;
-import org.ss12.wordprediction.WordPredictor;
-import org.ss12.wordprediction.WordReader;
-import org.ss12.wordprediction.model.PredictionModel;
 
 public class ImportLauncher {
 	public static void main(String args[]){

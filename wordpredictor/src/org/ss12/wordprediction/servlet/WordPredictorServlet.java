@@ -18,6 +18,10 @@ import org.ss12.wordprediction.model.PredictionModel;
  */
 public class WordPredictorServlet extends HttpServlet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 887632007177487449L;
 	private PredictionModel wp;
 
 	/**

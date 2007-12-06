@@ -102,14 +102,10 @@ public class WordLoader {
 		} catch (IOException e) {
 			System.out
 					.println("File not found, creating empty Ngram entry instead");
+			System.out.println(System.getProperty("user.dir"));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-//		System.out.println("Contains and:" + retval.containsKey("and"));
-//		System.out.println("Contains and histories:"
-//				+ retval.containsKey("and histories"));
-//		System.out.println("Contains about such matters:"
-//				+ retval.containsKey("about such matters"));
 		return retval;
 	}
 

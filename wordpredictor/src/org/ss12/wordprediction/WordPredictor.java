@@ -153,9 +153,9 @@ public class WordPredictor implements PredictionModel
         	case 3:
         		String tmp_begin=tokens[0]+" "+tokens[1];
         		begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
-        		System.out.println("the begin_seq is:"+begin_seq);
+        		//System.out.println("the begin_seq is:"+begin_seq);
         		end_seq=tmp_begin+" "+getUpperBound(tokens[2]);
-        		System.out.println("and the end_seq is:"+end_seq);
+        		//System.out.println("and the end_seq is:"+end_seq);
         		suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, trigrams);
         		numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
         		break;
@@ -268,18 +268,18 @@ public class WordPredictor implements PredictionModel
 		String t = s1+" "+s2+" "+s3;
 		trigramCount++;
 		addNgram(t,trigrams);
-		System.out.println("Trigrams: "+trigrams.size());;
+		//System.out.println("Trigrams: "+trigrams.size());;
 	}	
 	public void addBigram(String s1, String s2) {
 		String t = s1+" "+s2;
 		bigramCount++;
 		addNgram(t,bigrams);
-		System.out.println("Bigrams: "+bigrams.size());;
+		//System.out.println("Bigrams: "+bigrams.size());;
 	}	
 	public void addUnigram(String t) {
 		unigramCount++;
 		addNgram(t,unigrams);
-		System.out.println("Unigrams: "+unigrams.size());;
+		//System.out.println("Unigrams: "+unigrams.size());;
 	}	
 
 	private void addNgram(String t, SortedMap<String,Integer> sm) {

@@ -6,9 +6,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Arrays;
 
 import javax.swing.JButton;
@@ -25,10 +22,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.ss12.wordprediction.WordLoader;
 import org.ss12.wordprediction.WordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
-import org.ss12.wordprediction.reader.FileImporter;
 
 public class GuiLauncher extends JFrame implements ActionListener, ListSelectionListener, KeyListener, DocumentListener{
 	/**
@@ -68,21 +63,33 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
         outputTri.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         output.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = {};
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 6218654733508813417L;
+			String[] strings = {};
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         jScrollPane1.setViewportView(output);
 
         outputBi.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = {};
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 5152614925643522305L;
+			String[] strings = {};
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
         jScrollPane2.setViewportView(outputBi);
 
         outputTri.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = {};
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 907980171513869749L;
+			String[] strings = {};
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });

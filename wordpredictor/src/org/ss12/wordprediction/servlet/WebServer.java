@@ -9,6 +9,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
  * Creates a web server and adds a {@link WordPredictorServlet}.
+ * Connect at http://localhost:8080/predict
  */
 public class WebServer {
 	public static void main(String[] args) throws Exception {
