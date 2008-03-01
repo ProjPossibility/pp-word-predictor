@@ -27,9 +27,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.ChangeListener;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -55,9 +52,13 @@ public class GWTGUI implements EntryPoint {
 		public void onSuccess(Object result) {
 		      String[] suggestions = (String[]) result;
 				//String printedSuggestions = new String();
-				for(int i=0;i<min(suggestions.length,label[instance].length);i++){
+		      	int i;
+				for(i=0;i<min(suggestions.length,label[instance].length);i++){
 					//printedSuggestions+=suggestions[i]+"<br />";
 					label[instance][i].setText(suggestions[i]);
+				}
+				for(int j=i;j<label[instance].length;j++){
+					label[instance][j].setText("&nbsp;");
 				}
 				if(textbox.isReadOnly()){
 					textbox.setText("");
@@ -95,7 +96,6 @@ public class GWTGUI implements EntryPoint {
 	private TextBox textbox = new TextBox();
 	private Label label[][] = new Label[3][5];
 	public void onModuleLoad() {
-		//pm = new WordPredictor();
 		textbox.setText("Loading...");
 		textbox.setWidth("40em");
 		textbox.setReadOnly(true);
@@ -131,7 +131,7 @@ public class GWTGUI implements EntryPoint {
 				RootPanel.get("word"+(j+1)+""+(i+1)).add(label[j][i]);
 			}
 		}
-		getPredictions("".split(" "),5);
+		getPredictions("in the ".split(" "),5);
 	}
 	protected void handleChange() {
 		String[] text = textbox.getText().toLowerCase().split(" ");
