@@ -69,6 +69,7 @@ public class FileImporter {
 			while(br.ready()){
 				wr.nextWords(br.readLine().split(" "));
 			}
+			br.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
