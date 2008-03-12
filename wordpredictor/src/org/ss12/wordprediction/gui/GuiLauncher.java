@@ -384,8 +384,11 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 			if(startIndex<0) startIndex=0;
 			int j=0;
 			for(int i=startIndex;i<text.length;i++){
-				String[] outputdata = new String[3];
-				outputdata = Arrays.copyOfRange(text, i, text.length);
+				//System.out.println("text.length="+text.length+" i="+i);
+				String[] outputdata = new String[text.length-i];
+				System.arraycopy(text, i, outputdata, 0, text.length-i);
+				//outputdata = Arrays.copyOfRange(text, i, text.length);  Apparently this doesn't work in Java 1.5
+				
 				//System.out.println("i="+i+" j="+j+" "+outputdata[0]+" "+outputdata.length);
 				System.out.println("Sending...");
 				for(String s:outputdata)
