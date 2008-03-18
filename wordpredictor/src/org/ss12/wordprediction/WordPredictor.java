@@ -31,6 +31,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -159,9 +161,9 @@ public class WordPredictor implements PredictionModel
 
 		return cnd_set;
 	}
-	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestions)
+	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestionsRequested)
 	{
-		int numOfSuggestions = numberOfSuggestions;
+		int numOfSuggestionsFound = numberOfSuggestionsRequested;
 		//System.out.println("getSuggestions started");
 		String begin_seq,end_seq;
 		//SortedMap<String, Integer> suggestions_candidates;
@@ -178,15 +180,15 @@ public class WordPredictor implements PredictionModel
 			//System.out.println("the begin_seq is:"+begin_seq);
 			end_seq=tmp_begin+" "+getUpperBound(tokens[2]);
 			//System.out.println("and the end_seq is:"+end_seq);
-			suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, trigrams);
-			numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
+			suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestionsFound, trigrams);
+			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 2:
 
 			begin_seq=tokens[0]+" "+tokens[1];
 			end_seq=tokens[0]+" "+getUpperBound(tokens[1]);
-			suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestions, bigrams);
-			numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
+			suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestionsFound, bigrams);
+			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 1:
 			// m is used as a temporary structure to remove duplicate suggestions from two lists
@@ -194,10 +196,10 @@ public class WordPredictor implements PredictionModel
 			begin_seq=tokens[0];
 			end_seq=getUpperBound(begin_seq);
 			//built  suggestion list from unigram map
-			unigram_suggestions=foo(begin_seq, end_seq, numOfSuggestions,unigrams);
-			dictionary_suggestions = foo(begin_seq, end_seq, numOfSuggestions, words);
-			numOfHints_unigram = Math.min(numOfSuggestions, unigram_suggestions.length);
-			numOfHints_dictionary = Math.min(numOfSuggestions, dictionary_suggestions.length);
+			unigram_suggestions=foo(begin_seq, end_seq, numOfSuggestionsFound,unigrams);
+			dictionary_suggestions = foo(begin_seq, end_seq, numOfSuggestionsFound, words);
+			numOfHints_unigram = Math.min(numOfSuggestionsFound, unigram_suggestions.length);
+			numOfHints_dictionary = Math.min(numOfSuggestionsFound, dictionary_suggestions.length);
 			//for suggestions from dictionary map and from uni-gram map
 			//modify the entry value from counts to counts percentage
 			//so that their frequencies are comparable
@@ -246,21 +248,38 @@ public class WordPredictor implements PredictionModel
 			Arrays.sort(suggestions_candidates, 0, suggestions_candidates.length, sortedMapComparator);
 
 			//finally, update the numOfSuggestions before further processing
-			numOfSuggestions = Math.min(numOfSuggestions, suggestions_candidates.length);
+			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;    
 		}
 
 		String[] str_arr;
-		String[] suggestions=new String[numOfSuggestions];
-		for(int rank=0;rank<numOfSuggestions;rank++)
+		String[] suggestions=new String[numOfSuggestionsFound];
+		for(int rank=0;rank<numOfSuggestionsFound;rank++)
 		{
 			//System.out.println("Suggestion: "+suggestions_candidates[rank].toString());
 			//suggestions[rank]=suggestions_candidates[rank].getKey().toString();
 			str_arr=suggestions_candidates[rank].getKey().toString().split(" ");
 			suggestions[rank]=str_arr[str_arr.length-1];
 		}
-		if(suggestions.length<numberOfSuggestions){
-			
+		if(numOfSuggestionsFound<numberOfSuggestionsRequested && tokens.length>1){
+			String[] smaller = new String[tokens.length-1];
+			System.arraycopy(tokens, 1, smaller, 0, tokens.length-1);
+			String[] temp = this.getSuggestionsGramBased(smaller, numberOfSuggestionsRequested);
+			List<String> m=new LinkedList<String>();
+			for(String s:suggestions){
+				m.add(s);
+			}
+			for(int j=0; j<temp.length;j++)
+			{
+				if(!m.contains(temp[j]))
+					m.add(temp[j]);
+			}
+			String[] results = m.toArray(new String[0]);
+			String[] appendedResults = new String[Math.min(results.length, numberOfSuggestionsRequested)];
+
+			//System.arraycopy(suggestions, 0, appendedResults, 0, numOfSuggestionsFound);
+			System.arraycopy(results, 0, appendedResults, 0, Math.min(results.length, numberOfSuggestionsRequested));
+			suggestions=appendedResults;
 		}
 		return suggestions;
 	}    

@@ -370,14 +370,14 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 			jScrollPane1.setVisible(true);
 			String[] text;
 			boolean unigram=true;
-			if(input.getText().charAt(input.getText().length()-1)==' '){
-				String t = input.getText();
+			if(beginning.charAt(beginning.length()-1)==' '){
+				String t = beginning;
 				unigram=false;
 				//t+="z";
 				text = t.toLowerCase().split(" ");
 			}
 			else
-				text = input.getText().toLowerCase().split(" ");
+				text = beginning.toLowerCase().split(" ");
 			System.out.println("Last char"+input.getText().charAt(input.getText().length()-1));
 			String[][] results = new String[3][5];
 			int startIndex=text.length-3;

@@ -23,10 +23,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
-import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
+import org.ss12.wordprediction.WordPredictor;
+import org.ss12.wordprediction.model.PredictionModel;
 
 public class KeyboardPrototype extends JFrame implements ActionListener{
 	/**
@@ -39,8 +38,10 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 	Robot myRobot;
 	private boolean shift;
 	JButton[] wordButtons;
+	PredictionModel predictor;
 
 	public KeyboardPrototype(Robot robot) {
+		predictor = new WordPredictor();
 		myRobot = robot;
 		shift=false;
 		JPanel main = new JPanel();
@@ -84,6 +85,9 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 		main.add(keyboard,BorderLayout.CENTER);
 		this.getContentPane().add(main);
 	}
+	/*This function is VERY ugly.  It essentially selects some text and copies 
+	 * and pastes it by using KeyPresses.  There's got to be a better way
+	 */
 	private void getText() {
 		myRobot.keyPress(KeyEvent.VK_SHIFT);
 		myRobot.keyPress(KeyEvent.VK_UP);
@@ -160,13 +164,25 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent arg0) {
 		if(arg0.getSource().getClass().isInstance(button)){
 			String key = ((JButton)arg0.getSource()).getText();
+			if(key.length()<=0)
+				return;
+			if(key.charAt(key.length()-1)==' '){
+				String cur = text.getText();
+				int i = cur.lastIndexOf(' ');
+				String temp=key.substring(cur.length()-i-1,key.length()-1);
+				text.setText(text.getText()+temp);
+				typeString(temp);
+				key="Space";
+			}
 			if(key.equals("Enter")){
 				press(KeyEvent.VK_ENTER);
 				text.setText("");
+				predict();
 			}
 			else if(key.equals("Space")){
 				press(KeyEvent.VK_SPACE);
 				text.setText(text.getText()+' ');
+				predict();
 			}
 			else if(key.equals("Ctrl")) press(KeyEvent.VK_CONTROL);
 			else if(key.equals("Caps Lock")) press(KeyEvent.VK_CAPS_LOCK);
@@ -179,7 +195,13 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 			}
 			else if(key.equals("Alt")) press(KeyEvent.VK_ALT);
 			else if(key.equals("Tab")) press(KeyEvent.VK_TAB);
-			else if(key.equals("Backspace")) press(KeyEvent.VK_BACK_SPACE);
+			else if(key.equals("Backspace")){
+				String textTyped = text.getText();
+				if(textTyped.length()>0)
+					text.setText(textTyped.substring(0,textTyped.length()-1));
+				press(KeyEvent.VK_BACK_SPACE);
+				predict();
+			}
 			else{
 				String temp;
 				if(shift)
@@ -188,10 +210,24 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 					temp=key;
 				text.setText(text.getText()+temp);
 				typeString(key);
+				predict();
 			}
 			//myRobot.delay(100);
 			//getText();
 //			button.setText(""+(char)(button.getText().charAt(0)+1));
+		}
+	}
+	private void predict() {
+		String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), 5);
+		for(String r:results) System.out.println(r);
+		int i;
+		for(i=0;i<results.length;i++){
+			wordButtons[i].setText(results[i]+" ");
+			wordButtons[i].setEnabled(true);
+		}
+		for(;i<wordButtons.length;i++){
+			wordButtons[i].setText(" ");
+			wordButtons[i].setEnabled(false);
 		}
 	}
 	private void press(int key) {
