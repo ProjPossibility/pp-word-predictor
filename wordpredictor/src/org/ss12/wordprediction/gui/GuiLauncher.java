@@ -91,7 +91,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 			/**
 			 * 
 			 */
-			 private static final long serialVersionUID = 6218654733508813417L;
+			private static final long serialVersionUID = 6218654733508813417L;
 			String[] strings = {};
 			public int getSize() { return strings.length; }
 			public Object getElementAt(int i) { return strings[i]; }
@@ -123,7 +123,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.fill = GridBagConstraints.HORIZONTAL;
-		
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.ipady = 10;      //make this component tall
 		c.weightx = 0.0;
@@ -131,7 +131,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		c.gridx = 0;
 		c.gridy = 0;
 		add(input, c);
-		
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.ipady = 10;
 		c.weightx = 0.5;
@@ -153,7 +153,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 		c.gridx = 2;
 		c.gridy = 1;
 		add(new JLabel("Trigrams",JLabel.CENTER), c);
-		
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.ipady = 100;
 		c.weightx = 0.5;
@@ -388,7 +388,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 				String[] outputdata = new String[text.length-i];
 				System.arraycopy(text, i, outputdata, 0, text.length-i);
 				//outputdata = Arrays.copyOfRange(text, i, text.length);  Apparently this doesn't work in Java 1.5
-				
+
 				//System.out.println("i="+i+" j="+j+" "+outputdata[0]+" "+outputdata.length);
 				System.out.println("Sending...");
 				for(String s:outputdata)

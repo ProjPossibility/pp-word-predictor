@@ -90,4 +90,6 @@ public interface PredictionModel {
 	 * Saves the internal data to disk.
 	 */
 	public void cleanup();
+
+	public abstract String[] processString(String input);
 }

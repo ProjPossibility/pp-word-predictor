@@ -1,8 +1,10 @@
 package org.ss12.wordprediction.gui.onscreenkeyboard;
 
 import java.awt.AWTException;
+import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -15,15 +17,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
 
 public class KeyboardPrototype extends JFrame implements ActionListener{
 	/**
@@ -35,6 +38,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 	JTextField text;
 	Robot myRobot;
 	private boolean shift;
+	JButton[] wordButtons;
 
 	public KeyboardPrototype(Robot robot) {
 		myRobot = robot;
@@ -47,19 +51,37 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 				System.exit(0);
 			}
 		});
-		main.setLayout(new BoxLayout(main, BoxLayout.PAGE_AXIS));
-		text = new JTextField("Hello");
-		main.add(text);
+		main.setLayout(new BorderLayout());
+		text = new JTextField("");
+		text.setFont(text.getFont().deriveFont(20f));
+		main.add(text, BorderLayout.NORTH);
+		
+		JPanel keyboard = new JPanel();
+		
+		keyboard.setLayout(new BoxLayout(keyboard, BoxLayout.PAGE_AXIS));
+		//text = new JTextField("     1. Experience                    2. Expected                    3. Expect                    4. Experiments                    5. Experiment");
+
+		String[] words={" "," "," "," "," "};
+		JPanel wordRow = rowOfKeys(words);
+		Component[] buttons = wordRow.getComponents();
+		wordButtons = new JButton[buttons.length];
+		for(int i=0;i<buttons.length;i++){
+			wordButtons[i]=(JButton) buttons[i];
+			wordButtons[i].setEnabled(false);
+		}
+		keyboard.add(wordRow);
+						
 		String[] numbers = {"`","1","2","3","4","5","6","7","8","9","0","-","+","Backspace"};
-		main.add(rowOfKeys(numbers));
+		keyboard.add(rowOfKeys(numbers));
 		String[] first = {"Tab","q","w","e","r","t","y","u","i","o","p","[","]","\\"};
-		main.add(rowOfKeys(first));
+		keyboard.add(rowOfKeys(first));
 		String[] second = {"Caps Lock","a","s","d","f","g","h","i","j","k","l",";","'","Enter"};
-		main.add(rowOfKeys(second));
+		keyboard.add(rowOfKeys(second));
 		String[] third = {"Shift","z","x","c","v","b","n","m",",",".","/","Shift"};
-		main.add(rowOfKeys(third));
+		keyboard.add(rowOfKeys(third));
 		String[] fourth = {"Ctrl","Alt","Space","Alt","Ctrl"};
-		main.add(rowOfKeys(fourth));
+		keyboard.add(rowOfKeys(fourth));
+		main.add(keyboard,BorderLayout.CENTER);
 		this.getContentPane().add(main);
 	}
 	private void getText() {
@@ -93,16 +115,27 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 			e.printStackTrace();
 		}
 	}
-	private Component rowOfKeys(String[] keys) {
-		Box b = new Box(BoxLayout.LINE_AXIS);
+	private JPanel rowOfKeys(String[] keys) {
+		JPanel j = new JPanel(new GridBagLayout());
+		
+		GridBagConstraints c = new GridBagConstraints();
+
+		c.fill = GridBagConstraints.BOTH;
+		
 		for(int i=0;i<keys.length;i++){
+			c.fill = GridBagConstraints.BOTH;
+//			c.ipadx = 10;
+			c.weighty = 0.5;
+			c.weightx = 0.5;
+			c.gridwidth = 1;
+			c.gridy = 0;
+			c.gridx = i;
 			button = new JButton(keys[i]);
+			button.setFont(button.getFont().deriveFont(20f));
 			button.addActionListener(this);
-			if(button.getText()=="Space")
-				button.setPreferredSize(new Dimension(200,10));
-			b.add(button);	
+			j.add(button,c);
 		}
-		return b;
+		return j;
 	}
 	public void cleanup(){
 		//predictor.cleanup();
@@ -116,18 +149,25 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 		KeyboardPrototype gl = new KeyboardPrototype(new Robot());
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setAlwaysOnTop(true);
-		gl.setSize(650, 200);
+		gl.setSize(750, 300);
 		gl.setFocusableWindowState(false);
 
+//		try {
+//			UIManager.setLookAndFeel(new MotifLookAndFeel());
+//		} catch (UnsupportedLookAndFeelException e) {}
 		gl.setVisible(true);
 	}
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
 		if(arg0.getSource().getClass().isInstance(button)){
 			String key = ((JButton)arg0.getSource()).getText();
-			if(key.equals("Enter")) press(KeyEvent.VK_ENTER);
-			else if(key.equals("Space")) press(KeyEvent.VK_SPACE);
+			if(key.equals("Enter")){
+				press(KeyEvent.VK_ENTER);
+				text.setText("");
+			}
+			else if(key.equals("Space")){
+				press(KeyEvent.VK_SPACE);
+				text.setText(text.getText()+' ');
+			}
 			else if(key.equals("Ctrl")) press(KeyEvent.VK_CONTROL);
 			else if(key.equals("Caps Lock")) press(KeyEvent.VK_CAPS_LOCK);
 			else if(key.equals("Shift")){
@@ -141,10 +181,16 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 			else if(key.equals("Tab")) press(KeyEvent.VK_TAB);
 			else if(key.equals("Backspace")) press(KeyEvent.VK_BACK_SPACE);
 			else{
+				String temp;
+				if(shift)
+					temp=""+key.substring(0, 1).toUpperCase()+key.substring(1);
+				else
+					temp=key;
+				text.setText(text.getText()+temp);
 				typeString(key);
 			}
 			//myRobot.delay(100);
-			getText();
+			//getText();
 //			button.setText(""+(char)(button.getText().charAt(0)+1));
 		}
 	}

@@ -1,4 +1,4 @@
-<!-- An ANT build file for Geomancer application-->
+<!-- An ANT build file for Word Prediction application-->
 
 <!-- $Id: build.xml,v 1.4 2007/07/19 22:18:27 dlrichar Exp $ -->
 
@@ -35,23 +35,35 @@
 	</target>
 
 	<!-- RUN -->
-	<target name="run">
+	<target name="run.gui">
 		<java classname="org.ss12.wordprediction.gui.GuiLauncher" classpathref="run.classpath" fork="true">
 			<jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
-			<jvmarg value='-Djava.compiler="none"'/><!-- JIT REALLY sucks -->
 			<jvmarg value='-Djava.library.path=lib/'/>
 		</java>
 	</target>
+    <target name="run.gui.osk">
+        <java classname="org.ss12.wordprediction.gui.onscreenkeyboard.KeyboardPrototype" classpathref="run.classpath" fork="true">
+            <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+            <jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
+	<!--    
+	<target name="run.console">
+        <java classname="org.ss12.wordprediction.ui.ConsolePredictionLauncher" classpathref="run.classpath" fork="false">
+            <jvmarg value="-mx512m"/>
+        	<jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
+    -->
    <!-- IMPORT -->
     <target name="import">
         <java classname="org.ss12.wordprediction.reader.ImportLauncher" classpathref="run.classpath" fork="true">
             <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
-            <jvmarg value='-Djava.compiler="none"'/><!-- JIT REALLY sucks -->
             <jvmarg value='-Djava.library.path=lib/'/>
         </java>
     </target>
 	<!-- Compile without eclipse -->
-	<target name="compile" description="Compile the scec_vdo">
+	<target name="compile" description="Compile the word predictor">
 		<javac srcdir="${src}" destdir="${dest}" classpathref="build.classpath"/>
 	</target>
 </project>

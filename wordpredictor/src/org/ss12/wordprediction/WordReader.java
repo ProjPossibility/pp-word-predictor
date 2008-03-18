@@ -77,7 +77,7 @@ public class WordReader {
 				preWord = words[i];
 			} else {
 				prePreWord = preWord = null;
-				System.out.println();
+				//System.out.println();
 			}
 		}
 	}
