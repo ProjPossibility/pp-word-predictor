@@ -264,7 +264,6 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 	}
 	private void predict() {
 		String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), NUM_OF_WORDS);
-		for(String r:results) System.out.println(r);
 		int i;
 		for(i=0;i<results.length;i++){
 			if(capslock)

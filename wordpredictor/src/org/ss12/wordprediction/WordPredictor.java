@@ -129,7 +129,7 @@ public class WordPredictor implements PredictionModel
 	public String[] getSuggestionsFromDic(String begin_seq, int numOfSuggestions)
 	{
 		String[] suggestions=new String[numOfSuggestions];
-		Entry<String, Integer>[] cnd_set=foo(begin_seq, getUpperBound(begin_seq), numOfSuggestions,words);
+		Entry<String, Integer>[] cnd_set=findSuggestions(begin_seq, getUpperBound(begin_seq), numOfSuggestions,words);
 		numOfSuggestions = Math.min(numOfSuggestions, cnd_set.length);
 		for (int rank=0; rank<numOfSuggestions;rank++)
 		{
@@ -145,13 +145,13 @@ public class WordPredictor implements PredictionModel
 	 * @param map: words or unigrams or bigrams or trigrams
 	 * @return: exactly "numOfSuggestions" items of suggestions in the form of Entry<String, Integer>
 	 */
-	@SuppressWarnings("unchecked")
-	public Entry<String, Integer>[] foo(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String,Integer> map)
+	private Entry<String, Integer>[] findSuggestions(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String,Integer> map)
 	{
 		SortedMap<String, Integer> suggestions_candidates;
 		//System.out.println(end_seq);
-		if(end_seq==null || end_seq.compareTo(begin_seq)<0)
+		if(end_seq==null || end_seq.compareTo(begin_seq)<0){
 			suggestions_candidates=map.tailMap(begin_seq);
+		}
 		else
 			suggestions_candidates=map.subMap(begin_seq, end_seq);
 		Entry<String,Integer>[] cnd_set= suggestions_candidates.entrySet().toArray(new Entry[]{});
@@ -160,7 +160,6 @@ public class WordPredictor implements PredictionModel
 
 		return cnd_set;
 	}
-	@SuppressWarnings("unchecked")
 	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestionsRequested)
 	{
 		int numOfSuggestionsFound = numberOfSuggestionsRequested;
@@ -176,18 +175,26 @@ public class WordPredictor implements PredictionModel
 		{
 		case 3:
 			String tmp_begin=tokens[0]+" "+tokens[1];
-			begin_seq=tokens[0]+" "+tokens[1]+" "+tokens[2];
+			begin_seq=tmp_begin+" "+tokens[2];
 			//System.out.println("the begin_seq is:"+begin_seq);
-			end_seq=tmp_begin+" "+getUpperBound(tokens[2]);
+			String upper = getUpperBound(tokens[2]);
+			if(upper==null)
+				end_seq=tmp_begin+"a";
+			else
+				end_seq=tmp_begin+" "+upper;
 			//System.out.println("and the end_seq is:"+end_seq);
-			suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestionsFound, trigrams);
+			suggestions_candidates=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, trigrams);
 			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 2:
 
 			begin_seq=tokens[0]+" "+tokens[1];
-			end_seq=tokens[0]+" "+getUpperBound(tokens[1]);
-			suggestions_candidates=foo(begin_seq, end_seq, numOfSuggestionsFound, bigrams);
+			upper = getUpperBound(tokens[1]);
+			if(upper==null)
+				end_seq=tokens[0]+"a";
+			else
+				end_seq=tokens[0]+" "+upper;
+			suggestions_candidates=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, bigrams);
 			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 1:
@@ -196,8 +203,8 @@ public class WordPredictor implements PredictionModel
 			begin_seq=tokens[0];
 			end_seq=getUpperBound(begin_seq);
 			//built  suggestion list from unigram map
-			unigram_suggestions=foo(begin_seq, end_seq, numOfSuggestionsFound,unigrams);
-			dictionary_suggestions = foo(begin_seq, end_seq, numOfSuggestionsFound, words);
+			unigram_suggestions=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound,unigrams);
+			dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, words);
 			numOfHints_unigram = Math.min(numOfSuggestionsFound, unigram_suggestions.length);
 			numOfHints_dictionary = Math.min(numOfSuggestionsFound, dictionary_suggestions.length);
 			//for suggestions from dictionary map and from uni-gram map
