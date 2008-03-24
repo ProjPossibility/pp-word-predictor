@@ -145,6 +145,7 @@ public class WordPredictor implements PredictionModel
 	 * @param map: words or unigrams or bigrams or trigrams
 	 * @return: exactly "numOfSuggestions" items of suggestions in the form of Entry<String, Integer>
 	 */
+	@SuppressWarnings("unchecked")
 	public Entry<String, Integer>[] foo(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String,Integer> map)
 	{
 		SortedMap<String, Integer> suggestions_candidates;
@@ -157,10 +158,9 @@ public class WordPredictor implements PredictionModel
 		cmpSortedMap sortedMapComparator = new cmpSortedMap();
 		Arrays.sort(cnd_set, 0, cnd_set.length, sortedMapComparator);
 
-
-
 		return cnd_set;
 	}
+	@SuppressWarnings("unchecked")
 	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestionsRequested)
 	{
 		int numOfSuggestionsFound = numberOfSuggestionsRequested;
@@ -336,7 +336,7 @@ public class WordPredictor implements PredictionModel
 		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
 	}
 	public String[] processString(String input) {
-		input.toLowerCase();
+		input=input.toLowerCase();
 		String temp[] = new String[3];
 		int[] ind = new int[3];
 		ind[0] = input.lastIndexOf(' ');
@@ -353,8 +353,6 @@ public class WordPredictor implements PredictionModel
 		//for(String w:word) System.out.println("'"+w+"'");
 		return word;
 	}	
-
-
 }
 
 class cmpSortedMap implements Comparator<Entry<String,Integer>>

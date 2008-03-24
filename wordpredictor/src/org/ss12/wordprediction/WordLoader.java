@@ -114,6 +114,7 @@ public class WordLoader {
 	 * @param file the file to deserialize
 	 * @return the n-gram to frequency map
 	 */
+	@SuppressWarnings("unchecked")
 	public TreeMap<String, Integer> loadNgram(File file) {
 		TreeMap<String, Integer> retval = new TreeMap<String, Integer>();
 		try {
