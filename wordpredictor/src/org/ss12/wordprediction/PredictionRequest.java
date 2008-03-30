@@ -28,34 +28,27 @@ public final class PredictionRequest {
 
   /**
    * Creates a new {@code PredictionRequest} that contains an incomplete word
-   * and the preceding word, which together form a bigram.
+   * and the two preceding words, either of which could possibly be {@code null}
+   * if unknown.
    * 
    * @param incompleteWord
    *          the incomplete word to provide suggestions for
    * @param prevWord
-   *          the immediate, or first, preceding word
-   * @return a new {@link PredictionRequest} instance
-   */
-  public static PredictionRequest from(String incompleteWord, String prevWord) {
-    return new PredictionRequest(incompleteWord, Arrays.asList(prevWord));
-  }
-
-  /**
-   * Creates a new {@code PredictionRequest} that contains an incomplete word
-   * and the two preceding words, which together form a trigram.
-   * 
-   * @param incompleteWord
-   *          the incomplete word to provide suggestions for
-   * @param prevWord
-   *          the first preceding word
+   *          the first preceding word, possibly {@code null}
    * @param prevPrevWord
-   *          the second preceding word
+   *          the second preceding word, possibly {@code null}
    * @return a new {@link PredictionRequest} instance
    */
   public static PredictionRequest from(String incompleteWord, String prevWord,
       String prevPrevWord) {
-    return new PredictionRequest(incompleteWord, Arrays.asList(prevWord,
-        prevPrevWord));
+    if (prevWord == null) {
+      return new PredictionRequest(incompleteWord);
+    } else if (prevPrevWord == null) {
+      return new PredictionRequest(incompleteWord, Arrays.asList(prevWord));
+    } else {
+      return new PredictionRequest(incompleteWord, Arrays.asList(prevWord,
+          prevPrevWord));
+    }
   }
 
   /**
