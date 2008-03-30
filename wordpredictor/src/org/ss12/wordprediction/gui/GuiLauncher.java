@@ -46,7 +46,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.ss12.wordprediction.WordPredictor;
+import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
 
 public class GuiLauncher extends JFrame implements ActionListener, ListSelectionListener, KeyListener, DocumentListener{
@@ -210,7 +210,7 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		GuiLauncher gl = new GuiLauncher(new WordPredictor());
+		GuiLauncher gl = new GuiLauncher(new TreeMapWordPredictor());
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setSize(300,225);
 		gl.setVisible(true);

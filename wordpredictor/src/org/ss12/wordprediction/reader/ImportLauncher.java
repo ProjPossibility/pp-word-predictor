@@ -39,7 +39,7 @@ public class ImportLauncher {
 			e.printStackTrace();
 		}
 		
-		FileImporter fi = new FileImporter(wl);
+		FileImporter fi = new FileImporter(wl,false);
 		try{
 			File d = new File("resources/sample");
 			String[] files = d.list();

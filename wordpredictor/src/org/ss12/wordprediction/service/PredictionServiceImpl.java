@@ -24,7 +24,7 @@ package org.ss12.wordprediction.service;
 
 import org.ss12.wordprediction.client.PredictionService;
 
-import org.ss12.wordprediction.WordPredictor;
+import org.ss12.wordprediction.TreeMapWordPredictor;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 /**
@@ -35,10 +35,10 @@ public class PredictionServiceImpl extends RemoteServiceServlet implements Predi
 	 * 
 	 */
 	private static final long serialVersionUID = -190827977040318307L;
-	static WordPredictor wp;
+	static TreeMapWordPredictor wp;
 	
 	public PredictionServiceImpl(){
-		wp = new WordPredictor();
+		wp = new TreeMapWordPredictor();
 	}
 	
 	public void addUnigram(String s1){

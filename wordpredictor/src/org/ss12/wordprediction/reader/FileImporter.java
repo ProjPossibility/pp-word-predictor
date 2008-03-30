@@ -30,8 +30,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.ss12.wordprediction.SQLITEWordPredictor;
+import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.WordLoader;
-import org.ss12.wordprediction.WordPredictor;
 import org.ss12.wordprediction.WordReader;
 import org.ss12.wordprediction.model.PredictionModel;
 
@@ -51,11 +52,15 @@ public class FileImporter {
 		File bi = new File("resources/dictionaries/user/bi.dat");
 		File tri = new File("resources/dictionaries/user/tri.dat");
 		*/
-		pm = new WordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
+		pm = new TreeMapWordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
 	}
-	public FileImporter(WordLoader wl){
+	public FileImporter(WordLoader wl, boolean useSQL){
 		this.wl = wl;
-		pm = new WordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
+		if(useSQL)
+			pm = new SQLITEWordPredictor();
+		else
+			pm = new TreeMapWordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
+			
 	}
 	public boolean readFile(File f) throws FileNotFoundException{
 		boolean b = readFileAndNotCleanup(f);

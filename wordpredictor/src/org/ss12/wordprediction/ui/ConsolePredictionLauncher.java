@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.ss12.wordprediction.WordPredictor;
+import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.WordReader;
 import org.ss12.wordprediction.model.PredictionModel;
 
@@ -13,7 +13,7 @@ public class ConsolePredictionLauncher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		PredictionModel predictor = new WordPredictor();
+		PredictionModel predictor = new TreeMapWordPredictor();
 		WordReader wordReader = new WordReader(predictor);
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while(true){

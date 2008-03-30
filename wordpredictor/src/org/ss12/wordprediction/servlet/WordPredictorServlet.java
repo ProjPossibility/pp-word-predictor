@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.ss12.wordprediction.WordLoader;
-import org.ss12.wordprediction.WordPredictor;
+import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
 
 /**
@@ -59,7 +59,7 @@ public class WordPredictorServlet extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.wp = new WordPredictor(wl.getWords());
+		this.wp = new TreeMapWordPredictor(wl.getWords());
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse res)

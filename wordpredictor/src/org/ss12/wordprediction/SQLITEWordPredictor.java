@@ -27,9 +27,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +44,7 @@ import java.util.Map.Entry;
 
 import org.ss12.wordprediction.model.PredictionModel;
 
-public class WordPredictor implements PredictionModel
+public class SQLITEWordPredictor implements PredictionModel
 {
 	private SortedMap<String, Integer> words;
 	private SortedMap<String, Integer> unigrams;
@@ -51,27 +55,42 @@ public class WordPredictor implements PredictionModel
 	private int trigramCount;
 	private int unigramCount;
 
-	public WordPredictor(){
+	Statement stat;
+	Connection conn;
+
+	public SQLITEWordPredictor(){
 		WordLoader wl = new WordLoader(1);		
-		File uni,bi,tri,dict;
-		uni = new File("resources/dictionaries/user/uni.dat");
-		bi = new File("resources/dictionaries/user/bi.dat");
-		tri = new File("resources/dictionaries/user/tri.dat");
-		dict = new File("resources/dictionaries/user/dict.dat");
-		this.words = wl.loadNgram(dict);
-		this.bigrams = wl.loadNgram(bi);
-		this.trigrams = wl.loadNgram(tri);
-		this.unigrams = wl.loadNgram(uni);
-		wordCount = sumValues(words);
-		bigramCount = sumValues(bigrams);
-		trigramCount = sumValues(trigrams);
-		unigramCount = sumValues(unigrams);
+//		File uni,bi,tri,dict;
+//		uni = new File("resources/dictionaries/user/uni.dat");
+//		bi = new File("resources/dictionaries/user/bi.dat");
+//		tri = new File("resources/dictionaries/user/tri.dat");
+//		dict = new File("resources/dictionaries/user/dict.dat");
+//		this.words = wl.loadNgram(dict);
+//		this.bigrams = wl.loadNgram(bi);
+//		this.trigrams = wl.loadNgram(tri);
+//		this.unigrams = wl.loadNgram(uni);
+//		wordCount = sumValues(words);
+//		bigramCount = sumValues(bigrams);
+//		trigramCount = sumValues(trigrams);
+//		unigramCount = sumValues(unigrams);
+		try {
+			Class.forName("org.sqlite.JDBC");
+			conn = DriverManager.getConnection("jdbc:sqlite:words.db");
+			stat = conn.createStatement();
+			stat.executeUpdate("drop table if exists unigrams;");
+			stat.executeUpdate("create table unigrams (word, frequency);");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 	}
-	public WordPredictor(SortedMap<String, Integer> sm) {
+	public SQLITEWordPredictor(SortedMap<String, Integer> sm) {
 		this(sm, new TreeMap<String, Integer>(), new TreeMap<String, Integer>(), new TreeMap<String, Integer>());
 	}
 
-	public WordPredictor(SortedMap<String,Integer> sm,SortedMap<String, Integer> uni,SortedMap<String,Integer> bi,SortedMap<String,Integer> tri)
+	public SQLITEWordPredictor(SortedMap<String,Integer> sm,SortedMap<String, Integer> uni,SortedMap<String,Integer> bi,SortedMap<String,Integer> tri)
 	{
 		this.words=sm;
 		this.bigrams = bi;
@@ -292,15 +311,21 @@ public class WordPredictor implements PredictionModel
 	}    
 
 	public void cleanup(){
-		String path = "resources/dictionaries/user/";
 		try {
-			saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
-			saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
-			saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
-			saveMap(words,new FileOutputStream(path+"dict.dat"));
-		} catch (FileNotFoundException e) {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+//		String path = "resources/dictionaries/user/";
+//		try {
+//		saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
+//		saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
+//		saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
+//		saveMap(words,new FileOutputStream(path+"dict.dat"));
+//		} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//		}
 	}
 	private void saveMap(SortedMap<String,Integer> sm,OutputStream os){
 		ObjectOutputStream out = null;
@@ -319,28 +344,44 @@ public class WordPredictor implements PredictionModel
 	public void addTrigram(String s1, String s2, String s3) {
 		String t = s1+" "+s2+" "+s3;
 		trigramCount++;
-		addNgram(t,trigrams);
+		//addNgram(t,"trigrams");
 		//System.out.println("Trigrams: "+trigrams.size());;
 	}	
 	public void addBigram(String s1, String s2) {
 		String t = s1+" "+s2;
 		bigramCount++;
-		addNgram(t,bigrams);
+		//addNgram(t,"bigrams");
 		//System.out.println("Bigrams: "+bigrams.size());;
 	}	
 	public void addUnigram(String t) {
 		unigramCount++;
-		addNgram(t,unigrams);
+		addNgram(t,"unigrams");
 		//System.out.println("Unigrams: "+unigrams.size());;
 	}	
 
-	private void addNgram(String t, SortedMap<String,Integer> sm) {
-		if(sm.containsKey(t))
-			sm.put(t, sm.get(t)+1);
-		else{
-			sm.put(t, 1);
+	private void addNgram(String t, String table) {
+		try {
+			t = t.replaceAll("'", "''");
+			//System.out.println("SELECT frequency FROM " + table + " WHERE WORD like '"+t+"'");
+			int c = stat.executeUpdate("UPDATE " + table + " SET frequency = frequency + 1 WHERE WORD like '"+t+"'");
+			if(c==0)
+				stat.executeUpdate("INSERT INTO " + table + " VALUES ('"+t+"',1)");
+//			if(freq!=0){
+//			freq++;
+//			}
+//			else{
+//			stat.executeUpdate("INSERT INTO " + table + " VALUES ('"+t+"',1)");
+//			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
+//		if(sm.containsKey(t))
+//		sm.put(t, sm.get(t)+1);
+//		else{
+//		sm.put(t, 1);
+//		}
+//		System.out.println("trigram: "+s1+" "+s2+" "+s3);
 	}
 	public String[] processString(String input) {
 		input=input.toLowerCase();
@@ -360,30 +401,4 @@ public class WordPredictor implements PredictionModel
 		//for(String w:word) System.out.println("'"+w+"'");
 		return word;
 	}	
-}
-
-class cmpSortedMap implements Comparator<Entry<String,Integer>>
-{
-	public cmpSortedMap()
-	{
-
-	}
-
-	public int compare(Entry<String,Integer> o1, Entry<String,Integer> o2)
-	{
-		int v1=o1.getValue();
-		int v2=o2.getValue();
-		if(v1<v2)
-			return 1;
-		else if(v1>v2)
-			return -1;
-		else
-			return 0;
-	}
-
-	public boolean equals()
-	{
-		return true;
-	}
-
 }

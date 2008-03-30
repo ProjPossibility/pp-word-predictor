@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
-import org.ss12.wordprediction.WordPredictor;
+import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.gui.onscreenkeyboard.components.KeyButton;
 import org.ss12.wordprediction.model.PredictionModel;
 
@@ -44,7 +44,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 	JToggleButton leftShiftButton,rightShiftButton,leftCtrlButton,rightCtrlButton,leftAltButton,rightAltButton,capslockButton;
 
 	public KeyboardPrototype(Robot robot) {
-		predictor = new WordPredictor();
+		predictor = new TreeMapWordPredictor();
 		virtualKeyboard = robot;
 		shift=false;
 		JPanel main = new JPanel();

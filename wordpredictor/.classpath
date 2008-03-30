@@ -6,6 +6,8 @@
 	<classpathentry kind="lib" path="lib/jetty-util-6.1.5.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5-6.1.5.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-user.jar"/>
+	<classpathentry kind="lib" path="lib/sqlitejdbc-v043-nested.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
+	<classpathentry kind="lib" path="lib/je-3.2.74.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
