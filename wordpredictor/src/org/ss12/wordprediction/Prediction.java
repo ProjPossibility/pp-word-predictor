@@ -10,8 +10,8 @@ import java.util.List;
  * @author Michael Parker
  */
 public final class Prediction {
-  private PredictionRequest request;
-  private List<String> suggestions;
+  private final PredictionRequest request;
+  private final List<String> suggestions;
 
   /**
    * Creates a new {@link Prediction} instance that bundles together a
@@ -23,9 +23,9 @@ public final class Prediction {
   public Prediction(PredictionRequest request, List<String> suggestions) {
     this.request = request;
     if (suggestions.isEmpty()) {
-      suggestions = Collections.emptyList();
+      this.suggestions = Collections.emptyList();
     } else {
-      suggestions = Collections.unmodifiableList(new ArrayList<String>(
+      this.suggestions = Collections.unmodifiableList(new ArrayList<String>(
           suggestions));
     }
   }
@@ -42,5 +42,12 @@ public final class Prediction {
    */
   public List<String> getSuggestions() {
     return suggestions;
+  }
+  
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("request={").append(request.toString()).append("}, ");
+    sb.append("suggestions=").append(suggestions.toString());
+    return sb.toString();
   }
 }

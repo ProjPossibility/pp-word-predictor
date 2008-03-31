@@ -130,4 +130,11 @@ public final class PredictionRequest {
   public String getPrevPrevWord() {
     return (precedingWords.size() >= 2) ? precedingWords.get(1) : null;
   }
+  
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("incompleteWord=").append(incompleteWord).append(' ');
+    sb.append("precedingWords=").append(precedingWords);
+    return sb.toString();
+  }
 }
