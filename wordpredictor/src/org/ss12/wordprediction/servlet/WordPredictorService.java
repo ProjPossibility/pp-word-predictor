@@ -83,8 +83,9 @@ public class WordPredictorService extends HttpServlet {
       writeMissingParamsError();
       return;
     }
-    
-    outputWriter.writeSuggestions(prediction, res);
+
+    res.setContentType(outputWriter.getContentType());
+    outputWriter.writeSuggestions(prediction, res.getWriter());
   }
 
   private void writeUnknownFormatError() {

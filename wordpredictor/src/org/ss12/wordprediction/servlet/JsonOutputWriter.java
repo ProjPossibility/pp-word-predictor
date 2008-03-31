@@ -1,10 +1,9 @@
 package org.ss12.wordprediction.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Writer;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,17 +20,16 @@ public class JsonOutputWriter implements ServiceOutputWriter {
    */
   public static final JsonOutputWriter INSTANCE = new JsonOutputWriter();
 
+  // Do not allow instantiation, use the singleton.
   private JsonOutputWriter() {
   }
 
-  public String getGetParamValue() {
-    return "json";
+  public String getContentType() {
+    return "application/json";
   }
 
-  public void writeSuggestions(Prediction prediction, HttpServletResponse resp)
+  public void writeSuggestions(Prediction prediction, Writer out)
       throws IOException, ServletException {
-    System.err.println("prediction: " + prediction);
-    
     // Generate the JSON response.
     JSONObject json = new JSONObject();
     try {
@@ -44,8 +42,6 @@ public class JsonOutputWriter implements ServiceOutputWriter {
     }
 
     // Write the response.
-    resp.setContentType("applicaton/json");
-    PrintWriter writer = resp.getWriter();
-    writer.write(json.toString());
+    out.write(json.toString());
   }
 }

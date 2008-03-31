@@ -1,6 +1,7 @@
 package org.ss12.wordprediction.servlet;
 
 import java.io.IOException;
+import java.io.Writer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -12,9 +13,9 @@ import org.ss12.wordprediction.Prediction;
  */
 public interface ServiceOutputWriter {
   /**
-   * @return the {@code of} HTTP GET value that should use this writer
+   * @return the {@code content-type} of the HTTP GET response
    */
-  public String getGetParamValue();
+  public String getContentType();
 
   /**
    * Writes the given suggestions to the given writer.
@@ -28,6 +29,6 @@ public interface ServiceOutputWriter {
    * @throws ServletException
    *           if any other runtime error occurs
    */
-  public void writeSuggestions(Prediction prediction, HttpServletResponse resp)
+  public void writeSuggestions(Prediction prediction, Writer out)
       throws IOException, ServletException;
 }

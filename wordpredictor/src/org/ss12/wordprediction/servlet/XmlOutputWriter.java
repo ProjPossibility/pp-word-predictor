@@ -1,10 +1,10 @@
 package org.ss12.wordprediction.servlet;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.ss12.wordprediction.Prediction;
 import org.ss12.wordprediction.PredictionRequest;
@@ -25,8 +25,8 @@ public class XmlOutputWriter implements ServiceOutputWriter {
   private XmlOutputWriter() {
   }
 
-  public String getGetParamValue() {
-    return "xml";
+  public String getContentType() {
+    return "text/xml";
   }
 
   private void writeIncompleteWord(ContentHandler contentHandler,
@@ -72,14 +72,12 @@ public class XmlOutputWriter implements ServiceOutputWriter {
     contentHandler.endElement("", "", "suggestions");
   }
 
-  public void writeSuggestions(Prediction prediction, HttpServletResponse resp)
+  public void writeSuggestions(Prediction prediction, Writer out)
       throws IOException, ServletException {
-    resp.setContentType("text/xml");
-
     OutputFormat outputFormat = new OutputFormat("XML", "ISO-8859-1", true);
     outputFormat.setIndenting(true);
 
-    XMLSerializer serializer = new XMLSerializer(resp.getWriter(), outputFormat);
+    XMLSerializer serializer = new XMLSerializer(out, outputFormat);
     ContentHandler contentHandler = serializer.asContentHandler();
     try {
       AttributesImpl attributes = new AttributesImpl();
