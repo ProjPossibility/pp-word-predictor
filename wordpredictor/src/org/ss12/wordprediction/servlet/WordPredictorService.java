@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.ss12.wordprediction.Prediction;
+import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.WordLoader;
-import org.ss12.wordprediction.WordPredictor;
 import org.ss12.wordprediction.model.PredictionModel;
 import org.ss12.wordprediction.servlet.WordPredictorHttpUtil.HttpGetParams;
 
@@ -62,7 +62,7 @@ public class WordPredictorService extends HttpServlet {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    this.wp = new WordPredictor(wl.getWords());
+    this.wp = new TreeMapWordPredictor(wl.getWords());
 
     this.writers = new HashMap<String, ServiceOutputWriter>();
     writers.put(OutputFormat.JSON, JsonOutputWriter.INSTANCE);
