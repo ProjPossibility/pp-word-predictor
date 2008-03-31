@@ -66,6 +66,7 @@ public class WordPredictorService extends HttpServlet {
 
     this.writers = new HashMap<String, ServiceOutputWriter>();
     writers.put(OutputFormat.JSON, JsonOutputWriter.INSTANCE);
+    writers.put(OutputFormat.XML, XmlOutputWriter.INSTANCE);
   }
 
   public void doGet(HttpServletRequest req, HttpServletResponse res)
