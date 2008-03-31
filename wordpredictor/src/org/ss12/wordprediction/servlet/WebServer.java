@@ -38,6 +38,7 @@ public class WebServer {
 		Server server = new Server(8080);
 		Context root = new Context(server, "/", Context.SESSIONS);
 		root.addServlet(new ServletHolder(new WordPredictorServlet()), "/predict");
+		root.addServlet(new ServletHolder(new WordPredictorService()), "/predictservice");
 		server.start();
 	}
 }
