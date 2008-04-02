@@ -3,13 +3,14 @@ package org.ss12.wordprediction.newcore.annotations;
 import java.util.Comparator;
 
 import org.ss12.wordprediction.newcore.AnnotatedWord;
+import org.ss12.wordprediction.newcore.WordPredictorUtil;
 
 /**
  * Annotates a word with its frequency.
  * 
  * @author Michael Parker
  */
-class FrequencyAnnotation extends AnnotatedWord {
+public class FrequencyAnnotation extends AnnotatedWord {
   /**
    * A comparator that sorts {@link FrequencyAnnotation} instances by their
    * associated frequency.
@@ -48,5 +49,30 @@ class FrequencyAnnotation extends AnnotatedWord {
 
   protected void update() {
     ++frequency;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    } else if (obj instanceof FrequencyAnnotation) {
+      FrequencyAnnotation annotation = (FrequencyAnnotation) obj;
+      return (getWord().equals(annotation.getWord()) &&
+          (frequency == annotation.frequency));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return WordPredictorUtil.hashCode(getWord(), frequency);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("word=").append(getWord()).append(", ");
+    sb.append("freq=").append(frequency);
+    return sb.toString();
   }
 }
