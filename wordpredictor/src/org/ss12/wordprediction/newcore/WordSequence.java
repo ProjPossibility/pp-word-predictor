@@ -43,7 +43,7 @@ public final class WordSequence implements Comparable<WordSequence> {
       if (upperBound != null) {
         List<String> wordsList = new ArrayList<String>(i + 1);
         wordsList.addAll(words.subList(0, i));
-        wordsList.add(word);
+        wordsList.add(upperBound);
         return new WordSequence(wordsList);
       }
     }
@@ -82,11 +82,16 @@ public final class WordSequence implements Comparable<WordSequence> {
 
   public int compareTo(WordSequence wordSequence) {
     List<String> otherWords = wordSequence.words;
-    for (int i = 0; i < words.size(); ++i) {
+    int minSize = (words.size() < otherWords.size()) ? words.size()
+        : otherWords.size();
+    for (int i = 0; i < minSize; ++i) {
       int wordCmp = words.get(i).compareTo(otherWords.get(i));
       if (wordCmp != 0) {
         return wordCmp;
       }
+    }
+    if (words.size() != otherWords.size()) {
+      return (words.size() < otherWords.size()) ? -1 : 1;
     }
     return 0;
   }
