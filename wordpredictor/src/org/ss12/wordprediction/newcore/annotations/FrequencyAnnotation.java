@@ -14,7 +14,7 @@ class FrequencyAnnotation extends AnnotatedWord {
    * A comparator that sorts {@link FrequencyAnnotation} instances by their
    * associated frequency.
    */
-  public static final Comparator<FrequencyAnnotation> COMPARATOR =
+  static final Comparator<FrequencyAnnotation> COMPARATOR =
       new Comparator<FrequencyAnnotation>() {
     public int compare(FrequencyAnnotation lhs, FrequencyAnnotation rhs) {
       if (lhs.frequency == rhs.frequency) {
@@ -27,13 +27,16 @@ class FrequencyAnnotation extends AnnotatedWord {
   int frequency;
 
   FrequencyAnnotation(String word) {
-    super(word);
-    frequency = 1;
+    this(word, 1);
   }
 
   FrequencyAnnotation(FrequencyAnnotation annotation) {
-    super(annotation.getWord());
-    frequency = annotation.frequency;
+    this(annotation.getWord(), annotation.getFrequency());
+  }
+
+  FrequencyAnnotation(String word, int frequency) {
+    super(word);
+    this.frequency = frequency;
   }
 
   /**

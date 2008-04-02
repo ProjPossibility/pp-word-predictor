@@ -14,7 +14,7 @@ class LastTimeUsedAnnotation extends AnnotatedWord {
    * A comparator that sorts {@link LastTimeUsedAnnotation} instances by their
    * associated last time used.
    */
-  public static final Comparator<LastTimeUsedAnnotation> COMPARATOR =
+  static final Comparator<LastTimeUsedAnnotation> COMPARATOR =
       new Comparator<LastTimeUsedAnnotation>() {
     public int compare(LastTimeUsedAnnotation lhs, LastTimeUsedAnnotation rhs) {
       if (lhs.lastTimeUsed == rhs.lastTimeUsed) {
@@ -26,18 +26,21 @@ class LastTimeUsedAnnotation extends AnnotatedWord {
 
   long lastTimeUsed;
 
-  public LastTimeUsedAnnotation(String word) {
-    super(word);
-    lastTimeUsed = System.currentTimeMillis();
+  LastTimeUsedAnnotation(String word) {
+    this(word, System.currentTimeMillis());
   }
 
-  public LastTimeUsedAnnotation(LastTimeUsedAnnotation annotation) {
-    super(annotation.getWord());
-    lastTimeUsed = annotation.lastTimeUsed;
+  LastTimeUsedAnnotation(LastTimeUsedAnnotation annotation) {
+    this(annotation.getWord(), annotation.getLastTimeUsed());
+  }
+
+  public LastTimeUsedAnnotation(String word, long lastTimeUsed) {
+    super(word);
+    this.lastTimeUsed = lastTimeUsed;
   }
 
   /**
-   * @return the last time used, in milliseconds
+   * @return the last time this word was used, in milliseconds
    */
   long getLastTimeUsed() {
     return lastTimeUsed;
