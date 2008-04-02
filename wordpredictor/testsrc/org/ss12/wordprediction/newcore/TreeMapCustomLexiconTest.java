@@ -8,7 +8,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 /**
- * Unit test for {@link TreeMapImmutableLexicon}.
+ * Unit test for {@link TreeMapCustomLexicon}.
  * 
  * @author Michael Parker
  */
