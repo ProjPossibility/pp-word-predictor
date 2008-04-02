@@ -46,7 +46,7 @@ public abstract class AbstractScorer<T extends AnnotatedWord> implements
    * @param list the list to append to
    */
   protected void addAnnotatedWords(Iterable<T> annotatedWords, List<T> list) {
-    for (T annotatedWord : list) {
+    for (T annotatedWord : annotatedWords) {
       String word = annotatedWord.getWord();
       if (!allWords.contains(word)) {
         allWords.add(word);
@@ -135,27 +135,22 @@ public abstract class AbstractScorer<T extends AnnotatedWord> implements
   public List<String> getSuggestions() {
     List<String> suggestions = new ArrayList<String>();
 
-    if (trigrams == null) {
-      return suggestions;
+    if (trigrams != null) {
+      appendAnnotatedWords(trigrams, suggestions);
     }
-    appendAnnotatedWords(trigrams, suggestions);
-    if (bigrams == null) {
-      return suggestions;
+    if (bigrams != null) {
+      appendAnnotatedWords(bigrams, suggestions);
     }
-    appendAnnotatedWords(bigrams, suggestions);
-    if (unigrams == null) {
-      return suggestions;
+    if (unigrams != null) {
+      appendAnnotatedWords(unigrams, suggestions);
     }
-    appendAnnotatedWords(unigrams, suggestions);
 
-    if (additionalLexicons == null) {
-      return suggestions;
+    if (additionalLexicons != null) {
+      appendWordSignificances(additionalLexicons, suggestions);
     }
-    appendWordSignificances(additionalLexicons, suggestions);
-    if (defaultLexicon == null) {
-      return suggestions;
+    if (defaultLexicon != null) {
+      appendWordSignificances(defaultLexicon, suggestions);
     }
-    appendWordSignificances(defaultLexicon, suggestions);
     return suggestions;
   }
 }

@@ -1,5 +1,7 @@
 package org.ss12.wordprediction.newcore.annotations;
 
+import java.util.Collections;
+
 import org.ss12.wordprediction.newcore.Scorer;
 
 /**
@@ -9,6 +11,6 @@ import org.ss12.wordprediction.newcore.Scorer;
  */
 class LastTimeUsedScorer extends AbstractScorer<LastTimeUsedAnnotation> {
   public LastTimeUsedScorer() {
-    super(LastTimeUsedAnnotation.COMPARATOR);
+    super(Collections.reverseOrder(LastTimeUsedAnnotation.COMPARATOR));
   }
 }
