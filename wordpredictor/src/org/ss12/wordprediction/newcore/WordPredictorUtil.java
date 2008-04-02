@@ -5,7 +5,7 @@ package org.ss12.wordprediction.newcore;
  * 
  * @author Michael Parker
  */
-class WordPredictorUtil {
+public class WordPredictorUtil {
   private WordPredictorUtil() {
     // Only static utility methods, so do not allow instantiation.
   }
