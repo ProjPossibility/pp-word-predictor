@@ -13,17 +13,18 @@ import java.util.List;
 public final class PredictionRequest {
   private final List<String> precedingWords;
   private final String incompleteWord;
+  private final int numPredictions;
 
   /**
    * Creates a new {@code PredictionRequest} that contains an incomplete word
    * without any context.
    * 
-   * @param incompleteWord
-   *          the incomplete word to provide suggestions for
+   * @param incompleteWord the incomplete word to provide suggestions for
+   * @param numPredictions the maximum number of predictions to return
    * @return a new {@code PredictionRequest} instance
    */
-  public static PredictionRequest from(String incompleteWord) {
-    return new PredictionRequest(incompleteWord);
+  public static PredictionRequest from(String incompleteWord, int numPredictions) {
+    return new PredictionRequest(incompleteWord, numPredictions);
   }
 
   /**
@@ -31,23 +32,22 @@ public final class PredictionRequest {
    * and the two preceding words, either of which could possibly be {@code null}
    * if unknown.
    * 
-   * @param incompleteWord
-   *          the incomplete word to provide suggestions for
-   * @param prevWord
-   *          the first preceding word, possibly {@code null}
-   * @param prevPrevWord
-   *          the second preceding word, possibly {@code null}
+   * @param incompleteWord the incomplete word to provide suggestions for
+   * @param prevWord the first preceding word, possibly {@code null}
+   * @param prevPrevWord the second preceding word, possibly {@code null}
+   * @param numPredictions the maximum number of predictions to return
    * @return a new {@link PredictionRequest} instance
    */
   public static PredictionRequest from(String incompleteWord, String prevWord,
-      String prevPrevWord) {
+      String prevPrevWord, int numPredictions) {
     if (prevWord == null) {
-      return new PredictionRequest(incompleteWord);
+      return new PredictionRequest(incompleteWord, numPredictions);
     } else if (prevPrevWord == null) {
-      return new PredictionRequest(incompleteWord, Arrays.asList(prevWord));
+      return new PredictionRequest(incompleteWord, Arrays.asList(prevWord),
+          numPredictions);
     } else {
       return new PredictionRequest(incompleteWord, Arrays.asList(prevWord,
-          prevPrevWord));
+          prevPrevWord), numPredictions);
     }
   }
 
@@ -58,32 +58,35 @@ public final class PredictionRequest {
    * word, index {@code 1} is the word that immediately precedes that word, and
    * so forth.
    * 
-   * @param incompleteWord
-   *          the incomplete word to provide suggestions for
-   * @param precedingWords
-   *          a list of the preceding words
+   * @param incompleteWord the incomplete word to provide suggestions for
+   * @param precedingWords a list of the preceding words
+   * @param numPredictions the maximum number of predictions to return
    * @return a new {@link PredictionRequest} instance
    */
   public static PredictionRequest from(String incompleteWord,
-      List<String> precedingWords) {
+      List<String> precedingWords, int numPredictions) {
     if (precedingWords.isEmpty()) {
-      return new PredictionRequest(incompleteWord);
+      return new PredictionRequest(incompleteWord, numPredictions);
     } else {
-      return new PredictionRequest(incompleteWord, precedingWords);
+      return new PredictionRequest(incompleteWord, precedingWords,
+          numPredictions);
     }
   }
 
   // Private constructor, use the factory methods instead.
-  private PredictionRequest(String incompleteWord) {
+  private PredictionRequest(String incompleteWord, int numPredictions) {
     this.incompleteWord = incompleteWord;
     this.precedingWords = Collections.emptyList();
+    this.numPredictions = numPredictions;
   }
 
   // Private constructor, use the factory methods instead.
-  private PredictionRequest(String incompleteWord, List<String> precedingWords) {
+  private PredictionRequest(String incompleteWord, List<String> precedingWords,
+      int numPredictions) {
     this.incompleteWord = incompleteWord;
     this.precedingWords = Collections.unmodifiableList(new ArrayList<String>(
         precedingWords));
+    this.numPredictions = numPredictions;
   }
 
   /**
@@ -130,11 +133,19 @@ public final class PredictionRequest {
   public String getPrevPrevWord() {
     return (precedingWords.size() >= 2) ? precedingWords.get(1) : null;
   }
-  
+
+  /**
+   * @return the maximum number of predictions to return
+   */
+  public int getNumPredictions() {
+    return numPredictions;
+  }
+
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("incompleteWord=").append(incompleteWord).append(' ');
-    sb.append("precedingWords=").append(precedingWords);
+    sb.append("precedingWords=").append(precedingWords).append(' ');
+    sb.append("numPredictions=").append(numPredictions);
     return sb.toString();
   }
 }

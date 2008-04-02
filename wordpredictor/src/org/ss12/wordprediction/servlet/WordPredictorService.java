@@ -78,7 +78,7 @@ public class WordPredictorService extends HttpServlet {
       return;
     }
 
-    Prediction prediction = WordPredictorHttpUtil.makePrediction(req, wp);
+    Prediction prediction = WordPredictorHttpUtil.makePrediction(req, wp, 5);
     if (prediction == null) {
       writeMissingParamsError();
       return;

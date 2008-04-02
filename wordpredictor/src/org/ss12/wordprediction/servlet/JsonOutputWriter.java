@@ -34,9 +34,11 @@ public class JsonOutputWriter implements ServiceOutputWriter {
     JSONObject json = new JSONObject();
     try {
       PredictionRequest request = prediction.getRequest();
-      json.put("incomplete", request.getIncompleteWord());
-      json.put("context", new JSONArray(request.getPrecedingWords()));
-      json.put("suggestions", new JSONArray(prediction.getSuggestions()));
+      json.put(JsonConstants.INCOMPLETE_KEY, request.getIncompleteWord());
+      json.put(JsonConstants.CONTEXT_KEY, new JSONArray(request
+          .getPrecedingWords()));
+      json.put(JsonConstants.SUGGESTIONS_KEY, new JSONArray(prediction
+          .getSuggestions()));
     } catch (JSONException e) {
       throw new ServletException(e);
     }

@@ -39,7 +39,7 @@ public class WordPredictorHttpUtil {
   }
 
   public static Prediction makePrediction(HttpServletRequest req,
-      PredictionModel wp) {
+      PredictionModel wp, int numSuggestions) {
     // Generate the suggestions.
     String incompleteWord = req.getParameter(HttpGetParams.INCOMPLETE_WORD);
     if (incompleteWord == null) {
@@ -52,7 +52,7 @@ public class WordPredictorHttpUtil {
     String firstPrevWord = req.getParameter(HttpGetParams.FIRST_PREV_WORD);
     String secondPrevWord = req.getParameter(HttpGetParams.SECOND_PREV_WORD);
     PredictionRequest predictionRequest = PredictionRequest.from(
-        incompleteWord, firstPrevWord, secondPrevWord);
+        incompleteWord, firstPrevWord, secondPrevWord, numSuggestions);
     return new Prediction(predictionRequest, Arrays.asList(suggestions));
   }
 }
