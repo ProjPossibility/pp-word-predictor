@@ -10,11 +10,11 @@ import java.io.IOException;
  * where each line in the file must contain a word, followed by its
  * significance.
  * 
- * @see SignificanceFileWriter
+ * @see SignificanceTextFileWriter
  * 
  * @author Michael Parker
  */
-public class SignificanceFileReader {
+public class SignificanceTextFileReader {
   // Package protected so can be used by SignificanceFileWriter.
   static final String SIGNIFIANCE_DELIMETER = " ";
 
@@ -28,7 +28,7 @@ public class SignificanceFileReader {
    * @throws IOException if an underlying reader for the file could not be
    *           created
    */
-  public SignificanceFileReader(File f) throws IOException {
+  public SignificanceTextFileReader(File f) throws IOException {
     reader = new BufferedReader(new FileReader(f));
     isClosed = false;
   }

@@ -10,10 +10,10 @@ import java.io.IOException;
  * instances, where each line in the file contains a word, followed by its
  * significance.
  * 
- * @see SignificanceFileReader
+ * @see SignificanceTextFileReader
  * @author Michael Parker
  */
-public class SignificanceFileWriter {
+public class SignificanceTextFileWriter {
   private final BufferedWriter writer;
   private boolean isClosed;
 
@@ -24,7 +24,7 @@ public class SignificanceFileWriter {
    * @throws IOException if an underlying writer for the file could not be
    *           created
    */
-  public SignificanceFileWriter(File f) throws IOException {
+  public SignificanceTextFileWriter(File f) throws IOException {
     writer = new BufferedWriter(new FileWriter(f));
     isClosed = false;
   }
@@ -39,7 +39,7 @@ public class SignificanceFileWriter {
   public void writeNext(WordSignificance significance) throws IOException {
     StringBuilder sb = new StringBuilder();
     sb.append(significance.word);
-    sb.append(SignificanceFileReader.SIGNIFIANCE_DELIMETER);
+    sb.append(SignificanceTextFileReader.SIGNIFIANCE_DELIMETER);
     sb.append(significance.significance);
     sb.append('\n');
 

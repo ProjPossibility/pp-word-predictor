@@ -35,6 +35,23 @@ public class WordSignificance {
     this.significance = significance;
   }
 
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    } else if (obj instanceof WordSignificance) {
+      WordSignificance ws = (WordSignificance) obj;
+      return ((word.equals(ws.word)) && (significance == ws.significance));
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return WordPredictorUtil.hashCode(word, significance);
+  }
+
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("word=").append(word).append(", ");

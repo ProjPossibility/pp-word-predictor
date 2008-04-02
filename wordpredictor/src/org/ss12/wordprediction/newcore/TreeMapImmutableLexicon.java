@@ -34,7 +34,7 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
   /**
    * Constructs a new {@link TreeMapImmutableLexicon} from the contents of the
    * given file. Each line in the file must follow the format specified by
-   * {@link SignificanceFileReader}. The lines in the file do not need to be
+   * {@link SignificanceTextFileReader}. The lines in the file do not need to be
    * sorted lexicographically by word.
    * 
    * @param f the file containing words and their significance
@@ -43,7 +43,7 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
    */
   public static TreeMapImmutableLexicon fromFile(File f) throws IOException {
     SortedMap<String, WordSignificance> probabilities = new TreeMap<String, WordSignificance>();
-    SignificanceFileReader reader = new SignificanceFileReader(f);
+    SignificanceTextFileReader reader = new SignificanceTextFileReader(f);
     while (true) {
       WordSignificance significance = reader.readNext();
       if (significance == null) {
