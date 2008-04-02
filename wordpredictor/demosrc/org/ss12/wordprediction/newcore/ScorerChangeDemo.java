@@ -12,24 +12,31 @@ import org.ss12.wordprediction.newcore.annotations.FrequencyAnnotationFactory;
  * @author Michael Parker
  */
 public class ScorerChangeDemo {
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws InterruptedException {
+    AnnotationFactory<FrequencyAnnotation> annotationFactory = new FrequencyAnnotationFactory();
+
+    WordPredictor wordPredictor = createPredictor(annotationFactory);
+    showPredictions(wordPredictor);
+  }
+
+  private static <T extends AnnotatedWord> WordPredictor createPredictor(
+      AnnotationFactory<T> annotationFactory) throws InterruptedException {
+    // Create the backing data structures.
     Map<String, Integer> emptyMap = Collections.emptyMap();
     ImmutableLexicon defaultLexicon = TreeMapImmutableLexicon.fromMap(emptyMap);
+    CustomLexicon<T> customLexicon = new TreeMapCustomLexicon<T>(
+        annotationFactory);
+    // Pass these backing data structures into the predictor.
+    WordPredictor wordPredictor = new ScoringWordPredictor<T>(defaultLexicon,
+        customLexicon, annotationFactory);
 
-    AnnotationFactory<FrequencyAnnotation> annotationFactory =
-        new FrequencyAnnotationFactory();
-    CustomLexicon<FrequencyAnnotation> customLexicon =
-        new TreeMapCustomLexicon<FrequencyAnnotation>(annotationFactory);
-    WordPredictor wordPredictor = new ScoringWordPredictor<FrequencyAnnotation>(
-        defaultLexicon, customLexicon, annotationFactory);
-
+    // Populate predictor with two unigrams.
     customLexicon.addUnigram("bar");
-    Thread.sleep(10);
     customLexicon.addUnigram("bar");
     Thread.sleep(10);
     customLexicon.addUnigram("baz");
 
-    showPredictions(wordPredictor);
+    return wordPredictor;
   }
 
   private static void showPredictions(WordPredictor wordPredictor) {
