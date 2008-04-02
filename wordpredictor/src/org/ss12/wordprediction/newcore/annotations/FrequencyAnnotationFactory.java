@@ -1,4 +1,7 @@
-package org.ss12.wordprediction.newcore;
+package org.ss12.wordprediction.newcore.annotations;
+
+import org.ss12.wordprediction.newcore.AnnotationFactory;
+import org.ss12.wordprediction.newcore.Scorer;
 
 /**
  * An {@link AnnotationFactory} implementation for {@link FrequencyAnnotation}

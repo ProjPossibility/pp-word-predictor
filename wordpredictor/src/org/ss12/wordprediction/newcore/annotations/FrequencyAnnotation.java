@@ -1,6 +1,8 @@
-package org.ss12.wordprediction.newcore;
+package org.ss12.wordprediction.newcore.annotations;
 
 import java.util.Comparator;
+
+import org.ss12.wordprediction.newcore.AnnotatedWord;
 
 /**
  * Annotates a word with its frequency.
@@ -9,7 +11,8 @@ import java.util.Comparator;
  */
 class FrequencyAnnotation extends AnnotatedWord {
   /**
-   * A comparator by associate frequency.
+   * A comparator that sorts {@link FrequencyAnnotation} instances by their
+   * associated frequency.
    */
   public static final Comparator<FrequencyAnnotation> COMPARATOR =
       new Comparator<FrequencyAnnotation>() {
@@ -21,10 +24,11 @@ class FrequencyAnnotation extends AnnotatedWord {
     }
   };
 
-  int frequency = 1;
+  int frequency;
 
   FrequencyAnnotation(String word) {
     super(word);
+    frequency = 1;
   }
 
   FrequencyAnnotation(FrequencyAnnotation annotation) {
