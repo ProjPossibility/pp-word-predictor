@@ -1,4 +1,4 @@
-package org.ss12.wordprediction.newcore;
+package org.ss12.wordprediction.newcore.annotations;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,8 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.ss12.wordprediction.newcore.AnnotatedWord;
+import org.ss12.wordprediction.newcore.Scorer;
+import org.ss12.wordprediction.newcore.WordSignificance;
+
 /**
- * An abstract implementation of a {@link Scorer}.
+ * An skeletal implementation of a {@link Scorer}.
  * 
  * @author Michael Parker
  */
