@@ -1,5 +1,7 @@
 package org.ss12.wordprediction.newcore;
 
+import java.text.BreakIterator;
+
 /**
  * Accepts a sequence of tokens from sentences and adds all found unigrams,
  * bigrams, and trigrams to a backing {@link ScoringWordPredictor}.
@@ -8,9 +10,7 @@ package org.ss12.wordprediction.newcore;
  */
 public class SentenceReader {
   private final ScoringWordPredictor<?> wp;
-
-  private WordReader wordReader;
-  boolean endSentence;
+  private StringBuilder sb;
 
   /**
    * Creates a new word reader, and adds unigrams, bigrams, and trigrams to the
@@ -20,63 +20,62 @@ public class SentenceReader {
    */
   public SentenceReader(ScoringWordPredictor<? extends AnnotatedWord> wp) {
     this.wp = wp;
-    resetWordReader();
-  }
-
-  private void resetWordReader() {
-    wordReader = wp.getWordReader();
-    endSentence = false;
+    sb = new StringBuilder();
   }
 
   /**
-   * Extracts unigrams, bigrams, and trigrams from the given sequence of tokens
-   * of sentences and updates the word predictor.
+   * Extracts unigrams, bigrams, and trigrams from the given text and updates
+   * the word predictor. The text may be one or more complete sentences, or even
+   * only a sentence fragment.
    * 
-   * @param sentenceTokens the sentence tokens
+   * @param text the sentence
    */
-  public void nextTokens(String[] sentenceTokens) {
-    for (String word : sentenceTokens) {
-      word = word.toLowerCase().trim();
+  public void addText(String text) {
+    sb.append(text);
+    String allText = sb.toString();
 
-      if (!isValidWord(word)) {
-        resetWordReader();
-        continue;
-      }
-      word = stripPunctuation(word);
-      if (word.length() == 0) {
-        resetWordReader();
-        continue;
-      }
+    BreakIterator sentenceIterator = BreakIterator.getSentenceInstance();
+    sentenceIterator.setText(allText);
+    int start = sentenceIterator.first();
+    int end = sentenceIterator.next();
 
-      wordReader.nextWord(word);
-      if (endSentence) {
-        resetWordReader();
-      }
+    // Process all complete sentences.
+    while (end < allText.length()) {
+      String sentence = allText.substring(start, end);
+      addSentence(sentence);
+      start = end;
+      end = sentenceIterator.next();
     }
+
+    // Keep buffered any remaining sentence fragment.
+    sb.delete(0, start);
   }
 
-  private boolean isValidCharacter(char c) {
-    return (Character.isLetter(c) || (c == '\'') || (c == '-'));
+  /**
+   * Clear the internal state of this reader, meaning any sentence fragment that
+   * may be buffered will be considered a complete sentence and the word
+   * predictor will be updated accordingly.
+   */
+  public void flush() {
+    addSentence(sb.toString());
+    sb = new StringBuilder();
   }
 
-  private boolean isValidWord(String word) {
-    for (int i = 0; i < word.length() - 1; i++) {
-      char c = word.charAt(i);
-      if (!isValidCharacter(c)) {
-        return false;
-      }
-    }
-    return true;
-  }
+  private void addSentence(String sentence) {
+    WordReader wordReader = wp.getWordReader();
 
-  private String stripPunctuation(String word) {
-    if (word.length() > 0) {
-      char c = word.charAt(word.length() - 1);
-      if (!isValidCharacter(c)) {
-        endSentence = true;
-        return word.substring(0, word.length() - 1);
+    BreakIterator wordIterator = BreakIterator.getWordInstance();
+    wordIterator.setText(sentence);
+    int start = wordIterator.first();
+    int end = wordIterator.next();
+
+    while (end != BreakIterator.DONE) {
+      String word = sentence.substring(start, end);
+      if (Character.isLetterOrDigit(word.charAt(0))) {
+        wordReader.nextWord(word);
       }
+      start = end;
+      end = wordIterator.next();
     }
-    return word;
   }
 }
