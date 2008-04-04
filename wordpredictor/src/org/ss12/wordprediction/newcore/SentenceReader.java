@@ -71,7 +71,7 @@ public class SentenceReader {
 
     while (end != BreakIterator.DONE) {
       String word = sentence.substring(start, end);
-      if (Character.isLetterOrDigit(word.charAt(0))) {
+      if (Character.isLetter(word.charAt(0))) {
         wordReader.nextWord(word);
       }
       start = end;
