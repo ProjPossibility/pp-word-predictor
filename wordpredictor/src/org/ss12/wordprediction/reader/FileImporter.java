@@ -34,11 +34,11 @@ import org.ss12.wordprediction.SQLITEWordPredictor;
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.WordLoader;
 import org.ss12.wordprediction.WordReader;
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
 public class FileImporter {
 	WordLoader wl;
-	public PredictionModel pm;
+	public WordPredictor pm;
 	WordReader wr;
 	public FileImporter(){
 		wl = new WordLoader(1);

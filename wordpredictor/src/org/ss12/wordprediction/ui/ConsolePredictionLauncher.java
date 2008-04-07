@@ -6,14 +6,14 @@ import java.io.InputStreamReader;
 
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.WordReader;
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
 public class ConsolePredictionLauncher {
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		PredictionModel predictor = new TreeMapWordPredictor();
+		WordPredictor predictor = new TreeMapWordPredictor();
 		WordReader wordReader = new WordReader(predictor);
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		while(true){
@@ -29,4 +29,4 @@ public class ConsolePredictionLauncher {
 			}
 		}
 	}
-}
+} 

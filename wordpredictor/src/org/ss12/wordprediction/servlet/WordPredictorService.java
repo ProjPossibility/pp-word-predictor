@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.ss12.wordprediction.Prediction;
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.WordLoader;
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 import org.ss12.wordprediction.servlet.WordPredictorHttpUtil.HttpGetParams;
 
 /**
@@ -46,7 +46,7 @@ public class WordPredictorService extends HttpServlet {
     public static final String OUTPUT_FORMAT = "of";
   }
 
-  private final PredictionModel wp;
+  private final WordPredictor wp;
   private final Map<String, ServiceOutputWriter> writers;
 
   /**

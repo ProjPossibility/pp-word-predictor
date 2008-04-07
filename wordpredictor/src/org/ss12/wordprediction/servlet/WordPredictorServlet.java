@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.ss12.wordprediction.WordLoader;
 import org.ss12.wordprediction.TreeMapWordPredictor;
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
 /**
  * Receives a request from the user and outputs the top 5 words.
@@ -44,7 +44,7 @@ public class WordPredictorServlet extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 887632007177487449L;
-	private PredictionModel wp;
+	private WordPredictor wp;
 
 	/**
 	 * This creates a new servlet.

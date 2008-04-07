@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.ss12.wordprediction.Prediction;
 import org.ss12.wordprediction.PredictionRequest;
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
 /**
  * Static utility methods for web-based word predictor applications.
@@ -39,7 +39,7 @@ public class WordPredictorHttpUtil {
   }
 
   public static Prediction makePrediction(HttpServletRequest req,
-      PredictionModel wp, int numSuggestions) {
+      WordPredictor wp, int numSuggestions) {
     // Generate the suggestions.
     String incompleteWord = req.getParameter(HttpGetParams.INCOMPLETE_WORD);
     if (incompleteWord == null) {

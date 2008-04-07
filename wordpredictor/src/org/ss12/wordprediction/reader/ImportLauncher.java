@@ -39,7 +39,7 @@ public class ImportLauncher {
 			e.printStackTrace();
 		}
 		
-		FileImporter fi = new FileImporter(wl,false);
+		FileImporter fi = new FileImporter(wl,false);//true to use SQLITE, false to use TreeMap
 		try{
 			File d = new File("resources/sample");
 			String[] files = d.list();
