@@ -2,6 +2,7 @@ package org.ss12.wordprediction.gui.onscreenkeyboard;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -24,9 +25,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.gui.onscreenkeyboard.components.KeyButton;
 import org.ss12.wordprediction.model.WordPredictor;
@@ -49,6 +47,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	private boolean ctrl;
 	JToggleButton leftShiftButton,rightShiftButton,leftCtrlButton,rightCtrlButton,leftAltButton,rightAltButton,capslockButton;
 	Font selectedFont,regularFont;
+	Color buttonColor = new javax.swing.plaf.ColorUIResource(0);
 
 	public KeyboardPrototype(Robot robot) {
 		// Set Mac OS X to use the standard look and feel of Java and not the native Aqua user interface
@@ -193,8 +192,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		gl.setAlwaysOnTop(true);
 		gl.setSize(750, 300);
 		gl.setFocusableWindowState(false);
-//		gl.getRootPane().putClientProperty("Window.style", "small");
-		gl.getRootPane().setFocusable(false);
+//		gl.getRootPane().setFocusable(false);
 	
 		
 //		try {
@@ -361,12 +359,16 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		if(e.getSource() instanceof JComponent){
 			JComponent current = (JComponent)e.getSource();
 			current.setFont(selectedFont);
+
+			current.setBackground(Color.white);
+//			current.setBackground(new javax.swing.plaf.ColorUIResource(Color.white));
 		}
 	}
 	public void mouseExited(MouseEvent e) {
 		if(e.getSource() instanceof JComponent){
 			JComponent current = (JComponent)e.getSource();
 			current.setFont(regularFont);
+			current.setBackground(buttonColor);
 		}
 	}
 	public void mousePressed(MouseEvent e) {
