@@ -34,13 +34,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
-public class TreeMapWordPredictor implements PredictionModel
+public class TreeMapWordPredictor implements WordPredictor
 {
 	private SortedMap<String, Integer> words;
 	private SortedMap<String, Integer> unigrams;
@@ -50,6 +51,7 @@ public class TreeMapWordPredictor implements PredictionModel
 	private int bigramCount;
 	private int trigramCount;
 	private int unigramCount;
+	LinkedList<String> lastWords;
 
 	public TreeMapWordPredictor(){
 		WordLoader wl = new WordLoader(1);		
@@ -66,6 +68,7 @@ public class TreeMapWordPredictor implements PredictionModel
 		bigramCount = sumValues(bigrams);
 		trigramCount = sumValues(trigrams);
 		unigramCount = sumValues(unigrams);
+		lastWords = new LinkedList<String>();
 	}
 	public TreeMapWordPredictor(SortedMap<String, Integer> sm) {
 		this(sm, new TreeMap<String, Integer>(), new TreeMap<String, Integer>(), new TreeMap<String, Integer>());
@@ -357,6 +360,16 @@ public class TreeMapWordPredictor implements PredictionModel
 		for(int j=0;j<i;j++){
 			word[j] = temp[i-j-1];
 		}
+//		for(i=0;i<word.length-1;i++){
+//			if(!lastWords.get(i).equals(word[i])){
+//				System.out.println("Learning " + word[i] + "...");
+//				
+//				lastWords.add(word[i]);
+//			}
+//		}
+//		while(lastWords.size()>2){
+//			lastWords.poll();
+//		}
 		//for(String w:word) System.out.println("'"+w+"'");
 		return word;
 	}	

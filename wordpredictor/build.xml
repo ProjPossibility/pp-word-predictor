@@ -16,6 +16,7 @@
 		<pathelement location="bin"/>	
 	</path>
 	<path id="run.classpath">
+		<pathelement location="lib/sqlitejdbc-v043-nested.jar"/>
 		<pathelement location="bin"/>	
 	</path>
 	<path id="server.classpath">

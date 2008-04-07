@@ -47,7 +47,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.ss12.wordprediction.TreeMapWordPredictor;
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
 public class GuiLauncher extends JFrame implements ActionListener, ListSelectionListener, KeyListener, DocumentListener{
 	/**
@@ -61,11 +61,11 @@ public class GuiLauncher extends JFrame implements ActionListener, ListSelection
 	JList outputTri;
 	JPopupMenu menuOutput;
 	JMenuItem[] items;
-	PredictionModel predictor;
+	WordPredictor predictor;
 	JScrollPane jScrollPane1;
 	JScrollPane jScrollPane2;
 	JScrollPane jScrollPane3;
-	public GuiLauncher(PredictionModel wp) {
+	public GuiLauncher(WordPredictor wp) {
 		JPanel main = new JPanel();
 
 		addWindowListener(new WindowAdapter() {

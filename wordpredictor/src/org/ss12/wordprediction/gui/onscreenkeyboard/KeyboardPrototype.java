@@ -3,6 +3,7 @@ package org.ss12.wordprediction.gui.onscreenkeyboard;
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Robot;
@@ -10,12 +11,15 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -25,9 +29,9 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.gui.onscreenkeyboard.components.KeyButton;
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
-public class KeyboardPrototype extends JFrame implements ActionListener{
+public class KeyboardPrototype extends JFrame implements ActionListener, MouseListener{
 	/**
 	 * 
 	 */
@@ -37,13 +41,14 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 	JTextField text;
 	Robot virtualKeyboard;
 	JButton[] wordButtons;
-	PredictionModel predictor;
+	WordPredictor predictor;
 	JPanel keyboard;
 	private boolean shift;
 	private boolean capslock;
 	private boolean alt;
 	private boolean ctrl;
 	JToggleButton leftShiftButton,rightShiftButton,leftCtrlButton,rightCtrlButton,leftAltButton,rightAltButton,capslockButton;
+	Font selectedFont,regularFont;
 
 	public KeyboardPrototype(Robot robot) {
 		// Set Mac OS X to use the standard look and feel of Java and not the native Aqua user interface
@@ -67,8 +72,9 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 		virtualKeyboard = robot;
 		shift=false;
 		JPanel main = new JPanel();
-//		main.putClientProperty("Window.style", "small");
-	
+		
+		regularFont = new Font("Times New Roman",Font.PLAIN,20);
+		selectedFont = new Font("Times New Roman",Font.BOLD,20);
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -102,6 +108,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 
 		String[] numbers = {"`","1","2","3","4","5","6","7","8","9","0","-","=","Backspace"};
 		String[] upperNumbers = {"~","!","@","#","$","%","^","&","*","(",")","_","+","Backspace"};
+
 		int[] numberKeycodes = {KeyEvent.VK_BACK_QUOTE,KeyEvent.VK_1,KeyEvent.VK_2,KeyEvent.VK_3,KeyEvent.VK_4,KeyEvent.VK_5,KeyEvent.VK_6,KeyEvent.VK_7,KeyEvent.VK_8,KeyEvent.VK_9,KeyEvent.VK_0,KeyEvent.VK_MINUS,KeyEvent.VK_EQUALS,KeyEvent.VK_BACK_SPACE};
 		keyboard.add(rowOfKeys(numbers,upperNumbers,numberKeycodes));
 		String[] first = {"Tab","q","w","e","r","t","y","u","i","o","p","[","]","\\"};
@@ -165,14 +172,15 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 			else{
 				button = new KeyButton(keys[i],upperKeys[i],keycode[i]);
 			}
-			button.setFont(button.getFont().deriveFont(20f));
+			button.setFont(regularFont);
 			button.addActionListener(this);
+			button.addMouseListener(this);
 			j.add(button,c);
 		}
 		return j;
 	}
 	public void cleanup(){
-		//predictor.cleanup();
+		predictor.cleanup();
 	}
 
 
@@ -344,5 +352,29 @@ public class KeyboardPrototype extends JFrame implements ActionListener{
 			else if(key=='-')
 				press(KeyEvent.VK_MINUS);
 		}
+	}
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void mouseEntered(MouseEvent e) {
+		if(e.getSource() instanceof JComponent){
+			JComponent current = (JComponent)e.getSource();
+			current.setFont(selectedFont);
+		}
+	}
+	public void mouseExited(MouseEvent e) {
+		if(e.getSource() instanceof JComponent){
+			JComponent current = (JComponent)e.getSource();
+			current.setFont(regularFont);
+		}
+	}
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

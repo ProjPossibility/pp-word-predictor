@@ -22,7 +22,7 @@
 
 package org.ss12.wordprediction;
 
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
 /**
  * Accepts text and decomposes it into unigrams, bigrams, and tribrams.
@@ -30,7 +30,7 @@ import org.ss12.wordprediction.model.PredictionModel;
 public class WordReader {
 	private String prePreWord;
 	private String preWord;
-	private final PredictionModel wp;
+	private final WordPredictor wp;
 	boolean endSentence;
 
 	/**
@@ -40,7 +40,7 @@ public class WordReader {
 	 * @param wp
 	 *            prediction model to populate
 	 */
-	public WordReader(PredictionModel wp) {
+	public WordReader(WordPredictor wp) {
 		this.wp = wp;
 		prePreWord = null;
 		preWord = null;

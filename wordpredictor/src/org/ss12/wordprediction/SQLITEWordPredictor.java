@@ -42,9 +42,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-import org.ss12.wordprediction.model.PredictionModel;
+import org.ss12.wordprediction.model.WordPredictor;
 
-public class SQLITEWordPredictor implements PredictionModel
+public class SQLITEWordPredictor implements WordPredictor
 {
 	private SortedMap<String, Integer> words;
 	private SortedMap<String, Integer> unigrams;
