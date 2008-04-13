@@ -34,8 +34,8 @@ public class EntryWindow {
 		uniEntryWindow = new TreeMap<Date, String>();
 		uniEntryWindow = new TreeMap<Date, String>();
 		mode = 1;
-		Period  = 10;
-		WordNumber = 1000;
+		Period  = 1;
+		WordNumber = 2;
 	}
 	
 	public void setPeriod(int p){
@@ -50,13 +50,24 @@ public class EntryWindow {
 		assert(m>0 && m<4);
 		mode = m;
 	}
+	public int getPeriod(){
+		return Period;
+	}
+	public int getWordNumber(){
+		return WordNumber;
+	}
+	public int getMode(){
+		return mode;
+	}
 	
 	public void update(SortedMap<String, Integer> unigram,SortedMap<String,Integer> bigram, 
 			SortedMap<String, Integer> trigram, String s1, String s2, String s3){
 		Date d = new Date();
+		/*
 		updateEntryWindow( uniEntryWindow, unigram, s1, d);
 		updateEntryWindow( biEntryWindow, bigram, s2, d);
 		updateEntryWindow( triEntryWindow, trigram, s3, d);
+		*/
 	}
 	
 	/**
@@ -67,12 +78,15 @@ public class EntryWindow {
 	 * @param s: input string
 	 * @param d: input time(date)
 	 */
-	private void updateEntryWindow(SortedMap<Date, String> map, 
+	public void updateEntryWindow(SortedMap<Date, String> map, 
 			SortedMap<String, Integer> gram, String s, Date d){
+		// just for testing
+		//SortedMap<Date, String> map = uniEntryWindow;
 		if (mode == 2){// word number frame
 			//check if the map exceed maximum WordNumber
 			if (map.size() == WordNumber){
 				updateDown(gram, map.get(map.firstKey()));
+				//System.out.println(map.firstKey());
 				map.remove(map.firstKey());
 			}
 			map.put(d, s);
@@ -87,9 +101,14 @@ public class EntryWindow {
 			updateUp(gram, s);
 			Set<Entry<Date, String>> set = map.entrySet();
 			Iterator<Entry<Date, String>> it = set.iterator();
-			while (it.hasNext() && ((Entry<Date, String>)it.next()).getKey().getTime() < (d.getTime()- Period*60*1000)){
-				updateDown(gram, it.next().getValue());
-				it.remove();
+			while (it.hasNext()){
+				System.out.print("entering period remove: ");
+				Entry<Date, String> entry = (Entry<Date, String>)it.next();
+				if (entry.getKey().getTime() <= (d.getTime()- Period*1000)){
+					System.out.println(entry.getValue());
+					updateDown(gram, entry.getValue());
+					it.remove();
+				}
 			};
 		}	
 	}	
@@ -108,6 +127,8 @@ public class EntryWindow {
 	 * remove one string
 	 */
 	private void updateDown(SortedMap<String,Integer> gram, String s){
+		System.out.println("string to remove+:"+s);
+		System.out.println("freq of the removed string is: "+gram.get(s));
 		gram.put(s, gram.get(s)-1);
 		if (gram.get(s) == 0){
 			gram.remove(s);
