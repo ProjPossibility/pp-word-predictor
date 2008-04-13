@@ -1,8 +1,5 @@
 package org.ss12.wordprediction.customer;
 
-import java.awt.List;
-import java.sql.Time;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -19,6 +16,9 @@ public class EntryWindow {
 	private SortedMap<Date, String> uniEntryWindow;
 	private SortedMap<Date, String> biEntryWindow;
 	private SortedMap<Date, String> triEntryWindow;
+	private SortedMap<String, Integer> unigram;
+	private SortedMap<String, Integer> bigram;
+	private SortedMap<String, Integer> trigram;
 	private int Period;
 	private int WordNumber;
 	private int mode;
@@ -34,8 +34,13 @@ public class EntryWindow {
 		uniEntryWindow = new TreeMap<Date, String>();
 		uniEntryWindow = new TreeMap<Date, String>();
 		mode = 1;
-		Period  = 1;
-		WordNumber = 2;
+		Period  = 10;
+		WordNumber = 500;
+	}
+	EntryWindow(int m, int p, int n){
+		setPeriod(p);
+		setWordNumber(n);
+		setMode(mode);
 	}
 	
 	public void setPeriod(int p){
@@ -60,14 +65,13 @@ public class EntryWindow {
 		return mode;
 	}
 	
-	public void update(SortedMap<String, Integer> unigram,SortedMap<String,Integer> bigram, 
-			SortedMap<String, Integer> trigram, String s1, String s2, String s3){
+	public void update(String s1, String s2, String s3){
 		Date d = new Date();
-		/*
+		
 		updateEntryWindow( uniEntryWindow, unigram, s1, d);
 		updateEntryWindow( biEntryWindow, bigram, s2, d);
 		updateEntryWindow( triEntryWindow, trigram, s3, d);
-		*/
+		
 	}
 	
 	/**
@@ -78,7 +82,7 @@ public class EntryWindow {
 	 * @param s: input string
 	 * @param d: input time(date)
 	 */
-	public void updateEntryWindow(SortedMap<Date, String> map, 
+	private void updateEntryWindow(SortedMap<Date, String> map, 
 			SortedMap<String, Integer> gram, String s, Date d){
 		// just for testing
 		//SortedMap<Date, String> map = uniEntryWindow;
