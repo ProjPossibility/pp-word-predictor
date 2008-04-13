@@ -64,6 +64,15 @@ public class EntryWindow {
 	public int getMode(){
 		return mode;
 	}
+	public SortedMap<String, Integer> getUnigram(){
+		return unigram;
+	}
+	public SortedMap<String, Integer> getBigram(){
+		return bigram;
+	}
+	public SortedMap<String, Integer> getTrigram(){
+		return trigram;
+	}
 	
 	public void update(String s1, String s2, String s3){
 		Date d = new Date();
