@@ -128,7 +128,7 @@ public class EntryWindow {
 
 	// should be put in grams part
 	/**
-	 * add new string 
+	 * add new string from the gram
 	 */
 	private void updateUp(SortedMap<String,Integer> gram, String s){	
 		if (gram.containsKey(s)){
@@ -137,7 +137,7 @@ public class EntryWindow {
 		else gram.put(s, 1);
 	}
 	/**
-	 * remove one string
+	 * remove one string if its freq is 1; else decrement the freq by 1
 	 */
 	private void updateDown(SortedMap<String,Integer> gram, String s){
 		System.out.println("string to remove+:"+s);
