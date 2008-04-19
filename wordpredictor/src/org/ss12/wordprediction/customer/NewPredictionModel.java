@@ -111,5 +111,7 @@ public class NewPredictionModel {
 		Weights[2] = w3;
 	}
 	
-
+	public SortedMap<String, Double> getuniScoreMap(){
+		return uniScoreMap;
+	}
 }
