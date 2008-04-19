@@ -15,7 +15,7 @@ public class NewPredictionModelTest extends TestCase {
 		pm.getuniScoreMap().put("b", 2.0);
 		pm.getuniScoreMap().put("c", 3.0);
 		System.out.println(pm.getuniScoreMap());
-		//pm.sortList(pm.getuniScoreMap());
-		//System.out.println(pm.getuniScoreMap());
+		pm.sortList(pm.getuniScoreMap());
+		System.out.println(pm.getuniScoreMap());
 	}
 }

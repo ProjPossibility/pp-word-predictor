@@ -51,6 +51,7 @@ public class NewPredictionModel {
 	    List<Entry<String,Double>> list = new ArrayList(Arrays.asList(c.toArray()));
 	    //sort the list
 		Collections.sort(list, new MapEntryValueComparator());
+		System.out.println(list);
 	}
 	
 	private void triScorer(){
