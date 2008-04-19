@@ -1,4 +1,7 @@
 package org.ss12.wordprediction.customer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -7,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Comparator;
 import java.util.Map.Entry;
 
 /**
@@ -17,6 +19,9 @@ import java.util.Map.Entry;
  */
 
 import org.ss12.wordprediction.customer.EntryWindow;
+import org.ss12.wordprediction.MapEntryValueComparator;
+
+
 
 public class NewPredictionModel {
 	private EntryWindow ew1;
@@ -43,16 +48,13 @@ public class NewPredictionModel {
 		triScore = new TreeMap<String, Double>();
 	}
 
-	private void sortByValue(SortedMap<String, Double> map, Map<String, Double> result){
-		List<Entry<String, Double>> list = new LinkedList<Entry<String, Double>>(map.entrySet());
-		Collections.sort(list, new Comparator()){
-			public int compare(Entry<String, Double> e1, Entry<String, Double> e2){
-				return (e1.getValue()).compareTo(e2.getValue());
-			}
-			return (Comparable)
-		}
-		
+	public void sortList(Map<String, Double> map){
+		Collection<Double> c = map.values();
+		// Convert to list
+	    List list = new ArrayList(Arrays.asList(c.toArray()));
+		Collections.sort(list, new MapEntryValueComparator());
 	}
+	
 	private void triScorer(){
 		Set<Entry<String, Integer>> set = ew3.getTrigram().entrySet();
 		Iterator<Entry<String, Integer>> iter = set.iterator();
