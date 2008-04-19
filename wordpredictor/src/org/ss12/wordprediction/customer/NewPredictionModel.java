@@ -46,9 +46,10 @@ public class NewPredictionModel {
 	}
 
 	public void sortList(Map<String, Double> map){
-		Collection<Double> c = map.values();
+		Collection<Entry<String, Double>> c = map.entrySet();
 		// Convert to list
-	    List list = new ArrayList(Arrays.asList(c.toArray()));
+	    List<Entry<String,Double>> list = new ArrayList(Arrays.asList(c.toArray()));
+	    //sort the list
 		Collections.sort(list, new MapEntryValueComparator());
 	}
 	
