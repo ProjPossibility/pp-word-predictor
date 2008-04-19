@@ -31,8 +31,8 @@ public class EntryWindow {
 	 */
 	EntryWindow(){
 		uniEntryWindow = new TreeMap<Date, String>();
-		uniEntryWindow = new TreeMap<Date, String>();
-		uniEntryWindow = new TreeMap<Date, String>();
+		biEntryWindow = new TreeMap<Date, String>();
+		triEntryWindow = new TreeMap<Date, String>();
 		mode = 1;
 		Period  = 10;
 		WordNumber = 500;
