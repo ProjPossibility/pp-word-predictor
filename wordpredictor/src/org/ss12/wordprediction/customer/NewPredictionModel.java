@@ -28,10 +28,11 @@ public class NewPredictionModel {
 	private SortedMap<String, Double> uniScoreMap;
 	private SortedMap<String, Double> biScoreMap;
 	private SortedMap<String, Double> triScoreMap;
+	/*
 	private Map<String, Double> uniScore;
 	private Map<String, Double> biScore;
 	private Map<String, Double> triScore;
-	
+	*/
 	
 	NewPredictionModel(){
 		ew1 = new EntryWindow(1, 10, 1000);
@@ -112,7 +113,7 @@ public class NewPredictionModel {
 		}
 	}
 	
-	
+
 	public void setWeights(double w1, double w2, double w3){
 		assert(w1>0 && w1<1 && w2>0 && w2<1 && w3>0 && w3<1 && w1+w2+w3==1);
 		Weights[0] = w1;
@@ -120,8 +121,13 @@ public class NewPredictionModel {
 		Weights[2] = w3;
 	}
 	
-	public SortedMap<String, Double> getuniScoreMap(){
+	public SortedMap<String, Double> getUniScoreMap(){
 		return uniScoreMap;
 	}
-	 
+	public SortedMap<String, Double> getBiScoreMap(){
+		return biScoreMap;
+	}
+	public SortedMap<String, Double> getTriScoreMap(){
+		return triScoreMap;
+	}
 }
