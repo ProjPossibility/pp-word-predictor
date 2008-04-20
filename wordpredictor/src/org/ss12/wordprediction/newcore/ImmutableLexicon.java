@@ -8,14 +8,6 @@ package org.ss12.wordprediction.newcore;
  */
 public interface ImmutableLexicon {
   /**
-   * Returns the significance of the given word.
-   * 
-   * @param word the word to get the significance of
-   * @return its significance, or {@code null} if the word was not found
-   */
-  public WordSignificance getSignificance(String word);
-
-  /**
    * Returns the significance of all words lexicographically between the given
    * bounds.
    * 
