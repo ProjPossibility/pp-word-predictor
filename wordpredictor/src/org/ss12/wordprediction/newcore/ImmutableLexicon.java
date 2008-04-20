@@ -17,7 +17,14 @@ public interface ImmutableLexicon {
    *          bound
    * @return an iterable over the significance of all words between the bounds,
    *         possibly empty
+   * @throws IllegalStateException if the lexicon is closed and cannot be read
    */
   public Iterable<WordFrequencyPair> getSignificance(String lowBound,
-      String highBound);
+      String highBound) throws IllegalStateException;
+
+  /**
+   * Closes this lexicon, releasing all held resources. After this method is
+   * invoked, it can no longer be read from.
+   */
+  public void close();
 }

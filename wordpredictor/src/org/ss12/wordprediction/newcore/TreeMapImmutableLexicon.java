@@ -21,6 +21,7 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
       TreeMapImmutableLexicon.class.getName());
 
   private final SortedMap<String, WordFrequencyPair> frequencies;
+  private boolean isClosed;
 
   /**
    * Constructs a new {@link TreeMapImmutableLexicon} from a copy of the given
@@ -87,14 +88,15 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
   private TreeMapImmutableLexicon(
       SortedMap<String, WordFrequencyPair> probabilities) {
     this.frequencies = Collections.unmodifiableSortedMap(probabilities);
-  }
-
-  public WordFrequencyPair getSignificance(String word) {
-    return frequencies.get(word);
+    isClosed = false;
   }
 
   public Iterable<WordFrequencyPair> getSignificance(String lowBound,
       String highBound) {
+    if (isClosed) {
+      throw new IllegalStateException("Lexicon is closed, cannot read");
+    }
+
     if ((lowBound != null) && (highBound != null)) {
       return frequencies.subMap(lowBound, highBound).values();
     } else if (lowBound != null) {
@@ -103,5 +105,9 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
       return frequencies.headMap(highBound).values();
     }
     return frequencies.values();
+  }
+
+  public void close() {
+    isClosed = true;
   }
 }
