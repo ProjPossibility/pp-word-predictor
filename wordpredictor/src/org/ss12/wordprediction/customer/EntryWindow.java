@@ -13,7 +13,8 @@ import java.util.Map.Entry;
  * @author Lily
  */
 public class EntryWindow {
-	private SortedMap<Date, String> uniEntryWindow;
+	//keep track of the words within a certain time frame or number of entries constraint
+	private SortedMap<Date, String> uniEntryWindow;  
 	private SortedMap<Date, String> biEntryWindow;
 	private SortedMap<Date, String> triEntryWindow;
 	private SortedMap<String, Integer> unigram;
