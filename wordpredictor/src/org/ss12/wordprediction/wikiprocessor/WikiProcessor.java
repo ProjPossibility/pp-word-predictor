@@ -171,7 +171,8 @@ public class WikiProcessor {
 	}
 
 	/*
-	 * 
+	 * Method call to use to convert a subset of the wikipedia articles  specified to plain
+	 * text. This method will save the output of each article processed to a text file.
 	 */
 	public void convertFile(String wikiDB, int articleStart, int articleEnd) {
 
