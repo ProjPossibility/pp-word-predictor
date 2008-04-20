@@ -40,18 +40,25 @@ public class NewPredictionModel {
 		uniScoreMap = new TreeMap<String, Double>();
 		biScoreMap = new TreeMap<String, Double>();
 		triScoreMap = new TreeMap<String, Double>();
+		/*
 		uniScore = new TreeMap<String, Double>();
 		biScore = new TreeMap<String, Double>();
 		triScore = new TreeMap<String, Double>();
+		*/
 	}
 
-	public void sortList(Map<String, Double> map){
+	public List<Entry<String, Double>> sortList(Map<String, Double> map){
 		Collection<Entry<String, Double>> c = map.entrySet();
+
 		// Convert to list
-	    List<Entry<String,Double>> list = new ArrayList(Arrays.asList(c.toArray()));
+	    List<Entry<String,Double>> list = new ArrayList(c);
 	    //sort the list
 		Collections.sort(list, new MapEntryValueComparator());
-		System.out.println(list);
+		//System.out.println(list);
+		if (list.size() < 5)
+			return list;
+		else 
+			return list.subList(0,5);
 	}
 	
 	private void triScorer(){
@@ -116,4 +123,5 @@ public class NewPredictionModel {
 	public SortedMap<String, Double> getuniScoreMap(){
 		return uniScoreMap;
 	}
+	 
 }
