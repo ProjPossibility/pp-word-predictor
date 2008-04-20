@@ -165,6 +165,20 @@ public class TreeMapWordPredictor implements WordPredictor
 	}
 	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestionsRequested)
 	{
+		String[] scoredSuggestions = getSuggestionsWithScoring(tokens, numberOfSuggestionsRequested);
+		if (suggestions.length < numberOfSuggestionsRequested) {
+			String[] unscoredSuggestions = getSuggestionsWithoutScoring(tokens, numberOfSuggestionsRequested);
+			
+		}
+	}
+	
+	private String[] getSuggestionsWithScoring(String[] tokens, int numberOfSuggestionsRequested) {
+		// YOURCODEHERE
+	}
+	
+	private String[] getSuggestionsWithoutScoring(String[] tokens, int numberOfSuggestionsRequested) {
+		
+		
 		int numOfSuggestionsFound = numberOfSuggestionsRequested;
 		//System.out.println("getSuggestions started");
 		String begin_seq,end_seq;
