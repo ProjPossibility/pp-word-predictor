@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.ss12.wordprediction.newcore.AnnotatedWord;
 import org.ss12.wordprediction.newcore.Scorer;
-import org.ss12.wordprediction.newcore.WordSignificance;
+import org.ss12.wordprediction.newcore.WordFrequencyPair;
 
 /**
  * An skeletal implementation of a {@link Scorer}.
@@ -24,8 +24,8 @@ public abstract class AbstractScorer<T extends AnnotatedWord> implements
   protected List<T> trigrams;
   protected List<T> bigrams;
   protected List<T> unigrams;
-  protected List<WordSignificance> additionalLexicons;
-  protected List<WordSignificance> defaultLexicon;
+  protected List<WordFrequencyPair> additionalLexicons;
+  protected List<WordFrequencyPair> defaultLexicon;
 
   public AbstractScorer(Comparator<T> comparator) {
     allWords = new HashSet<String>();
@@ -63,8 +63,8 @@ public abstract class AbstractScorer<T extends AnnotatedWord> implements
    * @param list the list to append ot
    */
   protected void addWordSignificances(
-      Iterable<WordSignificance> wordSignificances, List<WordSignificance> list) {
-    for (WordSignificance wordSignificance : wordSignificances) {
+      Iterable<WordFrequencyPair> wordSignificances, List<WordFrequencyPair> list) {
+    for (WordFrequencyPair wordSignificance : wordSignificances) {
       if (!allWords.contains(wordSignificance.word)) {
         allWords.add(wordSignificance.word);
         list.add(wordSignificance);
@@ -96,9 +96,9 @@ public abstract class AbstractScorer<T extends AnnotatedWord> implements
    * @param suggestions the list of suggestions to append to
    */
   protected void appendWordSignificances(
-      List<WordSignificance> wordSignificances, List<String> suggestions) {
-    Collections.sort(wordSignificances, WordSignificance.COMPARATOR);
-    for (WordSignificance wordSignificance : wordSignificances) {
+      List<WordFrequencyPair> wordSignificances, List<String> suggestions) {
+    Collections.sort(wordSignificances, WordFrequencyPair.COMPARATOR);
+    for (WordFrequencyPair wordSignificance : wordSignificances) {
       suggestions.add(wordSignificance.word);
     }
   }
@@ -118,13 +118,13 @@ public abstract class AbstractScorer<T extends AnnotatedWord> implements
     addAnnotatedWords(customUnigrams, this.unigrams);
   }
 
-  public void addAdditionalLexicon(Iterable<WordSignificance> words) {
-    additionalLexicons = new ArrayList<WordSignificance>();
+  public void addAdditionalLexicon(Iterable<WordFrequencyPair> words) {
+    additionalLexicons = new ArrayList<WordFrequencyPair>();
     addWordSignificances(words, additionalLexicons);
   }
 
-  public void addDefaultLexicon(Iterable<WordSignificance> words) {
-    defaultLexicon = new ArrayList<WordSignificance>();
+  public void addDefaultLexicon(Iterable<WordFrequencyPair> words) {
+    defaultLexicon = new ArrayList<WordFrequencyPair>();
     addWordSignificances(words, defaultLexicon);
   }
 

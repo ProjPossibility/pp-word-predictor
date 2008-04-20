@@ -7,13 +7,13 @@ import java.util.Comparator;
  * 
  * @author Michael Parker
  */
-public class WordSignificance {
+public class WordFrequencyPair {
   /**
    * A comparator by associated significance.
    */
-  public static final Comparator<WordSignificance> COMPARATOR =
-      new Comparator<WordSignificance>() {
-    public int compare(WordSignificance lhs, WordSignificance rhs) {
+  public static final Comparator<WordFrequencyPair> COMPARATOR =
+      new Comparator<WordFrequencyPair>() {
+    public int compare(WordFrequencyPair lhs, WordFrequencyPair rhs) {
       if (lhs.significance == rhs.significance) {
         return 0;
       }
@@ -30,7 +30,7 @@ public class WordSignificance {
    * @param word the word
    * @param significance the significance
    */
-  public WordSignificance(String word, int significance) {
+  public WordFrequencyPair(String word, int significance) {
     this.word = word;
     this.significance = significance;
   }
@@ -39,8 +39,8 @@ public class WordSignificance {
   public boolean equals(Object obj) {
     if (obj == this) {
       return true;
-    } else if (obj instanceof WordSignificance) {
-      WordSignificance ws = (WordSignificance) obj;
+    } else if (obj instanceof WordFrequencyPair) {
+      WordFrequencyPair ws = (WordFrequencyPair) obj;
       return ((word.equals(ws.word)) && (significance == ws.significance));
     }
     return false;

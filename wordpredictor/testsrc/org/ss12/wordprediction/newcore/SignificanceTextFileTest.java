@@ -26,9 +26,9 @@ public class SignificanceTextFileTest extends TestCase {
   }
 
   public void testWriteAndRead() throws IOException {
-    WordSignificance ws1 = new WordSignificance("word1", 50);
-    WordSignificance ws2 = new WordSignificance("word2", 20);
-    WordSignificance ws3 = new WordSignificance("word3", 100);
+    WordFrequencyPair ws1 = new WordFrequencyPair("word1", 50);
+    WordFrequencyPair ws2 = new WordFrequencyPair("word2", 20);
+    WordFrequencyPair ws3 = new WordFrequencyPair("word3", 100);
 
     // Write the WordSignificance instances to the text file.
     SignificanceTextFileWriter writer = new SignificanceTextFileWriter(f);
@@ -39,9 +39,9 @@ public class SignificanceTextFileTest extends TestCase {
 
     // Read the WordSignificance instances from the text file.
     SignificanceTextFileReader reader = new SignificanceTextFileReader(f);
-    WordSignificance wsCopy1 = reader.readNext();
-    WordSignificance wsCopy2 = reader.readNext();
-    WordSignificance wsCopy3 = reader.readNext();
+    WordFrequencyPair wsCopy1 = reader.readNext();
+    WordFrequencyPair wsCopy2 = reader.readNext();
+    WordFrequencyPair wsCopy3 = reader.readNext();
     assertNull(reader.readNext());
     reader.close();
 

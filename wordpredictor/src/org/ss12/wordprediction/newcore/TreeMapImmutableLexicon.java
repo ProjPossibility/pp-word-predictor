@@ -13,7 +13,7 @@ import java.util.TreeMap;
  * @author Michael Parker
  */
 public class TreeMapImmutableLexicon implements ImmutableLexicon {
-  private final SortedMap<String, WordSignificance> probabilities;
+  private final SortedMap<String, WordFrequencyPair> probabilities;
 
   /**
    * Constructs a new {@link TreeMapImmutableLexicon} from a copy of the given
@@ -23,10 +23,10 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
    * @return the new immutable lexicon
    */
   public static TreeMapImmutableLexicon fromMap(Map<String, Integer> map) {
-    SortedMap<String, WordSignificance> probabilities = new TreeMap<String, WordSignificance>();
+    SortedMap<String, WordFrequencyPair> probabilities = new TreeMap<String, WordFrequencyPair>();
     for (Map.Entry<String, Integer> mapEntry : map.entrySet()) {
       String word = mapEntry.getKey();
-      probabilities.put(word, new WordSignificance(word, mapEntry.getValue()));
+      probabilities.put(word, new WordFrequencyPair(word, mapEntry.getValue()));
     }
     return new TreeMapImmutableLexicon(probabilities);
   }
@@ -42,10 +42,10 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
    * @throws IOException
    */
   public static TreeMapImmutableLexicon fromFile(File f) throws IOException {
-    SortedMap<String, WordSignificance> probabilities = new TreeMap<String, WordSignificance>();
+    SortedMap<String, WordFrequencyPair> probabilities = new TreeMap<String, WordFrequencyPair>();
     SignificanceTextFileReader reader = new SignificanceTextFileReader(f);
     while (true) {
-      WordSignificance significance = reader.readNext();
+      WordFrequencyPair significance = reader.readNext();
       if (significance == null) {
         break;
       }
@@ -55,15 +55,15 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
   }
 
   private TreeMapImmutableLexicon(
-      SortedMap<String, WordSignificance> probabilities) {
+      SortedMap<String, WordFrequencyPair> probabilities) {
     this.probabilities = Collections.unmodifiableSortedMap(probabilities);
   }
 
-  public WordSignificance getSignificance(String word) {
+  public WordFrequencyPair getSignificance(String word) {
     return probabilities.get(word);
   }
 
-  public Iterable<WordSignificance> getSignificance(String lowBound,
+  public Iterable<WordFrequencyPair> getSignificance(String lowBound,
       String highBound) {
     if ((lowBound != null) && (highBound != null)) {
       return probabilities.subMap(lowBound, highBound).values();

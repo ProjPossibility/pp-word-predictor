@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * A class for generating {@link WordSignificance} instances from a text file,
+ * A class for generating {@link WordFrequencyPair} instances from a text file,
  * where each line in the file must contain a word, followed by its
  * significance.
  * 
@@ -22,7 +22,7 @@ public class SignificanceTextFileReader {
   private boolean isClosed;
 
   /**
-   * Creates a new reader of {@link WordSignificance} instances.
+   * Creates a new reader of {@link WordFrequencyPair} instances.
    * 
    * @param f the file to read
    * @throws IOException if an underlying reader for the file could not be
@@ -34,15 +34,15 @@ public class SignificanceTextFileReader {
   }
 
   /**
-   * Returns the next {@link WordSignificance} instance. If this reader has
+   * Returns the next {@link WordFrequencyPair} instance. If this reader has
    * reached the end of the file, this method returns {@code null} and
    * {@link #close()} is automatically invoked.
    * 
-   * @return the next {@link WordSignificance} instance read from the file, or
+   * @return the next {@link WordFrequencyPair} instance read from the file, or
    *         {@code null} if at the end of file
    * @throws IOException if data could not be read from the file
    */
-  public WordSignificance readNext() throws IOException {
+  public WordFrequencyPair readNext() throws IOException {
     String line = reader.readLine();
     if (line == null) {
       // Reached end of file, so close
@@ -51,7 +51,7 @@ public class SignificanceTextFileReader {
     }
 
     String[] fields = line.split(SIGNIFIANCE_DELIMETER);
-    return new WordSignificance(fields[0], Integer.valueOf(fields[1]));
+    return new WordFrequencyPair(fields[0], Integer.valueOf(fields[1]));
   }
 
   /**

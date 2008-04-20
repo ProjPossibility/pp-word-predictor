@@ -40,14 +40,14 @@ public interface Scorer<T extends AnnotatedWord> {
    * 
    * @param words the words from an additional lexicon
    */
-  public void addAdditionalLexicon(Iterable<WordSignificance> words);
+  public void addAdditionalLexicon(Iterable<WordFrequencyPair> words);
 
   /**
    * Adds the default lexicon to the suggestions to score.
    * 
    * @param words the words from the default lexicon
    */
-  public void addDefaultLexicon(Iterable<WordSignificance> words);
+  public void addDefaultLexicon(Iterable<WordFrequencyPair> words);
 
   /**
    * Returns whether {@link #getSuggestions()} will return at least the given

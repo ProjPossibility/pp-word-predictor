@@ -1,7 +1,7 @@
 package org.ss12.wordprediction.newcore;
 
 /**
- * An immutable collection of {@link WordSignificance} instances, sorted
+ * An immutable collection of {@link WordFrequencyPair} instances, sorted
  * lexicographically by word.
  * 
  * @author Michael Parker
@@ -18,6 +18,6 @@ public interface ImmutableLexicon {
    * @return an iterable over the significance of all words between the bounds,
    *         possibly empty
    */
-  public Iterable<WordSignificance> getSignificance(String lowBound,
+  public Iterable<WordFrequencyPair> getSignificance(String lowBound,
       String highBound);
 }
