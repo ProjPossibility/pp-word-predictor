@@ -17,6 +17,7 @@ public class TreeMapCustomLexicon<T extends AnnotatedWord> implements
   private final SortedMap<WordSequence, T> unigrams;
   private final SortedMap<WordSequence, T> bigrams;
   private final SortedMap<WordSequence, T> trigrams;
+  private boolean isClosed;
 
   public TreeMapCustomLexicon(AnnotationFactory<T> annotationFactory) {
     this.annotationFactory = annotationFactory;
@@ -24,10 +25,15 @@ public class TreeMapCustomLexicon<T extends AnnotatedWord> implements
     unigrams = new TreeMap<WordSequence, T>();
     bigrams = new TreeMap<WordSequence, T>();
     trigrams = new TreeMap<WordSequence, T>();
+    isClosed = false;
   }
 
   private void add(SortedMap<WordSequence, T> sequenceMap,
       WordSequence wordSequence) {
+    if (isClosed) {
+      throw new IllegalStateException("Lexicon is closed, cannot write");
+    }
+
     T annotation = sequenceMap.get(wordSequence);
     if (annotation != null) {
       annotation.update();
@@ -51,6 +57,10 @@ public class TreeMapCustomLexicon<T extends AnnotatedWord> implements
 
   private Iterable<T> get(SortedMap<WordSequence, T> sequenceMap,
       WordSequence wordSequence) {
+    if (isClosed) {
+      throw new IllegalStateException("Lexicon is closed, cannot read");
+    }
+
     WordSequence upperBound = WordSequence.getNextSequence(wordSequence);
     if (upperBound == null) {
       return Collections.unmodifiableCollection(sequenceMap
@@ -72,5 +82,9 @@ public class TreeMapCustomLexicon<T extends AnnotatedWord> implements
       String prevPrevWord) {
     return get(trigrams, new WordSequence(prevPrevWord, prevWord,
         incompleteWord));
+  }
+
+  public void close() {
+    isClosed = true;
   }
 }

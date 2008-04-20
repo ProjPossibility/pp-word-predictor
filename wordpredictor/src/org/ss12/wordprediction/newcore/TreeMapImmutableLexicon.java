@@ -1,11 +1,15 @@
 package org.ss12.wordprediction.newcore;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * An implementation of {@link ImmutableLexicon} backed by a {@code TreeMap}.
@@ -13,7 +17,10 @@ import java.util.TreeMap;
  * @author Michael Parker
  */
 public class TreeMapImmutableLexicon implements ImmutableLexicon {
-  private final SortedMap<String, WordFrequencyPair> probabilities;
+  private static final Logger log = Logger.getLogger(
+      TreeMapImmutableLexicon.class.getName());
+
+  private final SortedMap<String, WordFrequencyPair> frequencies;
 
   /**
    * Constructs a new {@link TreeMapImmutableLexicon} from a copy of the given
@@ -31,6 +38,29 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
     return new TreeMapImmutableLexicon(probabilities);
   }
 
+  /**
+   * Constructs a new {@link TreeMapImmutableLexicon} from a serialized
+   * {@link TreeMap} of words mapped to their corresponding frequencies.
+   * 
+   * @param file the file containing the serialized map
+   * @return the new immutable lexicon
+   */
+  public static TreeMapImmutableLexicon fromSerializedMap(File file) {
+    TreeMap<String, Integer> map = new TreeMap<String, Integer>();
+    try {
+      FileInputStream objReader = new FileInputStream(file);
+      ObjectInputStream in = new ObjectInputStream(objReader);
+      map = (TreeMap<String, Integer>) in.readObject();
+      in.close();
+    } catch (IOException e) {
+      log.log(Level.WARNING, "Could not deserialize map, creating empty map", e);
+    } catch (ClassNotFoundException e) {
+      log.log(Level.SEVERE, "Could not find TreeMap class", e);
+    }
+
+    return fromMap(map);
+  }
+  
   /**
    * Constructs a new {@link TreeMapImmutableLexicon} from the contents of the
    * given file. Each line in the file must follow the format specified by
@@ -56,22 +86,22 @@ public class TreeMapImmutableLexicon implements ImmutableLexicon {
 
   private TreeMapImmutableLexicon(
       SortedMap<String, WordFrequencyPair> probabilities) {
-    this.probabilities = Collections.unmodifiableSortedMap(probabilities);
+    this.frequencies = Collections.unmodifiableSortedMap(probabilities);
   }
 
   public WordFrequencyPair getSignificance(String word) {
-    return probabilities.get(word);
+    return frequencies.get(word);
   }
 
   public Iterable<WordFrequencyPair> getSignificance(String lowBound,
       String highBound) {
     if ((lowBound != null) && (highBound != null)) {
-      return probabilities.subMap(lowBound, highBound).values();
+      return frequencies.subMap(lowBound, highBound).values();
     } else if (lowBound != null) {
-      return probabilities.tailMap(lowBound).values();
+      return frequencies.tailMap(lowBound).values();
     } else if (highBound != null) {
-      return probabilities.headMap(highBound).values();
+      return frequencies.headMap(highBound).values();
     }
-    return probabilities.values();
+    return frequencies.values();
   }
 }
