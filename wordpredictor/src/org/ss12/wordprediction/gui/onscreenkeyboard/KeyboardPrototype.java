@@ -50,6 +50,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	Color buttonColor = new javax.swing.plaf.ColorUIResource(0);
 
 	public KeyboardPrototype(Robot robot) {
+		super("Word Prediction On Screen Keyboard");
 		// Set Mac OS X to use the standard look and feel of Java and not the native Aqua user interface
 //		try {
 //			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -220,6 +221,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			}
 			press(keycode);
 			predict();
+			learn();
 		}
 		else if(arg0.getSource() instanceof JToggleButton){
 			JToggleButton key = ((JToggleButton)arg0.getSource());
@@ -260,6 +262,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			typeString(temp);
 			press(KeyEvent.VK_SPACE);
 			predict();
+			learn();
 		}
 	}
 	private void shift(boolean selected) {
@@ -290,6 +293,12 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 				b.setText(text.substring(0,1).toUpperCase()+text.substring(1));
 			else
 				b.setText(text.toLowerCase());
+		}
+	}
+	private void learn() {
+		String[] buffer = predictor.processString(text.getText());
+		if(buffer[buffer.length-1].equals("")){
+			predictor.learn(text.getText());
 		}
 	}
 	private void predict() {

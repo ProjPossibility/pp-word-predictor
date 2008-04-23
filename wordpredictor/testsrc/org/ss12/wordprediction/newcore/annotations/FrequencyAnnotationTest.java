@@ -9,7 +9,7 @@ import junit.framework.TestCase;
  * 
  * @author Michael Parker
  */
-public class FrequencyAnnotationTest extends TestCase {
+public class FrequencyAnnotationTest extends TestCase {	
   public void testUpdate() {
     FrequencyAnnotation annotation = new FrequencyAnnotation("a");
     assertEquals(1, annotation.getFrequency());

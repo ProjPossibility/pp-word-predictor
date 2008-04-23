@@ -11,6 +11,7 @@
 	<property name="builddir" value="${basedir}/build" />
 	<property name="src" value="${basedir}/src" />
 	<property name="dest" value="${basedir}/bin" />
+    <property name="dist" value="${basedir}/dist" />
 
 	<path id="build.classpath">
 		<pathelement location="bin"/>	
@@ -67,4 +68,32 @@
 	<target name="compile" description="Compile the word predictor">
 		<javac srcdir="${src}" destdir="${dest}" classpathref="build.classpath"/>
 	</target>
+	<target name="build" depends="init" description="Assembles an OSK distribution">
+
+        <!-- create a temp build directory -->
+        <mkdir dir="${builddir}" />
+
+	   	<!-- copy the source -->
+        <copy todir="${builddir}">
+            <fileset dir="${basedir}/bin" />
+        </copy>
+        <copy todir="${dist}/lib/">
+            <fileset dir="${basedir}/lib" />
+        </copy>
+        <copy todir="${dist}/resources/">
+            <fileset dir="${basedir}/resources" />
+        </copy>
+	        
+        <!-- make the jar -->
+        <jar jarfile="${dist}/WordPrediction.jar"
+            basedir="${builddir}" 
+            index="false" 
+            manifest="MANIFEST.MF"/>
+        <copy todir="${dist}" file="keyboard.bat" />
+        
+        <!-- delete the temp directory -->
+        <delete dir="${builddir}" />
+
+    </target>
+
 </project>

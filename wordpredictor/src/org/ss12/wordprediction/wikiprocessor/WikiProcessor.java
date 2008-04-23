@@ -1,3 +1,5 @@
+package org.ss12.wordprediction.wikiprocessor;
+
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -179,17 +181,17 @@ public class WikiProcessor {
 		//get to start index in wikiDB giant file
 		int index=0;
 		int numToStart = 0;
-		while(wikiDb.indexOf("<text>", index) > -1 && numToStart < articleStart) {
-			index = wikiDb.indexOf("<text>", index);
+		while(wikiDB.indexOf("<text>", index) > -1 && numToStart < articleStart) {
+			index = wikiDB.indexOf("<text>", index);
 			index++;
 			numToStart++;
 		}
 
 		//process articles
 		int numArticlesProcessed = 0;
-		while(wikiDb.indexOf("<text>", index) > -1 && numArticlesProcessed < articleEnd) {
-			index = wikiDb.indexOf("<text>", index);
-			String noFormatting = removeWikiFormating(wikiDB.substring(index));
+		while(wikiDB.indexOf("<text>", index) > -1 && numArticlesProcessed < articleEnd) {
+			index = wikiDB.indexOf("<text>", index);
+			String noFormatting = removeWikiFormat(wikiDB.substring(index));
 			saveToFile("article" + numArticlesProcessed + ".txt", noFormatting);
 			index++;
 			numArticlesProcessed++;

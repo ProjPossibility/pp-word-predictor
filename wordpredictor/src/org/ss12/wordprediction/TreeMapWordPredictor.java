@@ -52,9 +52,11 @@ public class TreeMapWordPredictor implements WordPredictor
 	private int trigramCount;
 	private int unigramCount;
 	LinkedList<String> lastWords;
+	WordReader reader;
 
 	public TreeMapWordPredictor(){
 		WordLoader wl = new WordLoader(1);		
+		reader = new WordReader(this);
 		File uni,bi,tri,dict;
 		uni = new File("resources/dictionaries/user/uni.dat");
 		bi = new File("resources/dictionaries/user/bi.dat");
@@ -80,6 +82,7 @@ public class TreeMapWordPredictor implements WordPredictor
 		this.bigrams = bi;
 		this.trigrams = tri;
 		this.unigrams = uni;
+		reader = new WordReader(this);
 		wordCount = sumValues(words);
 		bigramCount = sumValues(bigrams);
 		trigramCount = sumValues(trigrams);
@@ -165,19 +168,22 @@ public class TreeMapWordPredictor implements WordPredictor
 	}
 	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestionsRequested)
 	{
-		String[] scoredSuggestions = getSuggestionsWithScoring(tokens, numberOfSuggestionsRequested);
-		if (suggestions.length < numberOfSuggestionsRequested) {
+		//String[] scoredSuggestions = getSuggestionsWithScoring(tokens, numberOfSuggestionsRequested);
+		//if (scoredSuggestions.length < numberOfSuggestionsRequested) {
 			String[] unscoredSuggestions = getSuggestionsWithoutScoring(tokens, numberOfSuggestionsRequested);
 			
-		}
+		//}
+		return unscoredSuggestions;
 	}
 	
 	private String[] getSuggestionsWithScoring(String[] tokens, int numberOfSuggestionsRequested) {
 		// YOURCODEHERE
+		return null;
 	}
 	
 	private String[] getSuggestionsWithoutScoring(String[] tokens, int numberOfSuggestionsRequested) {
-		
+		if(tokens.length==0)
+			return new String[0];
 		
 		int numOfSuggestionsFound = numberOfSuggestionsRequested;
 		//System.out.println("getSuggestions started");
@@ -254,7 +260,7 @@ public class TreeMapWordPredictor implements WordPredictor
 					{
 						//update
 						m.put(dictionary_suggestions[j].getKey(), newVal);
-					}
+					}  
 					else
 					{
 						//just skip it!
@@ -283,6 +289,8 @@ public class TreeMapWordPredictor implements WordPredictor
 			//System.out.println("Suggestion: "+suggestions_candidates[rank].toString());
 			//suggestions[rank]=suggestions_candidates[rank].getKey().toString();
 			str_arr=suggestions_candidates[rank].getKey().toString().split(" ");
+			if(str_arr.length==0)
+				return new String[0];
 			suggestions[rank]=str_arr[str_arr.length-1];
 		}
 		if(numOfSuggestionsFound<numberOfSuggestionsRequested && tokens.length>1){
@@ -306,7 +314,7 @@ public class TreeMapWordPredictor implements WordPredictor
 			suggestions=appendedResults;
 		}
 		return suggestions;
-	}    
+	}
 
 	public void cleanup(){
 		String path = "resources/dictionaries/user/";
@@ -359,20 +367,38 @@ public class TreeMapWordPredictor implements WordPredictor
 		}
 		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
 	}
-	public String[] processString(String input) {
+	public int learn(String input){
+		String[] words = processString(input, 4);
+		if(!words[words.length-1].equals(""))
+			return 0;
+		String[] smaller = Arrays.copyOfRange(words, 0, words.length-1);
+		if(words.length>1)
+			reader.nextWord(smaller);
+		return words.length-1;
+	}
+	public String[] processString(String input){
+		return processString(input,3);
+	}
+	public String[] processString(String input, int numWords) {
 		input=input.toLowerCase();
-		String temp[] = new String[3];
-		int[] ind = new int[3];
+		int startPoint=Math.max(input.lastIndexOf('.'), Math.max(input.lastIndexOf('?'),input.lastIndexOf('!')))+1;
+		if(startPoint>=input.length())
+			return new String[]{""};
+		else if(startPoint>0)
+			input = input.substring(startPoint);
+		String temp[] = new String[numWords];
+		int[] ind = new int[numWords];
 		ind[0] = input.lastIndexOf(' ');
 		temp[0] = input.substring(ind[0]+1);
 		int i;
-		for(i=1;ind[i-1]>0 && i<3;i++){
+		for(i=1;ind[i-1]>0 && i<numWords;i++){
 			ind[i] = input.lastIndexOf(' ', ind[i-1]-1);
 			temp[i] = input.substring(ind[i]+1,ind[i-1]);
 		}
 		String word[] = new String[i];
 		for(int j=0;j<i;j++){
-			word[j] = temp[i-j-1];
+			temp[i-j-1] = reader.wordify(temp[i-j-1]);
+			word[j] = temp[i-j-1].trim();
 		}
 //		for(i=0;i<word.length-1;i++){
 //			if(!lastWords.get(i).equals(word[i])){
@@ -385,6 +411,9 @@ public class TreeMapWordPredictor implements WordPredictor
 //			lastWords.poll();
 //		}
 		//for(String w:word) System.out.println("'"+w+"'");
+		System.out.println("ProcessString: ");
+		for(String w:word)
+			System.out.println(w);
 		return word;
 	}	
 }

@@ -400,5 +400,9 @@ public class SQLITEWordPredictor implements WordPredictor
 		}
 		//for(String w:word) System.out.println("'"+w+"'");
 		return word;
+	}
+	public int learn(String input) {
+		// TODO Auto-generated method stub
+		return 0;
 	}	
 }

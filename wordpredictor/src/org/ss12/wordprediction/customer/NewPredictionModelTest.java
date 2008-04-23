@@ -11,11 +11,11 @@ import junit.framework.TestCase;
 public class NewPredictionModelTest extends TestCase {
 	public void testSortList(){
 		NewPredictionModel pm = new NewPredictionModel();
-		pm.getuniScoreMap().put("a", 1.0);
-		pm.getuniScoreMap().put("b", 2.0);
-		pm.getuniScoreMap().put("c", 3.0);
-		System.out.println(pm.getuniScoreMap());
-		pm.sortList(pm.getuniScoreMap());
-		System.out.println(pm.getuniScoreMap());
+		pm.getUniScoreMap().put("a", 1.0);
+		pm.getUniScoreMap().put("b", 2.0);
+		pm.getUniScoreMap().put("c", 3.0);
+		System.out.println(pm.getUniScoreMap());
+		pm.sortList(pm.getUniScoreMap());
+		System.out.println(pm.getUniScoreMap());
 	}
 }

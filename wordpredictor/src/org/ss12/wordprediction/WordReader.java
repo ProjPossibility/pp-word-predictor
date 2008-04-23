@@ -54,10 +54,35 @@ public class WordReader {
 	 * @param words
 	 *            the words
 	 */
+	public void nextWord(String[] words){
+		for(int i=0;i<words.length;i++){
+			words[i] = wordify(words[i]);
+			if(words[i].equals(""))
+				words[i]=null;
+		}
+		prePreWord=preWord=null;		
+		System.out.println("nextWord:");
+		for(String w : words)
+			System.out.println(w);
+		String newWord = words[words.length-1];
+		if(newWord==null)
+			return;
+		if(words.length==3){
+			prePreWord=words[0];
+			preWord=words[1];
+		}
+		else if(words.length==2){
+			prePreWord=null;
+			preWord=words[0];
+		}   
+		String[] s = {newWord};
+		nextWords(s);
+	}
 	public void nextWords(String[] words) {
 		for (int i = 0; i < words.length; i++) {
 			endSentence = false;
 			words[i] = words[i].toLowerCase();
+			System.out.println("Learning: "+words[i]+" prev words: "+prePreWord+" "+preWord);
 			if ((words[i] = wordify(words[i])).equals("")) {
 				prePreWord = preWord = null;
 				continue;
@@ -65,7 +90,6 @@ public class WordReader {
 			//System.out.print(words[i] + " ");
 			// System.out.println(wp);
 			wp.addUnigram(words[i]);
-
 			if (preWord != null)
 				wp.addBigram(preWord, words[i]);
 
@@ -82,7 +106,7 @@ public class WordReader {
 		}
 	}
 
-	private String wordify(String word) {
+	public String wordify(String word) {
 		word.trim();
 		for (int i = 0; i < word.length() - 1; i++) {
 			char c = word.charAt(i);

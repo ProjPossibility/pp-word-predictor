@@ -92,4 +92,5 @@ public interface WordPredictor {
 	public void cleanup();
 
 	public abstract String[] processString(String input);
+	public abstract int learn(String buffer);
 }
