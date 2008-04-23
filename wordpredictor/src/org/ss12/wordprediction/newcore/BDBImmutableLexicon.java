@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.ss12.wordprediction.newcore;
 
 import java.io.File;
@@ -94,12 +91,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		}
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Exception{
-		// TODO Auto-generated method stub
-
 		// environment is transactional
 		EnvironmentConfig envConfig = new EnvironmentConfig();
 		envConfig.setTransactional(true);
