@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="lib/gwt-user.jar"/>
 	<classpathentry kind="lib" path="lib/sqlitejdbc-v043-nested.jar"/>
 	<classpathentry kind="lib" path="lib/json.jar"/>
-	<classpathentry kind="lib" path="lib/je-3.2.74.jar"/>
+	<classpathentry kind="lib" path="lib/je-3.2.76.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
