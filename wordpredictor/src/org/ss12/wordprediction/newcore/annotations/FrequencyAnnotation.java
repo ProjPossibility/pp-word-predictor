@@ -1,5 +1,6 @@
 package org.ss12.wordprediction.newcore.annotations;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.ss12.wordprediction.newcore.AnnotatedWord;
@@ -10,7 +11,7 @@ import org.ss12.wordprediction.newcore.WordPredictorUtil;
  * 
  * @author Michael Parker
  */
-public class FrequencyAnnotation extends AnnotatedWord {
+public class FrequencyAnnotation extends AnnotatedWord implements Serializable {
   /**
    * A comparator that sorts {@link FrequencyAnnotation} instances by their
    * associated frequency.
