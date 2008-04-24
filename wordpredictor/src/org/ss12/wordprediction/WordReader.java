@@ -61,9 +61,9 @@ public class WordReader {
 				words[i]=null;
 		}
 		prePreWord=preWord=null;		
-		System.out.println("nextWord:");
-		for(String w : words)
-			System.out.println(w);
+//		System.out.println("nextWord:");
+//		for(String w : words)
+//			System.out.println(w);
 		String newWord = words[words.length-1];
 		if(newWord==null)
 			return;
@@ -82,7 +82,7 @@ public class WordReader {
 		for (int i = 0; i < words.length; i++) {
 			endSentence = false;
 			words[i] = words[i].toLowerCase();
-			System.out.println("Learning: "+words[i]+" prev words: "+prePreWord+" "+preWord);
+			//System.out.println("Learning: "+words[i]+" prev words: "+prePreWord+" "+preWord);
 			if ((words[i] = wordify(words[i])).equals("")) {
 				prePreWord = preWord = null;
 				continue;

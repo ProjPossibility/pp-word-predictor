@@ -417,10 +417,9 @@ public class TreeMapWordPredictor implements WordPredictor
 //		while(lastWords.size()>2){
 //			lastWords.poll();
 //		}
-		//for(String w:word) System.out.println("'"+w+"'");
-		System.out.println("ProcessString: ");
-		for(String w:word)
-			System.out.println(w);
+//		System.out.println("ProcessString: ");
+//		for(String w:word)
+//			System.out.println(w);
 		return word;
 	}	
 }
