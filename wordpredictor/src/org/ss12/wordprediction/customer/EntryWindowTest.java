@@ -11,8 +11,17 @@ public class EntryWindowTest extends TestCase {
 		EntryWindow ew = new EntryWindow();
 		ew.setMode(3);
 		assertEquals(3, ew.getMode());
-		assertEquals(1, ew.getPeriod());
-		assertEquals(2, ew.getWordNumber());
+		//assertEquals(, ew.getPeriod());
+		//assertEquals(2, ew.getWordNumber());
+	}
+	
+	public void testUpdate(){
+		EntryWindow ew = new EntryWindow();
+		ew.update("a", "a b", "a b c");
+		ew.update("a", "a b", "a b d");
+		System.out.println(ew.getUnigram());
+		System.out.println(ew.getBigram());
+		System.out.println(ew.getTrigram());
 	}
 	
 	/*
