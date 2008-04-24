@@ -34,6 +34,9 @@ public class EntryWindow {
 		uniEntryWindow = new TreeMap<Date, String>();
 		biEntryWindow = new TreeMap<Date, String>();
 		triEntryWindow = new TreeMap<Date, String>();
+		unigram = new TreeMap<String, Integer>();
+		bigram = new TreeMap<String, Integer>();
+		trigram = new TreeMap<String, Integer>();
 		mode = 1;
 		Period  = 10;
 		WordNumber = 500;
@@ -116,7 +119,7 @@ public class EntryWindow {
 			Set<Entry<Date, String>> set = map.entrySet();
 			Iterator<Entry<Date, String>> it = set.iterator();
 			while (it.hasNext()){
-				System.out.print("entering period remove: ");
+				System.out.println("entering period remove: ");
 				Entry<Date, String> entry = (Entry<Date, String>)it.next();
 				if (entry.getKey().getTime() <= (d.getTime()- Period*1000)){
 					System.out.println(entry.getValue());
