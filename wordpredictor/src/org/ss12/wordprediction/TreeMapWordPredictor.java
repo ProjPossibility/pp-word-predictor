@@ -197,6 +197,9 @@ public class TreeMapWordPredictor implements WordPredictor
 		switch(tokens.length)
 		{
 		case 3:
+			if(trigramCount<=0)
+				return new String[0];
+
 			String tmp_begin=tokens[0]+" "+tokens[1];
 			begin_seq=tmp_begin+" "+tokens[2];
 			//System.out.println("the begin_seq is:"+begin_seq);
@@ -210,6 +213,8 @@ public class TreeMapWordPredictor implements WordPredictor
 			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 2:
+			if(bigramCount<=0)
+				return new String[0];
 
 			begin_seq=tokens[0]+" "+tokens[1];
 			upper = getUpperBound(tokens[1]);
@@ -221,6 +226,8 @@ public class TreeMapWordPredictor implements WordPredictor
 			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 1:
+			if(unigramCount<=0)
+				return new String[0];
 			// m is used as a temporary structure to remove duplicate suggestions from two lists
 			Map<String,Integer> m=new HashMap<String,Integer>();
 			begin_seq=tokens[0];

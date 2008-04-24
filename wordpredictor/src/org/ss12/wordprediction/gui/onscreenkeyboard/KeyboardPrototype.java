@@ -20,11 +20,16 @@ import java.awt.event.WindowEvent;
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.gui.onscreenkeyboard.components.KeyButton;
 import org.ss12.wordprediction.model.WordPredictor;
@@ -40,11 +45,13 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	Robot virtualKeyboard;
 	JButton[] wordButtons;
 	WordPredictor predictor;
-	JPanel keyboard;
+	JPanel body;
 	private boolean shift;
 	private boolean capslock;
 	private boolean alt;
 	private boolean ctrl;
+	Thread loading;
+	JPanel predictionRow;
 	JToggleButton leftShiftButton,rightShiftButton,leftCtrlButton,rightCtrlButton,leftAltButton,rightAltButton,capslockButton;
 	Font selectedFont,regularFont;
 	Color buttonColor = new javax.swing.plaf.ColorUIResource(0);
@@ -67,11 +74,28 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 //			// TODO Auto-generated catch block
 //			e1.printStackTrace();
 //		}
-		
-		predictor = new TreeMapWordPredictor();
+		loading = new Thread(){
+			public void run(){
+				predictor = new TreeMapWordPredictor();
+				predict();
+				learn();
+			}
+		};
+		loading.start();
 		virtualKeyboard = robot;
 		shift=false;
 		JPanel main = new JPanel();
+		JMenuBar menu = new JMenuBar();
+		JMenu view = new JMenu("View");
+		JCheckBoxMenuItem viewPredictions = new JCheckBoxMenuItem("Predictions",true);
+		JCheckBoxMenuItem viewKeyboard = new JCheckBoxMenuItem("Keyboard",true);
+		viewPredictions.addActionListener(this);
+		viewKeyboard.addActionListener(this);
+		view.add(viewPredictions);
+		view.add(viewKeyboard);
+		menu.add(view);
+		
+		this.setJMenuBar(menu);
 		
 		regularFont = new Font("Times New Roman",Font.PLAIN,20);
 		selectedFont = new Font("Times New Roman",Font.BOLD,20);
@@ -87,9 +111,9 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		text.setFont(text.getFont().deriveFont(20f));
 		main.add(text, BorderLayout.NORTH);
 
-		keyboard = new JPanel();
+		body = new JPanel();
 
-		keyboard.setLayout(new BoxLayout(keyboard, BoxLayout.PAGE_AXIS));
+		body.setLayout(new BoxLayout(body, BoxLayout.PAGE_AXIS));
 
 		String[] words = new String[NUM_OF_WORDS];
 		int[] wordsKeycodes = new int[NUM_OF_WORDS];
@@ -97,36 +121,36 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			words[i]=" ";
 			wordsKeycodes[i] = 0;
 		}
-		JPanel wordRow = rowOfKeys(words,words,wordsKeycodes);
-		Component[] buttons = wordRow.getComponents();
+		predictionRow = rowOfKeys(words,words,wordsKeycodes);
+		Component[] buttons = predictionRow.getComponents();
 		wordButtons = new JButton[buttons.length];
 		for(int i=0;i<buttons.length;i++){
 			wordButtons[i]=(JButton) buttons[i];
 			wordButtons[i].setEnabled(false);
 		}
-		keyboard.add(wordRow);
+		body.add(predictionRow);
 
 		String[] numbers = {"`","1","2","3","4","5","6","7","8","9","0","-","=","Backspace"};
 		String[] upperNumbers = {"~","!","@","#","$","%","^","&","*","(",")","_","+","Backspace"};
 
 		int[] numberKeycodes = {KeyEvent.VK_BACK_QUOTE,KeyEvent.VK_1,KeyEvent.VK_2,KeyEvent.VK_3,KeyEvent.VK_4,KeyEvent.VK_5,KeyEvent.VK_6,KeyEvent.VK_7,KeyEvent.VK_8,KeyEvent.VK_9,KeyEvent.VK_0,KeyEvent.VK_MINUS,KeyEvent.VK_EQUALS,KeyEvent.VK_BACK_SPACE};
-		keyboard.add(rowOfKeys(numbers,upperNumbers,numberKeycodes));
+		body.add(rowOfKeys(numbers,upperNumbers,numberKeycodes));
 		String[] first = {"Tab","q","w","e","r","t","y","u","i","o","p","[","]","\\"};
 		String[] upperFirst = {"Tab","Q","W","E","R","T","Y","U","I","O","P","{","}","|"};
 		int[] firstKeycodes = {KeyEvent.VK_TAB,KeyEvent.VK_Q,KeyEvent.VK_W,KeyEvent.VK_E,KeyEvent.VK_R,KeyEvent.VK_T,KeyEvent.VK_Y,KeyEvent.VK_U,KeyEvent.VK_I,KeyEvent.VK_O,KeyEvent.VK_P,KeyEvent.VK_OPEN_BRACKET,KeyEvent.VK_CLOSE_BRACKET,KeyEvent.VK_BACK_SLASH};
-		keyboard.add(rowOfKeys(first,upperFirst,firstKeycodes));
+		body.add(rowOfKeys(first,upperFirst,firstKeycodes));
 		String[] second = {"Caps Lock","a","s","d","f","g","h","j","k","l",";","'","Enter"};
 		String[] upperSecond = {"Caps Lock","A","S","D","F","G","H","J","K","L",":",""+'"',"Enter"};
 		int[] secondKeycodes = {KeyEvent.VK_CAPS_LOCK,KeyEvent.VK_A,KeyEvent.VK_S,KeyEvent.VK_D,KeyEvent.VK_F,KeyEvent.VK_G,KeyEvent.VK_H,KeyEvent.VK_J,KeyEvent.VK_K,KeyEvent.VK_L,KeyEvent.VK_SEMICOLON,KeyEvent.VK_QUOTE,KeyEvent.VK_ENTER};
-		keyboard.add(rowOfKeys(second,upperSecond,secondKeycodes));
+		body.add(rowOfKeys(second,upperSecond,secondKeycodes));
 		String[] third = {"Shift","z","x","c","v","b","n","m",",",".","/","Shift"};
 		String[] upperThird = {"Shift","Z","X","C","V","B","N","M","<",">","?","Shift"};
 		int[] thirdKeycodes = {KeyEvent.VK_SHIFT,KeyEvent.VK_Z,KeyEvent.VK_X,KeyEvent.VK_C,KeyEvent.VK_V,KeyEvent.VK_B,KeyEvent.VK_N,KeyEvent.VK_M,KeyEvent.VK_COMMA,KeyEvent.VK_PERIOD,KeyEvent.VK_SLASH,KeyEvent.VK_SHIFT};
-		keyboard.add(rowOfKeys(third,upperThird,thirdKeycodes));
+		body.add(rowOfKeys(third,upperThird,thirdKeycodes));
 		String[] fourth = {"Ctrl","Alt","Space","Alt","Ctrl"};
 		int[] fourthKeycodes = {KeyEvent.VK_CONTROL,KeyEvent.VK_ALT,KeyEvent.VK_SPACE,KeyEvent.VK_ALT,KeyEvent.VK_CONTROL};
-		keyboard.add(rowOfKeys(fourth,fourth,fourthKeycodes));
-		main.add(keyboard,BorderLayout.CENTER);
+		body.add(rowOfKeys(fourth,fourth,fourthKeycodes));
+		main.add(body,BorderLayout.CENTER);
 		this.getContentPane().add(main);
 		predict();
 	}
@@ -180,6 +204,10 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		return j;
 	}
 	public void cleanup(){
+		this.setVisible(false);
+		loading=null;
+		if(predictor==null)
+			return;
 		predictor.cleanup();
 	}
 
@@ -264,12 +292,15 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			predict();
 			learn();
 		}
+		else if(arg0.getSource() instanceof JCheckBoxMenuItem){
+			
+		}
 	}
 	private void shift(boolean selected) {
 		shift=selected;
 		rightShiftButton.setSelected(selected);
 		leftShiftButton.setSelected(selected);
-		Component[] panels = keyboard.getComponents();
+		Component[] panels = body.getComponents();
 		for(Component p:panels){
 			if(p instanceof JPanel){
 				Component[] buttons = ((JPanel)p).getComponents();
@@ -296,12 +327,16 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		}
 	}
 	private void learn() {
+		if(predictor==null)
+			return;
 		String[] buffer = predictor.processString(text.getText());
 		if(buffer[buffer.length-1].equals("")){
 			predictor.learn(text.getText());
 		}
 	}
 	private void predict() {
+		if(predictor==null)
+			return;
 		String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), NUM_OF_WORDS);
 		int i;
 		for(i=0;i<results.length;i++){
@@ -367,19 +402,22 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	public void mouseEntered(MouseEvent e) {
 		if(e.getSource() instanceof JComponent){
 			JComponent current = (JComponent)e.getSource();
-			current.setFont(selectedFont);
-
-			current.setBackground(Color.white);
+			if(current.isEnabled()){
+				current.setFont(selectedFont);
+				current.setBackground(Color.white);
+			}
 //			current.setBackground(new javax.swing.plaf.ColorUIResource(Color.white));
 		}
 	}
 	public void mouseExited(MouseEvent e) {
 		if(e.getSource() instanceof JComponent){
 			JComponent current = (JComponent)e.getSource();
-			current.setFont(regularFont);
-			current.setBackground(buttonColor);
+			if(current.isEnabled()){
+				current.setFont(regularFont);
+				current.setBackground(buttonColor);
+			}
 		}
-	}
+	}  
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
 		

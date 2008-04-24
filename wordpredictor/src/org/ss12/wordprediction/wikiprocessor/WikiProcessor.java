@@ -181,9 +181,9 @@ public class WikiProcessor {
 		//get to start index in wikiDB giant file
 		int index=0;
 		int numToStart = 0;
-		while(wikiDB.indexOf("<text>", index) > -1 && numToStart < articleStart) {
-			index = wikiDB.indexOf("<text>", index);
-			index++;
+		int t;
+		while((t = wikiDB.indexOf("<text>", index)) > -1 && numToStart < articleStart) {
+			index = t+1;
 			numToStart++;
 		}
 

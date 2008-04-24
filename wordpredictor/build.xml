@@ -68,7 +68,7 @@
 	<target name="compile" description="Compile the word predictor">
 		<javac srcdir="${src}" destdir="${dest}" classpathref="build.classpath"/>
 	</target>
-	<target name="build" depends="init" description="Assembles an OSK distribution">
+	<target name="build.dist" depends="init" description="Assembles an OSK distribution">
 
         <!-- create a temp build directory -->
         <mkdir dir="${builddir}" />
