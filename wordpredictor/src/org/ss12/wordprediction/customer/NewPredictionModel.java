@@ -1,6 +1,5 @@
 package org.ss12.wordprediction.customer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
