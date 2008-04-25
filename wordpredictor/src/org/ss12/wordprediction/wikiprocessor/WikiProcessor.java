@@ -175,6 +175,12 @@ public class WikiProcessor {
 	/*
 	 * Method call to use to convert a subset of the wikipedia articles  specified to plain
 	 * text. This method will save the output of each article processed to a text file.
+	 * 
+	 * @param wikiDB The wikiDB file as a string (you can pass in subsets of the wikiDB file
+	 *  and make multiple calls to this method to save virtual memory.)
+	 * @param articleStart The article to start at in the db string
+	 * @param article end The article to end a t in the db string
+	 * 
 	 */
 	public void convertFile(String wikiDB, int articleStart, int articleEnd) {
 
