@@ -25,7 +25,6 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -129,7 +128,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			wordButtons[i].setEnabled(false);
 		}
 		body.add(predictionRow);
-
+		
 		String[] numbers = {"`","1","2","3","4","5","6","7","8","9","0","-","=","Backspace"};
 		String[] upperNumbers = {"~","!","@","#","$","%","^","&","*","(",")","_","+","Backspace"};
 
@@ -152,7 +151,6 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		body.add(rowOfKeys(fourth,fourth,fourthKeycodes));
 		main.add(body,BorderLayout.CENTER);
 		this.getContentPane().add(main);
-		predict();
 	}
 	private JPanel rowOfKeys(String[] keys, String[] upperKeys, int[] keycode) {
 		JPanel j = new JPanel(new GridBagLayout());
@@ -219,7 +217,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		KeyboardPrototype gl = new KeyboardPrototype(new Robot());
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setAlwaysOnTop(true);
-		gl.setSize(750, 300);
+		gl.setSize(800, 300);
 		gl.setFocusableWindowState(false);
 //		gl.getRootPane().setFocusable(false);
 	
@@ -293,7 +291,19 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			learn();
 		}
 		else if(arg0.getSource() instanceof JCheckBoxMenuItem){
-			
+			JCheckBoxMenuItem cur = (JCheckBoxMenuItem)arg0.getSource();
+			String text = cur.getText();
+			if(text.equals("Predictions")){
+				predictionRow.setVisible(cur.getState());
+			}
+			else if(text.equals("Keyboard")){
+				Component[] c = body.getComponents();
+				for(int i=1;i<c.length;i++)
+					c[i].setVisible(cur.getState());
+			}
+			else if(text.equals("Recent Text")){
+				this.text.setVisible(cur.getState());
+			}
 		}
 	}
 	private void shift(boolean selected) {
@@ -337,18 +347,25 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	private void predict() {
 		if(predictor==null)
 			return;
-		String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), NUM_OF_WORDS);
-		int i;
-		for(i=0;i<results.length;i++){
-			if(capslock)
-				results[i] = results[i].toUpperCase();
-			wordButtons[i].setText(results[i]);
-			wordButtons[i].setEnabled(true);
-		}
-		for(;i<wordButtons.length;i++){
-			wordButtons[i].setText(" ");
-			wordButtons[i].setEnabled(false);
-		}
+		loading = new Thread(){
+			public void run(){
+				String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), NUM_OF_WORDS);
+				int i;
+				for(i=0;i<results.length;i++){
+					if(capslock)
+						results[i] = results[i].toUpperCase();
+					wordButtons[i].setText(results[i]);
+					wordButtons[i].setEnabled(true);
+					wordButtons[i].setBackground(buttonColor);
+				}
+				for(;i<wordButtons.length;i++){
+					wordButtons[i].setText(" ");
+					wordButtons[i].setEnabled(false);
+					wordButtons[i].setBackground(Color.white);					
+				}			
+			}
+		};
+		loading.start();
 	}
 	private void press(int key) {
 		if(shift)
