@@ -137,14 +137,14 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 					new FrequencyAnnotationFactory(), 
 					FrequencyAnnotation.class);
 		
-//		wp.tester();
+		wp.tester();
 		wp.check();
 		wp.close();
 	}
 	
 	public void tester(){
 		addUnigram("cat");
-		addBigram("the", "cat");
+//		addBigram("the", "cat");
 	}
 	
 	public void check(){

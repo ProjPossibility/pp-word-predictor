@@ -27,16 +27,16 @@ public class FrequencyAnnotation extends AnnotatedWord implements Serializable {
   };
 
   int frequency;
-
-  FrequencyAnnotation(String word) {
+  
+  public FrequencyAnnotation(String word) {
     this(word, 1);
   }
 
-  FrequencyAnnotation(FrequencyAnnotation annotation) {
+  public FrequencyAnnotation(FrequencyAnnotation annotation) {
     this(annotation.getWord(), annotation.getFrequency());
   }
 
-  FrequencyAnnotation(String word, int frequency) {
+  public FrequencyAnnotation(String word, int frequency) {
     super(word);
     this.frequency = frequency;
   }

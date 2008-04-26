@@ -53,16 +53,15 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	}
 	
 	public void tester() throws Exception{
-		TransactionWorker worker =  new IncrementWordCount("dog");
+		TransactionWorker worker =  new IncrementWordCount("cat");
 		try{runner.run(worker);}
 		
-		finally{}
-		worker= new IncrementWordCount("cow");
-		try {runner.run(worker);}
+//		finally{}
+//		worker= new IncrementWordCount("dog");
+//		try {runner.run(worker);}
 
 		finally {
 			System.out.println("map = " + map);
-//			close();
 		}
 	}
 
@@ -70,8 +69,6 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		Iterable<WordFrequencyPair> i = getSignificance(null, null);
 		
 		System.out.println(i);
-		
-		close();
 	}
 	
 	public class IncrementWordCount implements TransactionWorker{
@@ -101,6 +98,8 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 
 //		wp.tester();
 		wp.check();
+		
+		wp.close();
 	}
 	
 	private BDBImmutableLexicon(Environment e) throws Exception{
