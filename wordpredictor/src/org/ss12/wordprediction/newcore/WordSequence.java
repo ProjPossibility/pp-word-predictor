@@ -1,11 +1,12 @@
 package org.ss12.wordprediction.newcore;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public final class WordSequence implements Comparable<WordSequence> {
+public final class WordSequence implements Comparable<WordSequence>, Serializable {
   private final List<String> words;
 
   /**
