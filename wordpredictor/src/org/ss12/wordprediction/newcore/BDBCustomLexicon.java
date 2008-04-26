@@ -137,13 +137,14 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 					new FrequencyAnnotationFactory(), 
 					FrequencyAnnotation.class);
 		
-		wp.tester();
+//		wp.tester();
 		wp.check();
 		wp.close();
 	}
 	
 	public void tester(){
 		addUnigram("cat");
+		addBigram("the", "cat");
 	}
 	
 	public void check(){
@@ -172,7 +173,7 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 		Database catalogDb = env.openDatabase(null, "catalog", dbConfig);
 		catalog = new StoredClassCatalog(catalogDb);
 		
-		// sets the keys to be type WordSequence, and the data to be the class 
+		// set the keys to be type WordSequence, and set the data to be the class 
 		// set by the constructor
 		SerialBinding keyBinding = new SerialBinding(catalog, WordSequence.class);
 		SerialBinding dataBinding = new SerialBinding(catalog, dataClass);
