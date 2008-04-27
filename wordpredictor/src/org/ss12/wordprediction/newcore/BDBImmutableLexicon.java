@@ -24,7 +24,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	private Environment env;
 	String envName = "ImmutableLexicon";
 	private Database db;
-	private SortedMap<String, Integer> map;
+	public SortedMap<String, Integer> map;
 	TransactionRunner runner;
 	
 	final static String dir = "./resources/dictionaries/bdb";
@@ -48,16 +48,48 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		return l;
 	}
 	
-	public void tester() throws Exception{
-		TransactionWorker worker =  new IncrementWordCount("cat");
+	public void add(Map<String, Integer> map) {
+		for (Map.Entry<String, Integer> e : map.entrySet()) {
+			incrementWord(e.getKey(), e.getValue());
+		}
+		map.clear();
+		System.gc();
+	}
+
+	public void incrementWord(String word){
+		incrementWord(word, 1);
+	}
+	
+	public void incrementWord(String word, int toAdd) {
+		Integer count = map.get(word);
+		if (count == null){
+			map.put(word, toAdd);
+		} else {
+			map.put(word, count + toAdd);
+		}
+
+		/*
+		TransactionWorker worker = new IncrementWordCount(word);
 		try{runner.run(worker);}
-		
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		*/
+	}
+	
+	public void tester() throws Exception{
+		for (int i = 0; i < 10000; ++i) {
+			TransactionWorker worker =  new IncrementWordCount("cat");
+			try{runner.run(worker);}
+			
 //		finally{}
 //		worker= new IncrementWordCount("dog");
 //		try {runner.run(worker);}
-
-		finally {
-			System.out.println("map = " + map);
+			
+			finally {
+				System.out.println("map = " + map);
+			}
+			
 		}
 	}
 
@@ -75,6 +107,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		}
 		
 		public void doWork() {
+			
 			Integer count = map.get(word);
 			if (count == null){
 				map.put(word, 1);
@@ -87,18 +120,18 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	public static void main(String[] args) throws Exception{
 		// environment is transactional
 		EnvironmentConfig envConfig = new EnvironmentConfig();
-		envConfig.setTransactional(true);
+		envConfig.setTransactional(false);
 		envConfig.setAllowCreate(true);
 		Environment myEnv = new Environment(new File(dir), envConfig);
 		BDBImmutableLexicon wp = new BDBImmutableLexicon(myEnv);
 
-		// wp.tester();
+		wp.tester();
 		wp.check();
 		
 		wp.close();
 	}
 	
-	private BDBImmutableLexicon(Environment e) throws Exception{
+	public BDBImmutableLexicon(Environment e) throws Exception{
 		runner = new TransactionRunner(e);
 		env = e;
 		open();
@@ -107,7 +140,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	@SuppressWarnings("unchecked")
 	private void open() throws Exception{
 		DatabaseConfig dbConfig = new DatabaseConfig();
-		dbConfig.setTransactional(true);
+		dbConfig.setTransactional(false);
 		dbConfig.setAllowCreate(true);
 		
 		// sets the keys to be type String, and the data to be Integer
