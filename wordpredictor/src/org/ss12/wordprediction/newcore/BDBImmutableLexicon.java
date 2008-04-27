@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 
-import com.sleepycat.bind.serial.ClassCatalog;
-import com.sleepycat.bind.serial.SerialBinding;
-import com.sleepycat.bind.serial.StoredClassCatalog;
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.collections.StoredSortedMap;
 import com.sleepycat.collections.TransactionRunner;
@@ -26,7 +23,6 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 
 	private Environment env;
 	String envName = "ImmutableLexicon";
-	private ClassCatalog catalog;
 	private Database db;
 	private SortedMap<String, Integer> map;
 	TransactionRunner runner;
@@ -96,7 +92,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		Environment myEnv = new Environment(new File(dir), envConfig);
 		BDBImmutableLexicon wp = new BDBImmutableLexicon(myEnv);
 
-//		wp.tester();
+		// wp.tester();
 		wp.check();
 		
 		wp.close();
@@ -114,11 +110,8 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		dbConfig.setTransactional(true);
 		dbConfig.setAllowCreate(true);
 		
-		Database catalogDb = env.openDatabase(null, "catalog", dbConfig);
-		catalog = new StoredClassCatalog(catalogDb);
-		
 		// sets the keys to be type String, and the data to be Integer
-		SerialBinding keyBinding = new SerialBinding(catalog, String.class);
+		TupleBinding keyBinding = TupleBinding.getPrimitiveBinding(String.class);
 		TupleBinding dataBinding = TupleBinding.getPrimitiveBinding(Integer.class);
 		
 		db = env.openDatabase(null, envName, dbConfig);
@@ -128,10 +121,6 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	
 	public void close() {
 		try {
-			if (catalog != null) {
-				catalog.close();
-				catalog = null;
-			}
 			if (db != null) {
 				db.close();
 				db = null;
