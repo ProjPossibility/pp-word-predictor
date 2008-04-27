@@ -30,7 +30,7 @@ public class EntryWindow {
 	 * @param WordNumber: must be larger than 500
 	 * @param Period: must be larger than 10(min)
 	 */
-	EntryWindow(){
+	public EntryWindow(){
 		uniEntryWindow = new TreeMap<Date, String>();
 		biEntryWindow = new TreeMap<Date, String>();
 		triEntryWindow = new TreeMap<Date, String>();
@@ -41,7 +41,7 @@ public class EntryWindow {
 		Period  = 10;
 		WordNumber = 500;
 	}
-	EntryWindow(int m, int p, int n){
+	public EntryWindow(int m, int p, int n){
 		setPeriod(p);
 		setWordNumber(n);
 		setMode(mode);
@@ -89,8 +89,8 @@ public class EntryWindow {
 	
 	/**
 	 * update EntryWindow according to {@link Period}/{@link WordNumber}
-	 * dump old words(exceed time period) for mode 1, dump one oldest word for for 2, dump both 
-	 * one oldest word and old words(exceed time period)
+	 * mode 1: time frame constraint , mode 2: entry number constraint, 
+	 * mode 3: time frame constraint and entry number constraint
 	 * @param map: the date-string map
 	 * @param s: input string
 	 * @param d: input time(date)
