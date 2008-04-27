@@ -39,20 +39,28 @@ import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.ss12.wordprediction.model.WordPredictor;
+import org.ss12.wordprediction.newcore.BDBImmutableLexicon;
+
+import com.sleepycat.je.DatabaseException;
+import com.sleepycat.je.Environment;
+import com.sleepycat.je.EnvironmentConfig;
 
 public class TreeMapWordPredictor implements WordPredictor
 {
-	private SortedMap<String, Integer> words;
-	private SortedMap<String, Integer> unigrams;
-	private SortedMap<String, Integer> bigrams;
-	private SortedMap<String, Integer> trigrams;
+	private Map<String, Integer> words;
+	private Map<String, Integer> unigrams;
+	private Map<String, Integer> bigrams;
+	private Map<String, Integer> trigrams;
 	private int wordCount;
 	private int bigramCount;
 	private int trigramCount;
 	private int unigramCount;
 	LinkedList<String> lastWords;
 	WordReader reader;
+	BDBImmutableLexicon wp;
 
+	final static String dir = "./resources/dictionaries/bdb";
+	
 	public TreeMapWordPredictor(){
 		WordLoader wl = new WordLoader(1);		
 		reader = new WordReader(this);
@@ -70,12 +78,31 @@ public class TreeMapWordPredictor implements WordPredictor
 		trigramCount = sumValues(trigrams);
 		unigramCount = sumValues(unigrams);
 		lastWords = new LinkedList<String>();
+		// environment is transactional
+		EnvironmentConfig envConfig = new EnvironmentConfig();
+		envConfig.setTransactional(false);
+		envConfig.setAllowCreate(true);
+		try {
+			wp = new BDBImmutableLexicon(new Environment(new File(dir), envConfig));
+			
+//			wp.check();
+			
+			//wp.close();
+		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+//		wp.tester();
 	}
 	public TreeMapWordPredictor(SortedMap<String, Integer> sm) {
 		this(sm, new TreeMap<String, Integer>(), new TreeMap<String, Integer>(), new TreeMap<String, Integer>());
 	}
 
-	public TreeMapWordPredictor(SortedMap<String,Integer> sm,SortedMap<String, Integer> uni,SortedMap<String,Integer> bi,SortedMap<String,Integer> tri)
+	public TreeMapWordPredictor(Map<String,Integer> sm,Map<String, Integer> uni,Map<String, Integer> bi,Map<String, Integer> tri)
 	{
 		this.words=sm;
 		this.bigrams = bi;
@@ -86,8 +113,25 @@ public class TreeMapWordPredictor implements WordPredictor
 		bigramCount = sumValues(bigrams);
 		trigramCount = sumValues(trigrams);
 		unigramCount = sumValues(unigrams);
+		EnvironmentConfig envConfig = new EnvironmentConfig();
+		envConfig.setTransactional(false);
+		envConfig.setAllowCreate(true);
+		Environment myEnv;
+		try {
+			myEnv = new Environment(new File(dir), envConfig);
+			wp = new BDBImmutableLexicon(myEnv);
+//			wp.check();
+			
+//			wp.close();
+		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	public int sumValues(SortedMap<String,Integer> sm){
+	public int sumValues(Map<String,Integer> sm){
 		Collection<Integer> c = sm.values();
 		int sum=0;
 		for(Integer f:c){
@@ -134,7 +178,7 @@ public class TreeMapWordPredictor implements WordPredictor
 	public String[] getSuggestionsFromDic(String begin_seq, int numOfSuggestions)
 	{
 		String[] suggestions=new String[numOfSuggestions];
-		Entry<String, Integer>[] cnd_set=findSuggestions(begin_seq, getUpperBound(begin_seq), numOfSuggestions,words);
+		Entry<String, Integer>[] cnd_set=findSuggestions(begin_seq, getUpperBound(begin_seq), numOfSuggestions,(SortedMap)words);
 		numOfSuggestions = Math.min(numOfSuggestions, cnd_set.length);
 		for (int rank=0; rank<numOfSuggestions;rank++)
 		{
@@ -208,7 +252,7 @@ public class TreeMapWordPredictor implements WordPredictor
 			else
 				end_seq=tmp_begin+" "+upper;
 			//System.out.println("and the end_seq is:"+end_seq);
-			suggestions_candidates=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, trigrams);
+			suggestions_candidates=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, (SortedMap)trigrams);
 			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 2:
@@ -221,7 +265,7 @@ public class TreeMapWordPredictor implements WordPredictor
 				end_seq=tokens[0]+"a";
 			else
 				end_seq=tokens[0]+" "+upper;
-			suggestions_candidates=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, bigrams);
+			suggestions_candidates=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, (SortedMap)bigrams);
 			numOfSuggestionsFound = Math.min(numOfSuggestionsFound, suggestions_candidates.length);
 			break;
 		case 1:
@@ -232,8 +276,8 @@ public class TreeMapWordPredictor implements WordPredictor
 			begin_seq=tokens[0];
 			end_seq=getUpperBound(begin_seq);
 			//built  suggestion list from unigram map
-			unigram_suggestions=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound,unigrams);
-			dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, words);
+			unigram_suggestions=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound,(SortedMap)unigrams);
+			dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, (SortedMap)words);
 			numOfHints_unigram = Math.min(numOfSuggestionsFound, unigram_suggestions.length);
 			numOfHints_dictionary = Math.min(numOfSuggestionsFound, dictionary_suggestions.length);
 			//for suggestions from dictionary map and from uni-gram map
@@ -324,14 +368,16 @@ public class TreeMapWordPredictor implements WordPredictor
 
 	public void cleanup(){
 		String path = "resources/dictionaries/user/";
-		try {
-			saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
-			saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
-			saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
-			saveMap(words,new FileOutputStream(path+"dict.dat"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
+//			saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
+//			saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
+//			saveMap(words,new FileOutputStream(path+"dict.dat"));
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+		wp.add(unigrams);
+		wp.close();
 	}
 	private void saveMap(SortedMap<String,Integer> sm,OutputStream os){
 		ObjectOutputStream out = null;
@@ -351,14 +397,14 @@ public class TreeMapWordPredictor implements WordPredictor
 		StringBuilder t = new StringBuilder(s1);
 		t.append(" ").append(s2).append(" ").append(s3);
 		trigramCount++;
-		addNgram(t.toString(),trigrams);
+//		addNgram(t.toString(),trigrams);
 		//System.out.println("Trigrams: "+trigrams.size());;
 	}	
 	public void addBigram(String s1, String s2) {
 		StringBuilder t = new StringBuilder(s1);
 		t.append(" ").append(s2);
 		bigramCount++;
-		addNgram(t.toString(),bigrams);
+//		addNgram(t.toString(),bigrams);
 		//System.out.println("Bigrams: "+bigrams.size());;
 	}	
 	public void addUnigram(String t) {
@@ -367,17 +413,28 @@ public class TreeMapWordPredictor implements WordPredictor
 		//System.out.println("Unigrams: "+unigrams.size());;
 	}	
 
-	private void addNgram(String t, SortedMap<String,Integer> sm) {
+	private void addNgram(String t, Map<String,Integer> sm) {
+//		wp.incrementWord(t);
+//		if(sm.containsKey(t))
+//			sm.put(t, sm.get(t)+1);
+//		else{
+//			sm.put(t, 1);
+//		}
 		Integer n;
 		if((n=sm.get(t))==null) n=0;
 		sm.put(t, n+1);
+		if(Runtime.getRuntime().freeMemory()<200000000){
+			System.out.println("FLUSH!!!!!");
+			wp.add(sm);
+			System.out.println("Free memory:"+Runtime.getRuntime().freeMemory());
+		}
 		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
 	}
 	public int learn(String input){
 		String[] words = processString(input, 4);
 		if(!words[words.length-1].equals(""))
 			return 0;
-		String[] smaller = Arrays.copyOfRange(words, 0, words.length-1);
+		String[] smaller = Arrays.asList(words).subList(0, words.length -1).toArray(new String[0]);
 		if(words.length>1)
 			reader.nextWord(smaller);
 		return words.length-1;
