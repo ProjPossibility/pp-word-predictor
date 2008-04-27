@@ -53,6 +53,7 @@ public class FileImporter {
 		File tri = new File("resources/dictionaries/user/tri.dat");
 		*/
 		pm = new TreeMapWordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
+		wr = new WordReader(pm);
 	}
 	public FileImporter(WordLoader wl, boolean useSQL){
 		this.wl = wl;
@@ -60,7 +61,7 @@ public class FileImporter {
 			pm = new SQLITEWordPredictor();
 		else
 			pm = new TreeMapWordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
-			
+		wr = new WordReader(pm);
 	}
 	public boolean readFile(File f) throws FileNotFoundException{
 		boolean b = readFileAndNotCleanup(f);
@@ -69,9 +70,9 @@ public class FileImporter {
 	}
 	private boolean readFileAndNotCleanup(File f) throws FileNotFoundException{
 		BufferedReader br = new BufferedReader(new FileReader(f));
-		wr = new WordReader(pm);
 		try {
 			while(br.ready()){
+//				br.readLine().split(" ");
 				wr.nextWords(br.readLine().split(" "));
 			}
 			br.close();

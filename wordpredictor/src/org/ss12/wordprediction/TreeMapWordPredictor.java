@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -349,15 +348,17 @@ public class TreeMapWordPredictor implements WordPredictor
 	}
 
 	public void addTrigram(String s1, String s2, String s3) {
-		String t = s1+" "+s2+" "+s3;
+		StringBuilder t = new StringBuilder(s1);
+		t.append(" ").append(s2).append(" ").append(s3);
 		trigramCount++;
-		addNgram(t,trigrams);
+		addNgram(t.toString(),trigrams);
 		//System.out.println("Trigrams: "+trigrams.size());;
 	}	
 	public void addBigram(String s1, String s2) {
-		String t = s1+" "+s2;
+		StringBuilder t = new StringBuilder(s1);
+		t.append(" ").append(s2);
 		bigramCount++;
-		addNgram(t,bigrams);
+		addNgram(t.toString(),bigrams);
 		//System.out.println("Bigrams: "+bigrams.size());;
 	}	
 	public void addUnigram(String t) {
@@ -367,11 +368,9 @@ public class TreeMapWordPredictor implements WordPredictor
 	}	
 
 	private void addNgram(String t, SortedMap<String,Integer> sm) {
-		if(sm.containsKey(t))
-			sm.put(t, sm.get(t)+1);
-		else{
-			sm.put(t, 1);
-		}
+		Integer n;
+		if((n=sm.get(t))==null) n=0;
+		sm.put(t, n+1);
 		//System.out.println("trigram: "+s1+" "+s2+" "+s3);
 	}
 	public int learn(String input){

@@ -41,13 +41,16 @@ public class ImportLauncher {
 		
 		FileImporter fi = new FileImporter(wl,false);//true to use SQLITE, false to use TreeMap
 		try{
-			File d = new File("resources/sample");
+			File d = new File("resources/articles");
 			String[] files = d.list();
 			for(int j=0;j<files.length;j++){
 				if(files[j].charAt(0)=='.')
 					continue;
+				if(files[j].compareTo("article00001000.txt")>=0)
+					break;
 				System.out.println(d.getAbsolutePath()+"/"+files[j]);
-				fi.readFile(new File(d.getAbsolutePath()+"/"+files[j]));
+				File f = new File(d.getAbsolutePath()+"/"+files[j]);
+				fi.readFile(f);
 			}
 		}catch(Exception e){
 			e.printStackTrace();

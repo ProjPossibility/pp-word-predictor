@@ -105,7 +105,6 @@ public class WordReader {
 			}
 		}
 	}
-
 	public String wordify(String word) {
 		word.trim();
 		for (int i = 0; i < word.length() - 1; i++) {

@@ -8,7 +8,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Class handles parsing of Wikimedia-formatted pages to plain  text.
@@ -43,8 +48,10 @@ public class WikiProcessor {
 	 * @param text The text to write to the file
 	 */
 	private void saveToFile(String file, String text) {
+		if(text.length()<100)
+			return;
 		try {
-			PrintWriter out = new PrintWriter(new FileWriter(file));
+			PrintWriter out = new PrintWriter(new FileWriter("resources/articles/"+file));
 			out.print(text);
 			out.flush();
 			out.close();
@@ -64,6 +71,8 @@ public class WikiProcessor {
 	 * @return The plain text of the page
 	 */
 	private String removeWikiFormat(String text) {
+		if(text.length()<150)
+			return "";
 		text = isolateTagContent("text", text);
 		text = text.replaceAll("=", "");
 		text = text.replaceAll("\'\'\'", "");
@@ -77,14 +86,14 @@ public class WikiProcessor {
 		}
 
 		//remove {{ tags
-		while(text.indexOf("{{") > -1) {
+		while(text.indexOf("{{") > -1 && text.indexOf("}}") > -1) {
 			text = removeTagContent("\\{\\{", "}}", text);
 		}
 
 		//handle bracket terms
-		while(text.indexOf("[[") > -1) {
-			int beginIndex = text.indexOf("[[");
-			int endIndex = text.indexOf("]]", beginIndex);
+		int beginIndex=-1;
+		int endIndex=-1;
+		while((beginIndex = text.indexOf("[[")) > -1 && (endIndex = text.indexOf("]]",beginIndex)) > -1) {
 //			System.out.println("BI: "  + beginIndex);
 //			System.out.println("EI: " + endIndex);
 			String substr = text.substring(beginIndex,(endIndex+2));
@@ -160,7 +169,9 @@ public class WikiProcessor {
 		rtnText = rtnText.replaceAll(closeTag, "" + close);
 
 		Stack<Integer> s = new Stack<Integer>();
-
+		int openIndex=-1;
+		int closeIndex=-1;
+		
 		for(int x=0; x < rtnText.length(); x++) {
 			char c = rtnText.charAt(x);
 			if(c==open) {
@@ -168,82 +179,103 @@ public class WikiProcessor {
 				//System.out.println(x);
 			}
 			else if(c==close && !s.isEmpty()) {
-				int openIndex = s.pop();
-				int closeIndex  = x;
+				openIndex = s.pop();
+				closeIndex  = x;
 				numCloseCount++;
 
-				if(s.isEmpty()) {
-					return text.substring(0, openIndex) + text.substring(closeIndex + closeTag.length()*numCloseCount  + 1, text.length());
-				}
+				//if(s.isEmpty()) {
+				return text.substring(0, openIndex) + text.substring(closeIndex + closeTag.length()*numCloseCount  + 1, text.length());
+				//}
 			}
 		}
-
-		return text;
+//		if(openIndex>=0){
+//			return text.substring(0, openIndex) + text.substring(closeIndex + closeTag.length()*numCloseCount  + 1, text.length());
+//		}
+		return text.replaceAll(openTag, "").replaceAll(closeTag, "");
 	}
 
 	/*
 	 * Method call to use to convert a subset of the wikipedia articles  specified to plain
 	 * text. This method will save the output of each article processed to a text file.
+	 * Processes articles in the range [articleStart, articleEnd)
 	 * 
-	 * @param wikiDB The wikiDB file as a string (you can pass in subsets of the wikiDB file
-	 *  and make multiple calls to this method to save virtual memory.)
-	 * @param articleStart The article to start at in the db string
-	 * @param article end The article to end a t in the db string
+	 * @param wikiDB The wikiDB file in XML format
+	 * @param articleStart The article to start at in the XML file, inclusively
+	 * @param articleEnd The article to end at in the XML file, exclusively
 	 * 
 	 */
 	public void convertFile(File wikiDB, int articleStart, int articleEnd) throws IOException {
-		System.out.println("Start converting articles " + articleStart + " - " + articleEnd);
+		System.out.println("Start converting articles [" + articleStart + " - " + articleEnd+")");
+		long time = System.currentTimeMillis();
 		//get to start index in wikiDB giant file
 		BufferedReader br = new BufferedReader(new FileReader(wikiDB));
-		int index=0;
 		int numToStart = 0;
-		int t;
 		String line = "";
 		while(br.ready() && numToStart <= articleStart){
 			line = br.readLine();
 			if(line.contains("<text "))
 				numToStart++;
 		}
-//		while((t = wikiDB.indexOf("<text>", index)) > -1 && numToStart < articleStart) {
-//			index = t+1;
-//			numToStart++;
-//		}
+		int maxThreads=10;
+		BlockingQueue<Runnable> q = new ArrayBlockingQueue<Runnable>(50);
+		ThreadPoolExecutor e = new ThreadPoolExecutor(maxThreads,maxThreads,0,TimeUnit.SECONDS,q,new ThreadPoolExecutor.CallerRunsPolicy());
 
 		//process articles
 		int numArticlesProcessed = 0;
 		StringBuffer article = new StringBuffer();
-		while(br.ready() && numArticlesProcessed <= articleEnd){
+		while(br.ready() && (numArticlesProcessed+articleStart) < articleEnd){
 			article.append(line+"\n");
 			if(line.contains("</text>")){
-//				System.out.println(article);
-//				saveToFile("output"+(numArticlesProcessed+articleStart)+".txt", article.toString());
-				String noFormatting = removeWikiFormat(article.toString());
-				saveToFile("article"+(numArticlesProcessed+articleStart)+".txt", noFormatting);
+				String filename = ""+(numArticlesProcessed+articleStart);
+				for(int i=filename.length();i<8;i++)
+					filename = "0"+filename;
+				filename = "article"+filename+".txt";
+
+				e.execute(new ArticleWorkUnit(article.toString(),filename));
 				numArticlesProcessed++;
 				article = new StringBuffer();
 			}
 			line = br.readLine();
 		}
+		Thread.yield();
+		Thread.yield();
+		List<Runnable> l = e.shutdownNow();
+		Thread.yield();
+		if(l.size()>0){
+			System.out.println("The following articles failed: ");
+			for(Runnable r: l){
+				ArticleWorkUnit awu = (ArticleWorkUnit)r;
+				System.out.println(awu.name);
+			}
+		}
 		br.close();
-		System.out.println("Done converting articles " + articleStart + " - " + (articleStart+numArticlesProcessed-1));
-//		while((t = wikiDB.indexOf("<text>", index)) > -1 && numArticlesProcessed < articleEnd) {
-//			index = t;
-//			String noFormatting = removeWikiFormat(wikiDB.substring(index));
-//			saveToFile("article" + numArticlesProcessed + ".txt", noFormatting);
-//			index++;
-//			numArticlesProcessed++;
-//		}
+		System.out.println("Done converting articles [" + articleStart + " - " + (articleStart+numArticlesProcessed)+")");
+		System.out.println("Took "+(System.currentTimeMillis()-time)/1000.0+" to read "+(articleEnd-articleStart)+" articles.");
+		System.out.println((System.currentTimeMillis()-time)/1000.0/(articleEnd-articleStart)+" per article.");
+	}
+	class ArticleWorkUnit implements Runnable{
+		String article;
+		String name;
+		public ArticleWorkUnit(String s, String f){
+			article=s;
+			name=f;
+		}
+		public void run(){
+			String noFormatting = removeWikiFormat(article);
+			saveToFile(name, noFormatting);
+		}
 	}
 		
 	public static void main(String[] args) {
-		WikiProcessor w = new WikiProcessor();
+		final WikiProcessor w = new WikiProcessor();
 		try {
-			w.convertFile(new File("wikipedia.xml"), 0, 100);
+			w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 50000, 100000);
+			for(int i=1;i<52;i++)
+				w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 100000*i, 100000*(i+1));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		String text = w.getPage("http://en.wikipedia.org/wiki/Special:Export/William_Shakespeare");
+//		String text = w.getPage("http://en.wikipedia.org/wiki/Special:Export/Arabic_language");
 //		w.saveToFile("test.txt", text);
 //		text = w.removeWikiFormat(text);
 //		w.saveToFile("test1.txt", text);

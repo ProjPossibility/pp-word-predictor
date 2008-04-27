@@ -58,8 +58,14 @@
     </target>
     -->
    <!-- IMPORT -->
-    <target name="import">
+    <target name="import.samples">
         <java classname="org.ss12.wordprediction.reader.ImportLauncher" classpathref="run.classpath" fork="true">
+            <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+            <jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
+    <target name="convert.wikipedia">
+        <java classname="org.ss12.wordprediction.wikiprocessor.WikiProcessor" classpathref="run.classpath" fork="true">
             <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
             <jvmarg value='-Djava.library.path=lib/'/>
         </java>
