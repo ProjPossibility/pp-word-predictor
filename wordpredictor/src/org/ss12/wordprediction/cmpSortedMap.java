@@ -3,16 +3,14 @@ package org.ss12.wordprediction;
 import java.util.Comparator;
 import java.util.Map.Entry;
 
-public class cmpSortedMap implements Comparator<Entry<String, Integer>>
+public class cmpSortedMap implements Comparator<Entry<String, ? extends Comparable>>
 {
-	public cmpSortedMap()
-	{
+	public cmpSortedMap(){}
 
-	}
-
-	public int compare(Entry<String,Integer> o1, Entry<String,Integer> o2)
+	public int compare(Entry<String,? extends Comparable> o1, Entry<String,? extends Comparable> o2)
 	{
-		return -o1.getValue().compareTo(o2.getValue());
+		Integer result = o1.getValue().compareTo(o2.getValue());
+		return result>0? -1:result == 0? 0: 1;
 	}
 //		int v1=o1.getValue();
 //		int v2=o2.getValue();
