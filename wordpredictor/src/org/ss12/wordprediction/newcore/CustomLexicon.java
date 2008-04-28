@@ -48,27 +48,27 @@ public interface CustomLexicon<T extends AnnotatedWord> {
 
   /**
    * Returns all completions of the given word, considering the preceding word.
+ * @param prevWord the first word preceding the incomplete word
+ * @param incompleteWord the incomplete word
    * 
-   * @param incompleteWord the incomplete word
-   * @param prevWord the first word preceding the incomplete word
    * @return an iterable over all possible completions
    * @throws IllegalStateException if the lexicon is closed and cannot be read
    */
-  public Iterable<T> getBigrams(String incompleteWord, String prevWord)
+  public Iterable<T> getBigrams(String prevWord, String incompleteWord)
       throws IllegalStateException;
 
   /**
    * Returns all completion of the given word, considering the two preceding
    * words.
+ * @param prevPrevWord the second word preceding the incomplete word
+ * @param prevWord the first word preceding the incomplete word
+ * @param incompleteWord the incomplete word
    * 
-   * @param incompleteWord the incomplete word
-   * @param prevWord the first word preceding the incomplete word
-   * @param prevPrevWord the second word preceding the incomplete word
    * @return an iterable over all possible completions
    * @throws IllegalStateException if the lexicon is closed and cannot be read
    */
-  public Iterable<T> getTrigrams(String incompleteWord, String prevWord,
-      String prevPrevWord) throws IllegalStateException;
+  public Iterable<T> getTrigrams(String prevPrevWord, String prevWord,
+      String incompleteWord) throws IllegalStateException;
 
   /**
    * Closes this lexicon, releasing all held resources and commiting all

@@ -8,7 +8,9 @@ package org.ss12.wordprediction.newcore;
  * @author Michael Parker
  */
 public abstract class AnnotatedWord {
-  private final String word;
+  protected String word;
+  
+  public AnnotatedWord() {}
 
   /**
    * Constructor to be called by subclasses.

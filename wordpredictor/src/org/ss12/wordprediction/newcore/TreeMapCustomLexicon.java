@@ -74,12 +74,12 @@ public class TreeMapCustomLexicon<T extends AnnotatedWord> implements
     return get(unigrams, new WordSequence(incompleteWord));
   }
 
-  public Iterable<T> getBigrams(String incompleteWord, String prevWord) {
+  public Iterable<T> getBigrams(String prevWord, String incompleteWord) {
     return get(bigrams, new WordSequence(prevWord, incompleteWord));
   }
 
-  public Iterable<T> getTrigrams(String incompleteWord, String prevWord,
-      String prevPrevWord) {
+  public Iterable<T> getTrigrams(String prevPrevWord, String prevWord,
+      String incompleteWord) {
     return get(trigrams, new WordSequence(prevPrevWord, prevWord,
         incompleteWord));
   }
