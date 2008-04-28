@@ -22,6 +22,10 @@ class MockAnnotation extends AnnotatedWord implements Externalizable {
 
   boolean isUpdated;
 
+  public MockAnnotation() {
+	  super("");
+  }
+
   protected MockAnnotation(String word) {
     super(word);
     isUpdated = false;
