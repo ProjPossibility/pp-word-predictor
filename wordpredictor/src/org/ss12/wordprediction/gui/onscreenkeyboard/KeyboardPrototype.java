@@ -36,7 +36,6 @@ import javax.swing.JToggleButton;
 
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.gui.onscreenkeyboard.components.KeyButton;
-import org.ss12.wordprediction.gui.onscreenkeyboard.components.NwFontChooserS;
 import org.ss12.wordprediction.model.WordPredictor;
 
 import sun.swing.SwingUtilities2;
@@ -346,8 +345,8 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 				this.text.setVisible(cur.getState());
 			}
 			else if(text.equals("Font")){
-				regularFont = NwFontChooserS.showDialog(this, null, regularFont);
-				componentResized(null);
+//				regularFont = NwFontChooserS.showDialog(this, null, regularFont);
+//				componentResized(null);
 			}
 			else if(text.equals("Learn")){
 				isLearning=cur.getState();
