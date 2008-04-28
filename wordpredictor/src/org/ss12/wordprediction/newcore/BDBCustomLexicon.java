@@ -91,31 +91,14 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 	private Iterable<T> get(SortedMap<WordSequence, T> sequenceMap,
 			WordSequence wordSequence) {
 		WordSequence upperBound = WordSequence.getNextSequence(wordSequence);
-		System.out.println("lower bound = " + wordSequence);
-		System.out.println("upper bound = " + upperBound);
 		if (upperBound == null) {
 			return Collections.unmodifiableCollection(sequenceMap
 					.tailMap(wordSequence).values());
 		}
-		/*
-		List<WordSequence> keys = new ArrayList<WordSequence>(sequenceMap.subMap(
-				wordSequence, upperBound).keySet());
-		System.out.println("all keys = " + keys);
-		for (WordSequence ws : keys) {
-			System.out.println("lt: " + wordSequence.compareTo(ws));
-		}
-		for (WordSequence ws : keys) {
-			System.out.println("gt: " + upperBound.compareTo(ws));
-		}
-		*/
-		SortedMap<WordSequence, T> copy = new TreeMap<WordSequence, T>(sequenceMap);
-		System.out.println("what it should be: " + copy.subMap(wordSequence, upperBound).keySet());
-		System.out.println("what it is = " + sequenceMap.subMap(
-				wordSequence, upperBound).keySet());
 		return Collections.unmodifiableCollection(sequenceMap.subMap(
 				wordSequence, upperBound).values());
 	}
-	
+
 	public Iterable<T> getUnigrams(String incompleteWord)
 			throws IllegalStateException {
 		return get(unigrams, new WordSequence(incompleteWord));
