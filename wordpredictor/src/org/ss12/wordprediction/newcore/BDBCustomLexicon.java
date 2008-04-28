@@ -2,7 +2,6 @@ package org.ss12.wordprediction.newcore;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
@@ -148,20 +147,27 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 	}
 	
 	public void tester(){
-		addUnigram("cat");
+//		addUnigram("cat");
+		
 //		addBigram("the", "cat");
 //		addBigram("the", "bat");
+		
+		addTrigram("the", "fat", "rat");
 	}
 	
 	public void check(){
 //		Iterable<T> i = getUnigrams("a");
 //		System.out.println(i);
 		
-		Iterable<T> b = getBigrams("the","c");
+//		Iterable<T> b = getBigrams("the","c");
+//		System.out.println(b);
+		
+		Iterable<T> b = getTrigrams("the","fat","");
 		System.out.println(b);
 		
-		System.out.println(unigrams);
-		System.out.println(bigrams);
+		System.out.println("unigrams= "+ unigrams);
+		System.out.println("bigrams= "+ bigrams);
+		System.out.println("trigrams= "+ trigrams);
 	}
 	
 	private BDBCustomLexicon(Environment e, AnnotationFactory<T> a, Class<T> c)
@@ -213,7 +219,11 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 			WordSequence sequence = (WordSequence) o;
 			List<String> words = sequence.getWords();
 			
-			out.writeString(words.get(0));
+			if(words.size() < 1){
+				out.writeString("");
+			} else {
+				out.writeString(words.get(0));
+			}
 		}
 
 		public Object entryToObject(TupleInput in) {
@@ -232,7 +242,11 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 			List<String> words = sequence.getWords();
 			
 			out.writeString(words.get(0));
-			out.writeString(words.get(1));
+			if(words.size() < 2){
+				out.writeString("");
+			} else {
+				out.writeString(words.get(1));
+			}
 		}
 
 		public Object entryToObject(TupleInput in) {
@@ -252,7 +266,11 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 			
 			out.writeString(words.get(0));
 			out.writeString(words.get(1));
-			out.writeString(words.get(2));
+			if(words.size() < 3){
+				out.writeString("");
+			} else {
+				out.writeString(words.get(2));
+			}
 		}
 
 		public Object entryToObject(TupleInput in) {
