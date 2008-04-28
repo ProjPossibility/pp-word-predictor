@@ -34,6 +34,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
+import com.sleepycat.je.Environment;
+
 /**
  * Allows loading the word-frequency pairs and the dictionary.
  */
