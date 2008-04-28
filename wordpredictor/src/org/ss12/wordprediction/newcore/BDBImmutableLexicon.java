@@ -67,7 +67,6 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		} else {
 			map.put(word, count + toAdd);
 		}
-
 		/*
 		TransactionWorker worker = new IncrementWordCount(word);
 		try{runner.run(worker);}

@@ -51,7 +51,7 @@ public class WikiProcessor {
 		if(text.length()<100)
 			return;
 		try {
-			PrintWriter out = new PrintWriter(new FileWriter("resources/articles/"+file));
+			PrintWriter out = new PrintWriter(new FileWriter("C:/articles/"+file));
 			out.print(text);
 			out.flush();
 			out.close();
@@ -62,7 +62,7 @@ public class WikiProcessor {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/*
 	 * Key method to remove the wikimedia format. Returns the text of the page
 	 * minus the wikimedia markup.
@@ -269,8 +269,8 @@ public class WikiProcessor {
 	public static void main(String[] args) {
 		final WikiProcessor w = new WikiProcessor();
 		try {
-			w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 50000, 100000);
-			for(int i=1;i<52;i++)
+			w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 390000, 400000);
+			for(int i=5;i<52;i++)
 				w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 100000*i, 100000*(i+1));
 		} catch (IOException e) {
 			e.printStackTrace();
