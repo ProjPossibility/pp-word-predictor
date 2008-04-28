@@ -20,7 +20,7 @@ public class BDBCustomLexiconTest extends CustomLexiconTest {
 			myEnv.removeDatabase(null, BDBCustomLexicon.UNIGRAM_DB_NAME);
 			myEnv.removeDatabase(null, BDBCustomLexicon.BIGRAM_DB_NAME);
 			myEnv.removeDatabase(null, BDBCustomLexicon.TRIGRAM_DB_NAME);
-			myEnv.removeDatabase(null, "classDb");
+			myEnv.removeDatabase(null, BDBCustomLexicon.CLASS_DB_NAME);
 		} catch (DatabaseException e) {}
 		
 		return new BDBCustomLexicon<MockAnnotation>(myEnv, new MockAnnotationFactory(), MockAnnotation.class);

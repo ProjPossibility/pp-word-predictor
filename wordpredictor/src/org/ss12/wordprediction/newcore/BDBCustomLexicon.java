@@ -31,6 +31,7 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 	static final String UNIGRAM_DB_NAME = "UnigramCustomLexicon";
 	static final String BIGRAM_DB_NAME = "BigramCustomLexicon";
 	static final String TRIGRAM_DB_NAME = "TrigramCustomLexicon";
+	static final String CLASS_DB_NAME = "classDb";
 	
 	private Environment env;
 	String envName = "CustomLexicon";
@@ -198,7 +199,7 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 		dbConfig = new DatabaseConfig();
 		dbConfig.setSortedDuplicates(false);
 		dbConfig.setAllowCreate(true);
-		Database catalogDb = env.openDatabase(null, "classDb", dbConfig);
+		Database catalogDb = env.openDatabase(null, CLASS_DB_NAME, dbConfig);
 		catalog = new StoredClassCatalog(catalogDb);
 		
 		// set the keys to be type WordSequence, and set the data to be the class 
@@ -267,12 +268,12 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 		public void objectToEntry(Object o, TupleOutput out) {
 			WordSequence sequence = (WordSequence) o;
 			List<String> words = sequence.getWords();
-			
+
 			out.writeString(words.get(0));
-			out.writeString(words.get(1));
-			if(words.size() < 3){
-				out.writeString("");
-			} else {
+			if(words.size() < 2){out.writeString("");} else {
+				out.writeString(words.get(1));
+			}
+			if(words.size() < 3){out.writeString("");} else {
 				out.writeString(words.get(2));
 			}
 		}
