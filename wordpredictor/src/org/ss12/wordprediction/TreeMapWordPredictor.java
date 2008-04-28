@@ -192,7 +192,7 @@ public class TreeMapWordPredictor implements WordPredictor
 	 * @param map: words or unigrams or bigrams or trigrams
 	 * @return: exactly "numOfSuggestions" items of suggestions in the form of Entry<String, Integer>
 	 */
-	private Entry<String, Integer>[] findSuggestions(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String,Integer> map)
+	private Entry<String, Integer>[] findSuggestions(String begin_seq, String end_seq, int numOfSuggestions, SortedMap<String, Integer> map)
 	{
 		SortedMap<String, Integer> suggestions_candidates;
 		//System.out.println(end_seq);
