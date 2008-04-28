@@ -4,7 +4,6 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.io.Serializable;
 import java.util.Comparator;
 
 import org.ss12.wordprediction.newcore.AnnotatedWord;
@@ -31,9 +30,12 @@ public class FrequencyAnnotation extends AnnotatedWord implements Externalizable
   };
 
   int frequency;
-  
-  public FrequencyAnnotation() {}
-  
+
+  // TODO(mgp): can we make this private? test when used by CustomLexiconTest 
+  public FrequencyAnnotation() {
+    super("");
+  }
+
   public FrequencyAnnotation(String word) {
     this(word, 1);
   }
