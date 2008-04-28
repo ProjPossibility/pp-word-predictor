@@ -1,5 +1,9 @@
 package org.ss12.wordprediction.newcore.annotations;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.util.Comparator;
 
@@ -11,7 +15,7 @@ import org.ss12.wordprediction.newcore.WordPredictorUtil;
  * 
  * @author Michael Parker
  */
-public class FrequencyAnnotation extends AnnotatedWord implements Serializable {
+public class FrequencyAnnotation extends AnnotatedWord implements Externalizable {
   /**
    * A comparator that sorts {@link FrequencyAnnotation} instances by their
    * associated frequency.
@@ -27,6 +31,8 @@ public class FrequencyAnnotation extends AnnotatedWord implements Serializable {
   };
 
   int frequency;
+  
+  public FrequencyAnnotation() {}
   
   public FrequencyAnnotation(String word) {
     this(word, 1);
@@ -76,4 +82,15 @@ public class FrequencyAnnotation extends AnnotatedWord implements Serializable {
     sb.append("freq=").append(frequency);
     return sb.toString();
   }
+
+public void readExternal(ObjectInput in) throws IOException,
+		ClassNotFoundException {
+	this.word = in.readUTF();
+	this.frequency = in.readInt();
+}
+
+public void writeExternal(ObjectOutput out) throws IOException {
+	out.writeUTF(word);
+	out.writeInt(frequency);
+}
 }

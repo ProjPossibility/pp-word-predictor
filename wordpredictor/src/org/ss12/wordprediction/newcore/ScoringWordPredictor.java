@@ -96,12 +96,12 @@ public class ScoringWordPredictor<T extends AnnotatedWord> implements
 
     // Add the custom trigrams and bigrams, and then try to return immediately.
     if (request.getPrevPrevWord() != null) {
-      scorer.addTrigrams(customLexicon.getTrigrams(request.getIncompleteWord(),
-          request.getPrevWord(), request.getPrevPrevWord()));
+      scorer.addTrigrams(customLexicon.getTrigrams(request.getPrevPrevWord(),
+          request.getPrevWord(), request.getIncompleteWord()));
     }
     if (request.getPrevWord() != null) {
-      scorer.addBigrams(customLexicon.getBigrams(request.getIncompleteWord(),
-          request.getPrevWord()));
+      scorer.addBigrams(customLexicon.getBigrams(request.getPrevWord(),
+          request.getIncompleteWord()));
       if (scorer.hasNumSuggestions(request.getNumPredictions())) {
         return scorer.getSuggestions();
       }
