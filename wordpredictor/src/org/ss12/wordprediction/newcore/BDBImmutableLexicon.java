@@ -27,7 +27,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	public SortedMap<String, Integer> map;
 	TransactionRunner runner;
 	
-	final static String dir = "./resources/dictionaries/bdb";
+	final static String dir = "./resources/dictionaries/bdb/immutable";
 	
 	public Iterable<WordFrequencyPair> getSignificance(String lowBound,
 			String highBound) {
