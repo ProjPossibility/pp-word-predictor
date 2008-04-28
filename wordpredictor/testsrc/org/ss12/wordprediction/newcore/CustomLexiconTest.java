@@ -89,7 +89,7 @@ public abstract class CustomLexiconTest extends TestCase {
   }
 
   public void testAddBigramsDifferingOnSecondWord() {
-    String firstWord = "y";
+    String firstWord = "z";
     MockAnnotation annotation1 = new MockAnnotation("a");
     MockAnnotation annotation2 = new MockAnnotation("aaa");
     MockAnnotation annotation3 = new MockAnnotation("b");
@@ -174,7 +174,39 @@ public abstract class CustomLexiconTest extends TestCase {
   }
 
   public void testAddTrigramsDifferingOnThirdWord() {
-    // TODO(mgp)
+    String firstWord = "y";
+    String secondWord = "z";
+    MockAnnotation annotation1 = new MockAnnotation("a");
+    MockAnnotation annotation2 = new MockAnnotation("aaa");
+    MockAnnotation annotation3 = new MockAnnotation("b");
+
+    // Assert that custom lexicon is empty at start.
+    assertEquals(Collections.emptyList(), toList(customLexicon.getTrigrams(
+        firstWord, secondWord, "")));
+    assertEquals(Collections.emptyList(), toList(customLexicon.getTrigrams(
+        firstWord, secondWord, "a")));
+
+    // Assert that can find first annotated word given "" or "a".
+    customLexicon.addTrigram(firstWord, secondWord, annotation1.getWord());
+    assertEquals(Arrays.asList(annotation1), toList(customLexicon.getTrigrams(
+        firstWord, secondWord, "")));
+    assertEquals(Arrays.asList(annotation1), toList(customLexicon.getTrigrams(
+        firstWord, secondWord, "a")));
+
+    // Assert that can find first two annotated words given "" or "a".
+    customLexicon.addTrigram(firstWord, secondWord, annotation2.getWord());
+    assertEquals(Arrays.asList(annotation1, annotation2), toList(customLexicon
+        .getTrigrams(firstWord, secondWord, "")));
+    assertEquals(Arrays.asList(annotation1, annotation2), toList(customLexicon
+        .getTrigrams(firstWord, secondWord, "a")));
+
+    // Assert that can find all annotated words given "".
+    customLexicon.addTrigram(firstWord, secondWord, annotation3.getWord());
+    assertEquals(Arrays.asList(annotation1, annotation2, annotation3),
+        toList(customLexicon.getTrigrams(firstWord, secondWord, "")));
+    // Assert that only find first two annotated words given "a".
+    assertEquals(Arrays.asList(annotation1, annotation2), toList(customLexicon
+        .getTrigrams(firstWord, secondWord, "a")));
   }
 
   /*
