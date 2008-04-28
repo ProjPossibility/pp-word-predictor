@@ -167,8 +167,8 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 //		Iterable<T> b = getBigrams("the","c");
 //		System.out.println(b);
 		
-		Iterable<T> b = getTrigrams("the","fat","");
-		System.out.println(b);
+//		Iterable<T> b = getTrigrams("the","fat","");
+//		System.out.println(b);
 		
 		System.out.println("unigrams= "+ unigrams);
 		System.out.println("bigrams= "+ bigrams);
@@ -224,9 +224,7 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 			WordSequence sequence = (WordSequence) o;
 			List<String> words = sequence.getWords();
 			
-			if(words.size() < 1){
-				out.writeString("");
-			} else {
+			if(words.size() < 1){out.writeString("");} else {
 				out.writeString(words.get(0));
 			}
 		}
@@ -246,10 +244,10 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 			WordSequence sequence = (WordSequence) o;
 			List<String> words = sequence.getWords();
 			
-			out.writeString(words.get(0));
-			if(words.size() < 2){
-				out.writeString("");
-			} else {
+			if(words.size() < 1){out.writeString("");} else {
+				out.writeString(words.get(0));
+			}
+			if(words.size() < 2){out.writeString("");} else {
 				out.writeString(words.get(1));
 			}
 		}
@@ -269,7 +267,9 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 			WordSequence sequence = (WordSequence) o;
 			List<String> words = sequence.getWords();
 
-			out.writeString(words.get(0));
+			if(words.size() < 1){out.writeString("");} else {
+				out.writeString(words.get(0));
+			}
 			if(words.size() < 2){out.writeString("");} else {
 				out.writeString(words.get(1));
 			}
