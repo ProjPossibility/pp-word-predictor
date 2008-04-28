@@ -76,10 +76,12 @@ public class TopElements {
    * @param comparator the comparator to sort elements
    */
   public static <T> void selectSmallest(T[] elements, int k, Comparator<T> comparator) {
-    if (elements.length <= k) {
+    if (k == 0) {
+      return;
+    } else if (elements.length <= k) {
       Arrays.sort(elements, comparator);
     } else {
-      partition(elements, comparator, k);
+      partition(elements, comparator, k - 1);
       Arrays.sort(elements, 0, k);
     }
   }

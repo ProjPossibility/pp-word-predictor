@@ -94,7 +94,7 @@ public class TopElementsTest extends TestCase {
     final int arraySize = 10000;
 
     Integer[] unsorted = new Integer[arraySize];
-    Random rng = new Random();
+    Random rng = new Random(42);
     for (int i = 0; i < arraySize; ++i) {
       unsorted[i] = rng.nextInt();
     }
