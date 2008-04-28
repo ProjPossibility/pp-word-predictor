@@ -22,14 +22,11 @@
 
 package org.ss12.wordprediction;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +37,7 @@ import java.util.Map.Entry;
 
 import org.ss12.wordprediction.model.WordPredictor;
 import org.ss12.wordprediction.newcore.BDBImmutableLexicon;
-
+import org.ss12.wordprediction.cmpSortedMap;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
@@ -51,12 +48,13 @@ public class TreeMapWordPredictor implements WordPredictor
 	private Map<String, Integer> unigrams;
 	private Map<String, Integer> bigrams;
 	private Map<String, Integer> trigrams;
+	
 	private int wordCount;
 	private int bigramCount;
 	private int trigramCount;
 	private int unigramCount;
 	LinkedList<String> lastWords;
-	WordReader reader;
+	protected WordReader reader;
 	BDBImmutableLexicon wp;
 
 	final static String dir = "./resources/dictionaries/bdb";
@@ -217,11 +215,6 @@ public class TreeMapWordPredictor implements WordPredictor
 			
 		//}
 		return unscoredSuggestions;
-	}
-	
-	private String[] getSuggestionsWithScoring(String[] tokens, int numberOfSuggestionsRequested) {
-		// YOURCODEHERE
-		return null;
 	}
 	
 	private String[] getSuggestionsWithoutScoring(String[] tokens, int numberOfSuggestionsRequested) {
@@ -398,7 +391,7 @@ public class TreeMapWordPredictor implements WordPredictor
 		t.append(" ").append(s2).append(" ").append(s3);
 		trigramCount++;
 //		addNgram(t.toString(),trigrams);
-		//System.out.println("Trigrams: "+trigrams.size());;
+		//System.out.println("Trigrams: "+trigrams.size());
 	}	
 	public void addBigram(String s1, String s2) {
 		StringBuilder t = new StringBuilder(s1);
@@ -412,7 +405,7 @@ public class TreeMapWordPredictor implements WordPredictor
 		addNgram(t,unigrams);
 		//System.out.println("Unigrams: "+unigrams.size());;
 	}	
-
+	
 	private void addNgram(String t, Map<String,Integer> sm) {
 //		wp.incrementWord(t);
 //		if(sm.containsKey(t))
@@ -480,28 +473,3 @@ public class TreeMapWordPredictor implements WordPredictor
 	}	
 }
 
-class cmpSortedMap implements Comparator<Entry<String,Integer>>
-{
-	public cmpSortedMap()
-	{
-
-	}
-
-	public int compare(Entry<String,Integer> o1, Entry<String,Integer> o2)
-	{
-		int v1=o1.getValue();
-		int v2=o2.getValue();
-		if(v1<v2)
-			return 1;
-		else if(v1>v2)
-			return -1;
-		else
-			return 0;
-	}
-
-	public boolean equals()
-	{
-		return true;
-	}
-
-}
