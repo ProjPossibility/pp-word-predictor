@@ -14,9 +14,9 @@ import java.util.Map.Entry;
  */
 public class EntryWindow {
 	//keep track of the words within a certain time frame or number of entries constraint
-	private SortedMap<Date, String> uniEntryWindow;  
-	private SortedMap<Date, String> biEntryWindow;
-	private SortedMap<Date, String> triEntryWindow;
+	private SortedMap<Date, String> UniEntryWindow;  
+	private SortedMap<Date, String> BiEntryWindow;
+	private SortedMap<Date, String> TriEntryWindow;
 	private SortedMap<String, Integer> unigram;
 	private SortedMap<String, Integer> bigram;
 	private SortedMap<String, Integer> trigram;
@@ -31,9 +31,9 @@ public class EntryWindow {
 	 * @param Period: must be larger than 10(min)
 	 */
 	public EntryWindow(){
-		uniEntryWindow = new TreeMap<Date, String>();
-		biEntryWindow = new TreeMap<Date, String>();
-		triEntryWindow = new TreeMap<Date, String>();
+		UniEntryWindow = new TreeMap<Date, String>();
+		BiEntryWindow = new TreeMap<Date, String>();
+		TriEntryWindow = new TreeMap<Date, String>();
 		unigram = new TreeMap<String, Integer>();
 		bigram = new TreeMap<String, Integer>();
 		trigram = new TreeMap<String, Integer>();
@@ -78,55 +78,137 @@ public class EntryWindow {
 		return trigram;
 	}
 	
-	public void update(String s1, String s2, String s3){
+	public void update(String t1, String t2, String t3){
 		Date d = new Date();
 		
-		updateEntryWindow( uniEntryWindow, unigram, s1, d);
-		updateEntryWindow( biEntryWindow, bigram, s2, d);
-		updateEntryWindow( triEntryWindow, trigram, s3, d);
+		updateUniEntryWindow(t1);
+		updateBiEntryWindow(t1, t2);
+		updateTriEntryWindow(t1, t2, t3);
 		
 	}
 	
 	/**
-	 * update EntryWindow according to {@link Period}/{@link WordNumber}
+	 * update UniEntryWindow according to {@link Period}/{@link WordNumber}
 	 * mode 1: time frame constraint , mode 2: entry number constraint, 
 	 * mode 3: time frame constraint and entry number constraint
-	 * @param map: the date-string map
-	 * @param s: input string
-	 * @param d: input time(date)
+	 * @param t: input string
 	 */
-	private void updateEntryWindow(SortedMap<Date, String> map, 
-			SortedMap<String, Integer> gram, String s, Date d){
-		// just for testing
-		//SortedMap<Date, String> map = uniEntryWindow;
+	private void updateUniEntryWindow(String t){
+		Date d = new Date();
 		if (mode == 2){// word number frame
 			//check if the map exceed maximum WordNumber
-			if (map.size() == WordNumber){
-				updateDown(gram, map.get(map.firstKey()));
+			if (UniEntryWindow.size() == WordNumber){
+				decrement(unigram, UniEntryWindow.get(UniEntryWindow.firstKey()));
 				//System.out.println(map.firstKey());
-				map.remove(map.firstKey());
+				UniEntryWindow.remove(UniEntryWindow.firstKey());
 			}
-			map.put(d, s);
-			updateUp(gram, s);
+			UniEntryWindow.put(d, t);
+			increment(unigram, t);
 		}
 		else {// both time and word number frame
-			if (mode == 3 && map.size() == WordNumber){
-				updateDown(gram, map.get(map.firstKey()));
-				map.remove(map.firstKey());
+			if (mode == 3 && UniEntryWindow.size() == WordNumber){
+				decrement(unigram, UniEntryWindow.get(UniEntryWindow.firstKey()));
+				UniEntryWindow.remove(UniEntryWindow.firstKey());
 			}
-			map.put(d, s);
-			updateUp(gram, s);
-			Set<Entry<Date, String>> set = map.entrySet();
+			UniEntryWindow.put(d, t);
+			increment(unigram, t);
+			Set<Entry<Date, String>> set = UniEntryWindow.entrySet();
 			Iterator<Entry<Date, String>> it = set.iterator();
 			while (it.hasNext()){
 				System.out.println("entering period remove: ");
 				Entry<Date, String> entry = (Entry<Date, String>)it.next();
 				if (entry.getKey().getTime() <= (d.getTime()- Period*1000)){
 					System.out.println(entry.getValue());
-					updateDown(gram, entry.getValue());
+					decrement(unigram, entry.getValue());
 					it.remove();
 				}
-			};
+			}
+		}	
+	}	
+	
+	/**
+	 * update BiEntryWindow according to {@link Period}/{@link WordNumber}
+	 * mode 1: time frame constraint , mode 2: entry number constraint, 
+	 * mode 3: time frame constraint and entry number constraint
+	 * @param t: input string
+	 */
+	private void updateBiEntryWindow(String s1, String s2){
+		Date d = new Date();
+		StringBuilder s = new StringBuilder(s1);
+		s.append(" ").append(s2);
+		String t = s.toString();
+		
+		if (mode == 2){// word number frame
+			//check if the map exceed maximum WordNumber
+			if (BiEntryWindow.size() == WordNumber){
+				decrement(bigram, BiEntryWindow.get(BiEntryWindow.firstKey()));
+				//System.out.println(map.firstKey());
+				BiEntryWindow.remove(BiEntryWindow.firstKey());
+			}
+			BiEntryWindow.put(d, t);
+			increment(bigram, t);
+		}
+		else {// both time and word number frame
+			if (mode == 3 && BiEntryWindow.size() == WordNumber){
+				decrement(bigram, BiEntryWindow.get(BiEntryWindow.firstKey()));
+				BiEntryWindow.remove(BiEntryWindow.firstKey());
+			}
+			BiEntryWindow.put(d, t);
+			increment(bigram, t);
+			Set<Entry<Date, String>> set = BiEntryWindow.entrySet();
+			Iterator<Entry<Date, String>> it = set.iterator();
+			while (it.hasNext()){
+				System.out.println("entering period remove: ");
+				Entry<Date, String> entry = (Entry<Date, String>)it.next();
+				if (entry.getKey().getTime() <= (d.getTime()- Period*1000)){
+					System.out.println(entry.getValue());
+					decrement(bigram, entry.getValue());
+					it.remove();
+				}
+			}
+		}	
+	}	
+	
+	/**
+	 * update TriEntryWindow according to {@link Period}/{@link WordNumber}
+	 * mode 1: time frame constraint , mode 2: entry number constraint, 
+	 * mode 3: time frame constraint and entry number constraint
+	 * @param t: input string
+	 */
+	private void updateTriEntryWindow(String s1, String s2, String s3){
+		Date d = new Date();
+		StringBuilder s = new StringBuilder(s1);
+		s.append(" ").append(s2).append(s3);
+		String t = s.toString();
+		
+		if (mode == 2){// word number frame
+			//check if the map exceed maximum WordNumber
+			if (TriEntryWindow.size() == WordNumber){
+				decrement(trigram, TriEntryWindow.get(TriEntryWindow.firstKey()));
+				//System.out.println(map.firstKey());
+				TriEntryWindow.remove(TriEntryWindow.firstKey());
+			}
+			TriEntryWindow.put(d, t);
+			increment(trigram, t);
+		}
+		else {// both time and word number frame
+			if (mode == 3 && TriEntryWindow.size() == WordNumber){
+				decrement(trigram, TriEntryWindow.get(TriEntryWindow.firstKey()));
+				TriEntryWindow.remove(TriEntryWindow.firstKey());
+			}
+			TriEntryWindow.put(d, t);
+			increment(trigram, t);
+			Set<Entry<Date, String>> set = TriEntryWindow.entrySet();
+			Iterator<Entry<Date, String>> it = set.iterator();
+			while (it.hasNext()){
+				System.out.println("entering period remove: ");
+				Entry<Date, String> entry = (Entry<Date, String>)it.next();
+				if (entry.getKey().getTime() <= (d.getTime()- Period*1000)){
+					System.out.println(entry.getValue());
+					decrement(trigram, entry.getValue());
+					it.remove();
+				}
+			}
 		}	
 	}	
 
@@ -134,7 +216,7 @@ public class EntryWindow {
 	/**
 	 * add new string from the gram
 	 */
-	private void updateUp(SortedMap<String,Integer> gram, String s){	
+	private void increment(SortedMap<String,Integer> gram, String s){	
 		if (gram.containsKey(s)){
 			gram.put(s, gram.get(s)+1);
 		}
@@ -143,7 +225,7 @@ public class EntryWindow {
 	/**
 	 * remove one string if its freq is 1; else decrement the freq by 1
 	 */
-	private void updateDown(SortedMap<String,Integer> gram, String s){
+	private void decrement(SortedMap<String,Integer> gram, String s){
 		System.out.println("string to remove+:"+s);
 		System.out.println("freq of the removed string is: "+gram.get(s));
 		gram.put(s, gram.get(s)-1);
