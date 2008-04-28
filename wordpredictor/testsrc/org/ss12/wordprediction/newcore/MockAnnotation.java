@@ -1,5 +1,9 @@
 package org.ss12.wordprediction.newcore;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Comparator;
 
 /**
@@ -7,7 +11,7 @@ import java.util.Comparator;
  * 
  * @author Michael Parker
  */
-class MockAnnotation extends AnnotatedWord {
+class MockAnnotation extends AnnotatedWord implements Externalizable {
   static final Comparator<MockAnnotation> COMPARATOR =
       new Comparator<MockAnnotation>() {
     public int compare(MockAnnotation lhs, MockAnnotation rhs) {
@@ -54,5 +58,14 @@ class MockAnnotation extends AnnotatedWord {
 
   protected void update() {
     isUpdated = true;
+  }
+
+  public void readExternal(ObjectInput in) throws IOException,
+      ClassNotFoundException {
+    word = in.readUTF();
+  }
+
+  public void writeExternal(ObjectOutput out) throws IOException {
+    out.writeUTF(word);
   }
 }
