@@ -15,7 +15,7 @@ public abstract class CustomLexiconTest extends TestCase {
   protected CustomLexicon<MockAnnotation> customLexicon;
 
   @Override
-  public void setUp() {
+  public void setUp() throws Exception {
     customLexicon = getCustomLexicon();
   }
 
@@ -30,7 +30,7 @@ public abstract class CustomLexiconTest extends TestCase {
    * 
    * @return the lexicon to test
    */
-  protected abstract CustomLexicon<MockAnnotation> getCustomLexicon();
+  protected abstract CustomLexicon<MockAnnotation> getCustomLexicon() throws Exception;
 
   public void testAddUnigrams() {
     MockAnnotation annotation1 = new MockAnnotation("a");
