@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -59,7 +60,6 @@ public class TreeMapWordPredictor implements WordPredictor
 	BDBImmutableLexicon biBD;
 	BDBImmutableLexicon dictBD;
 	private boolean buffered;
-
 
 	final static String dir = "./resources/dictionaries/bdb/";
 
@@ -228,8 +228,25 @@ public class TreeMapWordPredictor implements WordPredictor
 				suggestions_candidates);
 		Entry<String,Integer>[] cnd_set= copy.entrySet().toArray(new Entry[]{});
 		cmpSortedMap sortedMapComparator = new cmpSortedMap();
-		Arrays.sort(cnd_set, sortedMapComparator);
+		cnd_set = selectHighest(cnd_set, 5);
+		//Arrays.sort(cnd_set, sortedMapComparator);
 		return cnd_set;
+	}
+	private Entry<String, Integer>[] selectHighest(
+			Entry<String, Integer>[] cnd_set, int k) {
+		SortedMap<String, Integer> results = new TreeMap<String, Integer>();
+		int i=0;
+		for(;i<k && i<cnd_set.length;i++){
+			results.put(cnd_set[i].getKey(), cnd_set[i].getValue());
+		}
+		for(;i<cnd_set.length;i++){
+			String first = results.firstKey();
+			if(results.get(first) < cnd_set[i].getValue()){
+				results.put(cnd_set[i].getKey(), cnd_set[i].getValue());
+				results.remove(first);
+			}
+		}
+		return results.entrySet().toArray(new Entry[]{});
 	}
 	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestionsRequested)
 	{
@@ -303,11 +320,8 @@ public class TreeMapWordPredictor implements WordPredictor
 			//so that their frequencies are comparable
 			for(int i=0;i<numOfHints_unigram;i++)
 			{
-				unigram_suggestions[i].setValue(unigram_suggestions[i].getValue()/unigramCount);
-				//System.out.println(unigram_suggestions[i].getKey()+": "+unigram_suggestions[i].getValue());
 				//after the modification, put that into Map
 				m.put(unigram_suggestions[i].getKey(), unigram_suggestions[i].getValue());
-
 			}
 			//built list from dictionary map
 
