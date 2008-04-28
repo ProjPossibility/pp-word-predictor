@@ -28,6 +28,10 @@ import com.sleepycat.je.EnvironmentConfig;
  */
 public class BDBCustomLexicon<T extends AnnotatedWord & Serializable> 
 		implements CustomLexicon<T> {
+	static final String UNIGRAM_DB_NAME = "UnigramCustomLexicon";
+	static final String BIGRAM_DB_NAME = "BigramCustomLexicon";
+	static final String TRIGRAM_DB_NAME = "TrigramCustomLexicon";
+	
 	private Environment env;
 	String envName = "CustomLexicon";
 	private StoredClassCatalog catalog;
@@ -41,7 +45,7 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 	
 	private final Class<T> dataClass;
 	private final AnnotationFactory<T> annotationFactory;
-	final static String dir = "./resources/dictionaries/bdb";
+	final static String dir = "./resources/dictionaries/bdb/custom";
 	
 	
 	private void add(SortedMap<WordSequence, T> sequenceMap,
@@ -170,7 +174,7 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 		System.out.println("trigrams= "+ trigrams);
 	}
 	
-	private BDBCustomLexicon(Environment e, AnnotationFactory<T> a, Class<T> c)
+	public BDBCustomLexicon(Environment e, AnnotationFactory<T> a, Class<T> c)
 			throws Exception{
 		env = e;
 		
@@ -187,9 +191,9 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 		dbConfig.setAllowCreate(true);
 		
 //		db = env.openDatabase(null, envName, dbConfig);
-		uniDB = env.openDatabase(null, "UnigramCustomLexicon", dbConfig);
-		biDB = env.openDatabase(null, "BigramCustomLexicon", dbConfig);
-		triDB = env.openDatabase(null, "TrigramCustomLexicon", dbConfig);
+		uniDB = env.openDatabase(null, UNIGRAM_DB_NAME, dbConfig);
+		biDB = env.openDatabase(null, BIGRAM_DB_NAME, dbConfig);
+		triDB = env.openDatabase(null, TRIGRAM_DB_NAME, dbConfig);
 		
 		dbConfig = new DatabaseConfig();
 		dbConfig.setSortedDuplicates(false);
