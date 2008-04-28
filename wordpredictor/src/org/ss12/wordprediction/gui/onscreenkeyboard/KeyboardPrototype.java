@@ -391,27 +391,34 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			predictor.learn(text.getText());
 		}
 	}
+	Thread newest;
 	private void predict() {
 		if(predictor==null)
 			return;
+//		loading.stop();
+		
 		loading = new Thread(){
 			public void run(){
 				String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), NUM_OF_WORDS);
-				int i;
-				for(i=0;i<results.length;i++){
-					if(capslock)
-						results[i] = results[i].toUpperCase();
-					wordButtons[i].setText(results[i]);
-					wordButtons[i].setEnabled(true);
-					wordButtons[i].setBackground(buttonColor);
+				if(Thread.currentThread()==newest){
+					newest=null;
+					int i=0;
+					for(;i<results.length;i++){
+						if(capslock)
+							results[i] = results[i].toUpperCase();
+						wordButtons[i].setText(results[i]);
+						wordButtons[i].setEnabled(true);
+						wordButtons[i].setBackground(buttonColor);
+					}
+					for(;i<wordButtons.length;i++){
+						wordButtons[i].setText(" ");
+						wordButtons[i].setEnabled(false);
+						wordButtons[i].setBackground(Color.white);					
+					}
 				}
-				for(;i<wordButtons.length;i++){
-					wordButtons[i].setText(" ");
-					wordButtons[i].setEnabled(false);
-					wordButtons[i].setBackground(Color.white);					
-				}			
 			}
 		};
+		newest=loading;
 		loading.start();
 	}
 	private void press(int key) {
