@@ -93,7 +93,7 @@ public class EntryWindow {
 	 * mode 3: time frame constraint and entry number constraint
 	 * @param t: input string
 	 */
-	private void updateUniEntryWindow(String t){
+	public void updateUniEntryWindow(String t){
 		Date d = new Date();
 		if (mode == 2){// word number frame
 			//check if the map exceed maximum WordNumber
@@ -132,7 +132,7 @@ public class EntryWindow {
 	 * mode 3: time frame constraint and entry number constraint
 	 * @param t: input string
 	 */
-	private void updateBiEntryWindow(String s1, String s2){
+	public void updateBiEntryWindow(String s1, String s2){
 		Date d = new Date();
 		StringBuilder s = new StringBuilder(s1);
 		s.append(" ").append(s2);
@@ -175,7 +175,7 @@ public class EntryWindow {
 	 * mode 3: time frame constraint and entry number constraint
 	 * @param t: input string
 	 */
-	private void updateTriEntryWindow(String s1, String s2, String s3){
+	public void updateTriEntryWindow(String s1, String s2, String s3){
 		Date d = new Date();
 		StringBuilder s = new StringBuilder(s1);
 		s.append(" ").append(s2).append(s3);
