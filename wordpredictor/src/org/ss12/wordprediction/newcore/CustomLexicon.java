@@ -11,7 +11,8 @@ public interface CustomLexicon<T extends AnnotatedWord> {
    * Registers with the lexicon that the given word has just been used.
    * 
    * @param word the used word
-   * @throws IllegalStateException if the lexicon is closed and cannot be written
+   * @throws IllegalStateException if the lexicon is closed and cannot be
+   *           written
    */
   public void addUnigram(String word) throws IllegalStateException;
 
@@ -20,7 +21,8 @@ public interface CustomLexicon<T extends AnnotatedWord> {
    * 
    * @param firstWord the first word used
    * @param secondWord the second word used
-   * @throws IllegalStateException if the lexicon is closed and cannot be written
+   * @throws IllegalStateException if the lexicon is closed and cannot be
+   *           written
    */
   public void addBigram(String firstWord, String secondWord)
       throws IllegalStateException;
@@ -31,7 +33,8 @@ public interface CustomLexicon<T extends AnnotatedWord> {
    * @param firstWord the first word used
    * @param secondWord the second word used
    * @param thirdWord the third word used
-   * @throws IllegalStateException if the lexicon is closed and cannot be written
+   * @throws IllegalStateException if the lexicon is closed and cannot be
+   *           written
    */
   public void addTrigram(String firstWord, String secondWord, String thirdWord)
       throws IllegalStateException;
@@ -48,9 +51,9 @@ public interface CustomLexicon<T extends AnnotatedWord> {
 
   /**
    * Returns all completions of the given word, considering the preceding word.
- * @param prevWord the first word preceding the incomplete word
- * @param incompleteWord the incomplete word
    * 
+   * @param prevWord the first word preceding the incomplete word
+   * @param incompleteWord the incomplete word
    * @return an iterable over all possible completions
    * @throws IllegalStateException if the lexicon is closed and cannot be read
    */
@@ -60,10 +63,10 @@ public interface CustomLexicon<T extends AnnotatedWord> {
   /**
    * Returns all completion of the given word, considering the two preceding
    * words.
- * @param prevPrevWord the second word preceding the incomplete word
- * @param prevWord the first word preceding the incomplete word
- * @param incompleteWord the incomplete word
    * 
+   * @param prevPrevWord the second word preceding the incomplete word
+   * @param prevWord the first word preceding the incomplete word
+   * @param incompleteWord the incomplete word
    * @return an iterable over all possible completions
    * @throws IllegalStateException if the lexicon is closed and cannot be read
    */
@@ -71,9 +74,9 @@ public interface CustomLexicon<T extends AnnotatedWord> {
       String incompleteWord) throws IllegalStateException;
 
   /**
-   * Closes this lexicon, releasing all held resources and commiting all
-   * changes to disk. After this method is invoked, it can no longer be read
-   * from or written to.
+   * Closes this lexicon, releasing all held resources and commiting all changes
+   * to disk. After this method is invoked, it can no longer be read from or
+   * written to.
    */
   public void close();
 }
