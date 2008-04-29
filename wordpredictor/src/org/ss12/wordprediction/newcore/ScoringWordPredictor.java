@@ -103,14 +103,14 @@ public class ScoringWordPredictor<T extends AnnotatedWord> implements
       scorer.addBigrams(customLexicon.getBigrams(request.getPrevWord(),
           request.getIncompleteWord()));
       if (scorer.hasNumSuggestions(request.getNumPredictions())) {
-        return scorer.getSuggestions();
+        return trimList(scorer.getSuggestions(), request.getNumPredictions());
       }
     }
 
     // Add the custom unigrams, and then try to return immediately.
     scorer.addUnigrams(customLexicon.getUnigrams(request.getIncompleteWord()));
     if (scorer.hasNumSuggestions(request.getNumPredictions())) {
-      return scorer.getSuggestions();
+      return trimList(scorer.getSuggestions(), request.getNumPredictions());
     }
 
     // Add the additional lexicons, and then try to return immediately.
@@ -122,13 +122,17 @@ public class ScoringWordPredictor<T extends AnnotatedWord> implements
             lexiconUpperBound));
       }
       if (scorer.hasNumSuggestions(request.getNumPredictions())) {
-        return scorer.getSuggestions();
+        return trimList(scorer.getSuggestions(), request.getNumPredictions());
       }
     }
 
     // Add the default lexicon and then return.
     scorer.addDefaultLexicon(defaultLexicon.getSignificance(lexiconLowerBound,
         lexiconUpperBound));
-    return scorer.getSuggestions();
+    return trimList(scorer.getSuggestions(), request.getNumPredictions());
+  }
+
+  private List<String> trimList(List<String> list, int maxSize) {
+    return (list.size() <= maxSize) ? list : list.subList(0, maxSize);
   }
 }
