@@ -82,7 +82,7 @@ public class TopElements {
       Arrays.sort(elements, comparator);
     } else {
       partition(elements, comparator, k - 1);
-      Arrays.sort(elements, 0, k);
+      Arrays.sort(elements, 0, k, comparator);
     }
   }
 

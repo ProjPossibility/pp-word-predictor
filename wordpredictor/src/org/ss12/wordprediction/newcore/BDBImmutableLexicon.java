@@ -12,6 +12,7 @@ import com.sleepycat.collections.TransactionRunner;
 import com.sleepycat.collections.TransactionWorker;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
+import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 
@@ -161,6 +162,8 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 				env.close();
 				env = null;
 			}
+		} catch (DatabaseException de){
+			System.out.println("Closing a database with active cursors, closing them");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

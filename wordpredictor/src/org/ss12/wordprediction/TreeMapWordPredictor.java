@@ -228,25 +228,9 @@ public class TreeMapWordPredictor implements WordPredictor
 				suggestions_candidates);
 		Entry<String,Integer>[] cnd_set= copy.entrySet().toArray(new Entry[]{});
 		cmpSortedMap sortedMapComparator = new cmpSortedMap();
-		cnd_set = selectHighest(cnd_set, 5);
+		TopElements.selectSmallest(cnd_set, 5,sortedMapComparator);
 		//Arrays.sort(cnd_set, sortedMapComparator);
 		return cnd_set;
-	}
-	private Entry<String, Integer>[] selectHighest(
-			Entry<String, Integer>[] cnd_set, int k) {
-		SortedMap<String, Integer> results = new TreeMap<String, Integer>();
-		int i=0;
-		for(;i<k && i<cnd_set.length;i++){
-			results.put(cnd_set[i].getKey(), cnd_set[i].getValue());
-		}
-		for(;i<cnd_set.length;i++){
-			String first = results.firstKey();
-			if(results.get(first) < cnd_set[i].getValue()){
-				results.put(cnd_set[i].getKey(), cnd_set[i].getValue());
-				results.remove(first);
-			}
-		}
-		return results.entrySet().toArray(new Entry[]{});
 	}
 	public String[] getSuggestionsGramBased(String[]tokens,int numberOfSuggestionsRequested)
 	{
@@ -407,6 +391,7 @@ public class TreeMapWordPredictor implements WordPredictor
 //		} catch (FileNotFoundException e) {
 //		e.printStackTrace();
 //		}
+		System.out.println("cleaning up");
 		if(buffered){
 			flush();
 		}
@@ -414,6 +399,7 @@ public class TreeMapWordPredictor implements WordPredictor
 		biBD.close();
 		triBD.close();
 		dictBD.close();
+		System.out.println("cleaned up");
 	}
 	private void saveMap(SortedMap<String,Integer> sm,OutputStream os){
 		ObjectOutputStream out = null;
