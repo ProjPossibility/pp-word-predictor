@@ -39,6 +39,7 @@ import org.ss12.wordprediction.newcore.BDBImmutableLexicon;
 import org.ss12.wordprediction.newcore.CachingImmutableLexicon;
 import org.ss12.wordprediction.newcore.ImmutableLexicon;
 import org.ss12.wordprediction.newcore.WordFrequencyPair;
+import org.ss12.wordprediction.newcore.WordPredictorUtil;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -263,6 +264,21 @@ public class TreeMapWordPredictor implements WordPredictor
 
     public Integer setValue(Integer value) {
       throw new UnsupportedOperationException();
+    }
+    
+    public boolean equals(Object obj) {
+      if (obj == this) {
+        return true;
+      } else if (obj instanceof Entry) {
+        Entry e = (Entry) obj;
+        return WordPredictorUtil.equals(word, e.getKey()) &&
+            WordPredictorUtil.equals(frequency, e.getValue());
+      }
+      return false;
+    }
+    
+    public int hashCode() {
+      return WordPredictorUtil.hashCode(word, frequency);
     }
 	}
 	
