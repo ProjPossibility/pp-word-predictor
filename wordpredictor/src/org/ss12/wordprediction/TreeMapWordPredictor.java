@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -236,7 +237,8 @@ public class TreeMapWordPredictor implements WordPredictor
 	  }
 
 	  WordFrequencyPair[] freqsArray = freqsList.toArray(new WordFrequencyPair[0]);
-	  TopElements.selectSmallest(freqsArray, numSuggestions, WordFrequencyPair.COMPARATOR);
+	  TopElements.selectSmallest(freqsArray, numSuggestions,
+			  Collections.reverseOrder(WordFrequencyPair.COMPARATOR));
 	  Entry[] entries = new Entry[numSuggestions];
 	  for (int i = 0; i < numSuggestions; ++i) {
 	    entries[i] = new FrequencyEntry(freqsArray[i].word, freqsArray[i].significance);
