@@ -13,6 +13,18 @@ public class WordPredictorUtil {
   }
 
   /**
+   * Returns whether the two objects are equal to one another, allowing either
+   * or both of the given objects to be {@code null}.
+   * 
+   * @param lhs the first argument
+   * @param rhs the second argument
+   * @return {@code true} if the two objects are equal, {@code false} otherwise
+   */
+  public static boolean equals(Object lhs, Object rhs) {
+    return (lhs == null) ? (rhs == null) : lhs.equals(rhs);
+  }
+
+  /**
    * Convenient varargs form of {@link Arrays#hashCode(Object[])}.
    * 
    * @param objs the objects to hash
