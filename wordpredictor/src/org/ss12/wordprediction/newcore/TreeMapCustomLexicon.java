@@ -40,7 +40,7 @@ public class TreeMapCustomLexicon<T extends AnnotatedWord> implements
     } else {
       String lastWord = wordSequence.getLastWord();
       sequenceMap.put(wordSequence,
-          annotationFactory.newAnnotation(lastWord, wordSequence.size()));
+          annotationFactory.newAnnotation(lastWord, wordSequence.size() - 1));
     }
   }
 

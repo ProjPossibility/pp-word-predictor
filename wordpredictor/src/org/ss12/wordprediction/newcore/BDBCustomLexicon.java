@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.ss12.wordprediction.newcore.annotations.FrequencyAnnotation;
 import org.ss12.wordprediction.newcore.annotations.FrequencyAnnotationFactory;
@@ -58,7 +57,7 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 		} else {
 			String lastWord = wordSequence.getLastWord();
 			sequenceMap.put(wordSequence, 
-					annotationFactory.newAnnotation(lastWord, wordSequence.size()));
+					annotationFactory.newAnnotation(lastWord, wordSequence.size() - 1));
 		}
 	}
 
