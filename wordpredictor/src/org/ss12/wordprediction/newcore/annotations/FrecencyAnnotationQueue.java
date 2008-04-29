@@ -13,6 +13,12 @@ class FrecencyAnnotationQueue {
   final int totalBucketSize;
   final FrecencyAnnotation[] annotations;
 
+  /**
+   * Constructs a new queue having the given bucket sizes. Buckets with smaller
+   * element indices contain annotations that have been updated more recently.
+   * 
+   * @param bucketSizes the bucket sizes
+   */
   FrecencyAnnotationQueue(int[] bucketSizes) {
     startIndex = 0;
     size = 0;
@@ -31,15 +37,18 @@ class FrecencyAnnotationQueue {
   }
 
   void add(FrecencyAnnotation annotation) {
-    int currIndex = 0;
+    int partialSize = 0;
     for (int i = 0; i < bucketSizes.length; ++i) {
-      if (currIndex >= size) {
+      partialSize += bucketSizes[i];
+      if (partialSize > size) {
         break;
       }
 
-      int shiftedIndex = getShiftedIndex(currIndex);
-      annotations[shiftedIndex].shiftBucket(i);
-      currIndex += bucketSizes[i];
+      int currIndex = startIndex - partialSize;
+      if (currIndex < 0) {
+        currIndex += size;
+      }
+      annotations[currIndex].moveToBucket(i + 1);
     }
 
     if (size < totalBucketSize) {
@@ -52,9 +61,5 @@ class FrecencyAnnotationQueue {
       ++startIndex;
       startIndex = (startIndex % totalBucketSize);
     }
-  }
-
-  private int getShiftedIndex(int index) {
-    return startIndex + index;
   }
 }

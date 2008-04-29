@@ -15,7 +15,7 @@ public class MockAnnotationFactory implements AnnotationFactory<MockAnnotation> 
     return annotation;
   }
 
-  public MockAnnotation newAnnotation(String word) {
+  public MockAnnotation newAnnotation(String word, int numPrecedingWords) {
     return new MockAnnotation(word);
   }
 

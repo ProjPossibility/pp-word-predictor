@@ -58,10 +58,10 @@ public class BDBCustomLexicon<T extends AnnotatedWord & Serializable>
 		} else {
 			String lastWord = wordSequence.getLastWord();
 			sequenceMap.put(wordSequence, 
-					annotationFactory.newAnnotation(lastWord));
+					annotationFactory.newAnnotation(lastWord, wordSequence.size()));
 		}
 	}
-	
+
 	public void addUnigram(String word){
 		try {
 			add(unigrams, new WordSequence(word));
