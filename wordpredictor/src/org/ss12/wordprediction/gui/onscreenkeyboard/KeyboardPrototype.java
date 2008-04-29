@@ -299,7 +299,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 					learn();
 					return;
 				}
-			}Let's write a sentence. How about another one? Awesome! 
+			}
 			else{
 				text.setText(text.getText()+key.getText().replace("<html>", "").replace("</html>", "").replace("<body>","").replace("</body>", ""));
 			}
