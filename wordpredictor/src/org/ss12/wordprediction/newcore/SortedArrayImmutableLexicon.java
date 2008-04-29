@@ -30,7 +30,7 @@ public class SortedArrayImmutableLexicon implements ImmutableLexicon {
       WordFrequencyPair[] freqs) {
     WordFrequencyPair[] sortedFreqs = freqs.clone();
     Arrays.sort(sortedFreqs, WORD_COMPARATOR);
-    return new SortedArrayImmutableLexicon(freqs.clone());
+    return new SortedArrayImmutableLexicon(sortedFreqs);
   }
 
   private SortedArrayImmutableLexicon(WordFrequencyPair[] freqs) {
