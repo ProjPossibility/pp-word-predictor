@@ -63,28 +63,28 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	JToggleButton leftShiftButton,rightShiftButton,leftCtrlButton,rightCtrlButton,leftAltButton,rightAltButton,capslockButton;
 	Font regularFont;
 	Color buttonColor = new javax.swing.plaf.ColorUIResource(0);
-	
+
 	class NontruncatingSwingUtilities2 extends SwingUtilities2{
-		
+
 	}
 
 	public KeyboardPrototype(Robot robot) {
 		super("Word Prediction On Screen Keyboard");
 		// Set Mac OS X to use the standard look and feel of Java and not the native Aqua user interface
 //		try {
-//			UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+//		UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 //		} catch (ClassNotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
+//		// TODO Auto-generated catch block
+//		e1.printStackTrace();
 //		} catch (InstantiationException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
+//		// TODO Auto-generated catch block
+//		e1.printStackTrace();
 //		} catch (IllegalAccessException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
+//		// TODO Auto-generated catch block
+//		e1.printStackTrace();
 //		} catch (UnsupportedLookAndFeelException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
+//		// TODO Auto-generated catch block
+//		e1.printStackTrace();
 //		}
 		loading = new Thread(){
 			public void run(){
@@ -118,9 +118,9 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		settings.add(setLearn);
 		menu.add(view);
 		menu.add(settings);
-		
+
 		this.setJMenuBar(menu);
-		
+
 		regularFont = new Font("Arial",Font.BOLD,20);
 		//selectedFont = new Font("Arial",Font.BOLD,20);
 
@@ -156,7 +156,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		}
 		body.add(predictionRow);
 		loading.start();
-		
+
 		String[] numbers = {"`","1","2","3","4","5","6","7","8","9","0","-","=","Backspace"};
 		String[] upperNumbers = {"~","!","@","#","$","%","^","&","*","(",")","_","+","Backspace"};
 
@@ -170,7 +170,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		String[] upperSecond = {"Caps Lock","A","S","D","F","G","H","J","K","L",":",""+'"',"Enter"};
 		int[] secondKeycodes = {KeyEvent.VK_CAPS_LOCK,KeyEvent.VK_A,KeyEvent.VK_S,KeyEvent.VK_D,KeyEvent.VK_F,KeyEvent.VK_G,KeyEvent.VK_H,KeyEvent.VK_J,KeyEvent.VK_K,KeyEvent.VK_L,KeyEvent.VK_SEMICOLON,KeyEvent.VK_QUOTE,KeyEvent.VK_ENTER};
 		body.add(rowOfKeys(second,upperSecond,secondKeycodes));
-		String[] third = {"Shift","z","x","c","v","b","n","m",",",".","/","Shift"};
+		String[] third = {"Shift","z","x","c","v","b","n","m",",",".","<body>/</body>","Shift"};
 		String[] upperThird = {"Shift","Z","X","C","V","B","N","M","<",">","?","Shift"};
 		int[] thirdKeycodes = {KeyEvent.VK_SHIFT,KeyEvent.VK_Z,KeyEvent.VK_X,KeyEvent.VK_C,KeyEvent.VK_V,KeyEvent.VK_B,KeyEvent.VK_N,KeyEvent.VK_M,KeyEvent.VK_COMMA,KeyEvent.VK_PERIOD,KeyEvent.VK_SLASH,KeyEvent.VK_SHIFT};
 		body.add(rowOfKeys(third,upperThird,thirdKeycodes));
@@ -244,9 +244,10 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	public void cleanup(){
 		this.setVisible(false);
 		loading=null;
-		if(predictor==null)
-			return;
-		predictor.cleanup();
+		newest=null;
+		if(predictor!=null)
+			predictor.cleanup();
+		System.exit(0);
 	}
 
 
@@ -260,8 +261,8 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		gl.setSize(800, 300);
 		gl.setFocusableWindowState(false);
 //		gl.getRootPane().setFocusable(false);
-	
-		
+
+
 //		try {
 //		UIManager.setLookAndFeel(new MotifLookAndFeel());
 //		} catch (UnsupportedLookAndFeelException e) {}
@@ -282,8 +283,25 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			else if(keycode==KeyEvent.VK_SPACE){
 				text.setText(text.getText()+' ');
 			}
+			//if a character the denotes the end of a sentence
+			else if(keycode==KeyEvent.VK_PERIOD || 
+					shift && (keycode==KeyEvent.VK_SLASH || 
+							keycode==KeyEvent.VK_1)){
+				String textTyped = text.getText();
+				int length = textTyped.length();
+				if(length>0 && textTyped.charAt(length-1)==' '){
+					boolean storeShift = shift;
+					press(KeyEvent.VK_BACK_SPACE);
+					shift = storeShift;
+					press(keycode);
+					press(KeyEvent.VK_SPACE);
+					predict();
+					learn();
+					return;
+				}
+			}Let's write a sentence. How about another one? Awesome! 
 			else{
-				text.setText(text.getText()+key.getText().replace("<html>", "").replace("</html>", ""));
+				text.setText(text.getText()+key.getText().replace("<html>", "").replace("</html>", "").replace("<body>","").replace("</body>", ""));
 			}
 			press(keycode);
 			predict();
@@ -323,7 +341,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 			String cur = text.getText();
 			int i = cur.lastIndexOf(' ');
 			String key = ((JButton)arg0.getSource()).getText();
-			String temp=key.substring(cur.length()-i-1,key.length()).replace("<html>", "").replace("</html>", "");
+			String temp=key.substring(cur.length()-i-1,key.length()).replace("<html>", "").replace("</html>", "").replace("<body>","").replace("</body>","");
 			text.setText(text.getText()+temp+' ');
 			typeString(temp);
 			press(KeyEvent.VK_SPACE);
@@ -395,26 +413,29 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	private void predict() {
 		if(predictor==null)
 			return;
-//		loading.stop();
-		
+
 		loading = new Thread(){
 			public void run(){
-				String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), NUM_OF_WORDS);
-				if(Thread.currentThread()==newest){
-					newest=null;
-					int i=0;
-					for(;i<results.length;i++){
-						if(capslock)
-							results[i] = results[i].toUpperCase();
-						wordButtons[i].setText(results[i]);
-						wordButtons[i].setEnabled(true);
-						wordButtons[i].setBackground(buttonColor);
+				try{
+					String[] results = predictor.getSuggestionsGramBased(predictor.processString(text.getText()), NUM_OF_WORDS);
+					if(Thread.currentThread()==newest){
+						newest=null;
+						int i=0;
+						for(;i<results.length;i++){
+							if(capslock)
+								results[i] = results[i].toUpperCase();
+							wordButtons[i].setText(results[i]);
+							wordButtons[i].setEnabled(true);
+							wordButtons[i].setBackground(buttonColor);
+						}
+						for(;i<wordButtons.length;i++){
+							wordButtons[i].setText(" ");
+							wordButtons[i].setEnabled(false);
+							wordButtons[i].setBackground(Color.white);					
+						}
 					}
-					for(;i<wordButtons.length;i++){
-						wordButtons[i].setText(" ");
-						wordButtons[i].setEnabled(false);
-						wordButtons[i].setBackground(Color.white);					
-					}
+				}catch(ThreadDeath td){
+					System.out.println("Caught ThreadDeath");
 				}
 			}
 		};
@@ -468,7 +489,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	}
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void mouseEntered(MouseEvent e) {
 		if(e.getSource() instanceof JComponent){
@@ -491,19 +512,19 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	}
 	public void mousePressed(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void mouseReleased(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void componentMoved(ComponentEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void componentResized(ComponentEvent e) {
 		float font = ((this.getWidth()*2+this.getHeight())/100.0f)*1.25f;
@@ -525,6 +546,6 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	}
 	public void componentShown(ComponentEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}  
 }
