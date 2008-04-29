@@ -20,8 +20,9 @@ public class CachingImmutableLexicon {
     .067f, .075f, .019f, .001f, .06f, .063f,        // N through S
     .091f, .028f, .01f, .024f, .002f, .02f, .001f   // T through Z
   };
-  
-  public ImmutableLexicon createCache(ImmutableLexicon lexicon, int approxSize) {
+
+  public static ImmutableLexicon createCache(
+      ImmutableLexicon lexicon, int approxSize) {
     List<WordFrequencyPair> allFreqs = new LinkedList<WordFrequencyPair>();
     for (char i = 'a'; i <= 'z'; ++i) {
       // Get all WordFrequencyPairs from the lexicon.
@@ -40,8 +41,10 @@ public class CachingImmutableLexicon {
       TopElements.selectSmallest(
           letterFreqsArray, letterSize, WordFrequencyPair.COMPARATOR);
 
+      int copySize = (letterFreqsArray.length < letterSize) ?
+          letterFreqsArray.length : letterSize;
       // Append the sorted WordFrequencyPairs to the alphabetized list.
-      for (int j = 0; j < letterSize; ++j) {
+      for (int j = 0; j < copySize; ++j) {
         allFreqs.add(letterFreqsArray[j]);
       }
     }
@@ -49,7 +52,7 @@ public class CachingImmutableLexicon {
         allFreqs.toArray(new WordFrequencyPair[0]));
   }
 
-  private int getSize(int letterIndex, int approxSize) {
+  private static int getSize(int letterIndex, int approxSize) {
     return (int) Math.ceil(FREQ_DISTRIBUTION[letterIndex] * approxSize);
   }
 }
