@@ -1,5 +1,6 @@
 package org.ss12.wordprediction.newcore;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -38,8 +39,8 @@ public class CachingImmutableLexicon {
       }
       WordFrequencyPair[] letterFreqsArray = letterFreqsList.toArray(
           new WordFrequencyPair[0]);
-      TopElements.selectSmallest(
-          letterFreqsArray, letterSize, WordFrequencyPair.COMPARATOR);
+      TopElements.selectSmallest(letterFreqsArray, letterSize,
+          Collections.reverseOrder(WordFrequencyPair.COMPARATOR));
 
       int copySize = (letterFreqsArray.length < letterSize) ?
           letterFreqsArray.length : letterSize;
