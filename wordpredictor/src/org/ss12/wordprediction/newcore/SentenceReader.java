@@ -40,7 +40,7 @@ public class SentenceReader {
     int end = sentenceIterator.next();
 
     // Process all complete sentences.
-    while (end < allText.length()) {
+    while ((end >= 0) && (end < allText.length())) {
       String sentence = allText.substring(start, end);
       addSentence(sentence);
       start = end;

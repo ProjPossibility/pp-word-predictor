@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.ss12.wordprediction.PredictionRequest;
+import org.ss12.wordprediction.newcore.annotations.FrecencyAnnotationFactory;
 import org.ss12.wordprediction.newcore.annotations.FrequencyAnnotationFactory;
 import org.ss12.wordprediction.newcore.annotations.LastTimeUsedAnnotationFactory;
 
@@ -196,22 +197,33 @@ public class ScorerBenchmark {
     return 0;
   }
 
+  public static void verifyFilesExist(File[] files) {
+    for (File file : files) {
+      if (!file.exists()) {
+        throw new IllegalArgumentException("File does not exist: " + file);
+      }
+    }
+  }
+  
   public static void main(String[] args) throws IOException {
     // Name all AnnotationFactory instances to benchmark.
     NameAnnotationPair[] nameAnnotationPairs = new NameAnnotationPair[] {
         new NameAnnotationPair("frequency", new FrequencyAnnotationFactory()),
         new NameAnnotationPair("timeLastUsed",
-            new LastTimeUsedAnnotationFactory())
+            new LastTimeUsedAnnotationFactory()),
+        new NameAnnotationPair("frecency", new FrecencyAnnotationFactory())
     };
 
     // Specify the files used to train the word predictor.
     File[] trainingFiles = new File[] {
-
+        new File("./resources/sample/bible_acts.txt")
     };
     // Specify the files used to benchmark the word predictor.
     File[] benchmarkFiles = new File[] {
-
+        new File("./resources/sample/bible_luke.txt")
     };
+    verifyFilesExist(trainingFiles);
+    verifyFilesExist(benchmarkFiles);
 
     for (NameAnnotationPair nameAnnotationPair : nameAnnotationPairs) {
       ScoringWordPredictor<? extends AnnotatedWord> wordPredictor =
@@ -219,6 +231,7 @@ public class ScorerBenchmark {
       System.out.println(nameAnnotationPair.name + ":");
       System.out.println("  training...");
       trainWordPredictor(trainingFiles, wordPredictor);
+
       System.out.println("  benchmarking...");
       BenchmarkResult benchmarkResult = benchmarkWordPredictor(benchmarkFiles,
           wordPredictor);
