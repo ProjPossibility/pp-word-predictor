@@ -49,7 +49,7 @@ public class CachingImmutableLexicon {
         allFreqs.add(letterFreqsArray[j]);
       }
     }
-    return SortedArrayImmutableLexicon.fromSortedArray(
+    return SortedArrayImmutableLexicon.fromUnsortedArray(
         allFreqs.toArray(new WordFrequencyPair[0]));
   }
 
