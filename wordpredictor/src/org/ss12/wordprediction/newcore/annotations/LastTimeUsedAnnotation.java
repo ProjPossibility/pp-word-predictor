@@ -1,6 +1,5 @@
 package org.ss12.wordprediction.newcore.annotations;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 import org.ss12.wordprediction.newcore.AnnotatedWord;
@@ -11,8 +10,7 @@ import org.ss12.wordprediction.newcore.WordPredictorUtil;
  * 
  * @author Michael Parker
  */
-public class LastTimeUsedAnnotation extends AnnotatedWord
-    implements Serializable{
+public class LastTimeUsedAnnotation extends AnnotatedWord {
   /**
    * A comparator that sorts {@link LastTimeUsedAnnotation} instances by their
    * associated last time used.
@@ -27,19 +25,19 @@ public class LastTimeUsedAnnotation extends AnnotatedWord
     }
   };
 
+  LastTimeUsedClock clock;
   long lastTimeUsed;
 
-  LastTimeUsedAnnotation(String word) {
-    this(word, System.currentTimeMillis());
-  }
-
   LastTimeUsedAnnotation(LastTimeUsedAnnotation annotation) {
-    this(annotation.getWord(), annotation.getLastTimeUsed());
+    super(annotation.word);
+    this.clock = annotation.clock;
+    this.lastTimeUsed = annotation.lastTimeUsed;
   }
 
-  LastTimeUsedAnnotation(String word, long lastTimeUsed) {
+  LastTimeUsedAnnotation(String word, LastTimeUsedClock clock) {
     super(word);
-    this.lastTimeUsed = lastTimeUsed;
+    this.clock = clock;
+    update();
   }
 
   /**
@@ -50,7 +48,7 @@ public class LastTimeUsedAnnotation extends AnnotatedWord
   }
 
   protected void update() {
-    lastTimeUsed = System.currentTimeMillis();
+    lastTimeUsed = clock.getTimeInMillis();
   }
 
   @Override

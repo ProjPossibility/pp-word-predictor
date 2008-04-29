@@ -14,6 +14,7 @@ import org.ss12.wordprediction.PredictionRequest;
 import org.ss12.wordprediction.newcore.annotations.FrecencyAnnotationFactory;
 import org.ss12.wordprediction.newcore.annotations.FrequencyAnnotationFactory;
 import org.ss12.wordprediction.newcore.annotations.LastTimeUsedAnnotationFactory;
+import org.ss12.wordprediction.newcore.annotations.MockLastTimeUsedClock;
 
 /**
  * A benchmark for {@link Scorer} implementations.
@@ -210,7 +211,7 @@ public class ScorerBenchmark {
     NameAnnotationPair[] nameAnnotationPairs = new NameAnnotationPair[] {
         new NameAnnotationPair("frequency", new FrequencyAnnotationFactory()),
         new NameAnnotationPair("timeLastUsed",
-            new LastTimeUsedAnnotationFactory()),
+            new LastTimeUsedAnnotationFactory(new MockLastTimeUsedClock())),
         new NameAnnotationPair("frecency", new FrecencyAnnotationFactory())
     };
 
