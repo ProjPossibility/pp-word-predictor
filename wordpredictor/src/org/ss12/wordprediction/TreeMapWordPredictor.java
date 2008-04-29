@@ -30,13 +30,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.ss12.wordprediction.model.WordPredictor;
 import org.ss12.wordprediction.newcore.BDBImmutableLexicon;
+import org.ss12.wordprediction.newcore.CachingImmutableLexicon;
+import org.ss12.wordprediction.newcore.ImmutableLexicon;
+import org.ss12.wordprediction.newcore.WordFrequencyPair;
 
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
@@ -44,6 +46,8 @@ import com.sleepycat.je.EnvironmentConfig;
 
 public class TreeMapWordPredictor implements WordPredictor
 {
+  private static final int CACHE_SIZE = 10000;
+  
 	private Map<String, Integer> words;
 	private Map<String, Integer> unigrams;
 	private Map<String, Integer> bigrams;
@@ -56,9 +60,11 @@ public class TreeMapWordPredictor implements WordPredictor
 	LinkedList<String> lastWords;
 	protected WordReader reader;
 	BDBImmutableLexicon uniBD;
+	ImmutableLexicon uniCache;
 	BDBImmutableLexicon triBD;
 	BDBImmutableLexicon biBD;
 	BDBImmutableLexicon dictBD;
+	ImmutableLexicon dictCache;
 	private boolean buffered;
 
 	final static String dir = "./resources/dictionaries/bdb/";
@@ -83,7 +89,9 @@ public class TreeMapWordPredictor implements WordPredictor
 		envConfig.setAllowCreate(true);
 		try {
 			dictBD = new BDBImmutableLexicon(new Environment(dict, envConfig));
+			dictCache = CachingImmutableLexicon.createCache(dictBD, CACHE_SIZE);
 			uniBD = new BDBImmutableLexicon(new Environment(uni, envConfig));
+			uniCache = CachingImmutableLexicon.createCache(uniBD, CACHE_SIZE);
 			biBD = new BDBImmutableLexicon(new Environment(bi, envConfig));
 			triBD = new BDBImmutableLexicon(new Environment(tri, envConfig));
 		} catch (DatabaseException e) {
@@ -96,6 +104,7 @@ public class TreeMapWordPredictor implements WordPredictor
 
 //		wp.tester();
 	}
+	
 	public TreeMapWordPredictor(SortedMap<String, Integer> sm) {
 		this(sm, new TreeMap<String, Integer>(), new TreeMap<String, Integer>(), new TreeMap<String, Integer>());
 	}
@@ -130,11 +139,15 @@ public class TreeMapWordPredictor implements WordPredictor
 				myEnv.removeDatabase(null, "ImmutableLexicon");
 			}catch(DatabaseException e){}
 			dictBD = new BDBImmutableLexicon(myEnv);
+	    dictCache = CachingImmutableLexicon.createCache(dictBD, CACHE_SIZE);
+
 			myEnv = new Environment(uniF, envConfig);
 			try{
 				myEnv.removeDatabase(null, "ImmutableLexicon");
 			}catch(DatabaseException e){}
 			uniBD = new BDBImmutableLexicon(myEnv);
+	    uniCache = CachingImmutableLexicon.createCache(uniBD, CACHE_SIZE);
+
 			myEnv = new Environment(biF, envConfig);
 			try{
 				myEnv.removeDatabase(null, "ImmutableLexicon");
@@ -207,6 +220,52 @@ public class TreeMapWordPredictor implements WordPredictor
 		}
 		return suggestions;
 	}
+	
+	private Entry<String, Integer>[] findSuggestions(String beginSeq, String endSeq,
+	    int numSuggestions, ImmutableLexicon cacheLexicon) {
+	  // Build a list of all WordFrequencyPair instances from the cache.
+	  Iterable<WordFrequencyPair> freqs = cacheLexicon.getSignificance(beginSeq, endSeq);
+	  LinkedList<WordFrequencyPair> freqsList = new LinkedList<WordFrequencyPair>();
+	  for (WordFrequencyPair freq : freqs) {
+	    freqsList.add(freq);
+	  }
+	  if (freqsList.size() < numSuggestions) {
+	    // We can't return enough words from the cache, must go to the real lexicon.
+	    return new Entry[0];
+	  }
+
+	  WordFrequencyPair[] freqsArray = freqsList.toArray(new WordFrequencyPair[0]);
+	  TopElements.selectSmallest(freqsArray, numSuggestions, WordFrequencyPair.COMPARATOR);
+	  Entry[] entries = new Entry[numSuggestions];
+	  for (int i = 0; i < numSuggestions; ++i) {
+	    entries[i] = new FrequencyEntry(freqsArray[i].word, freqsArray[i].significance);
+	  }
+	  return entries;
+	}
+
+	// SUCH AN UGLY HACK.
+	private static final class FrequencyEntry implements Entry<String, Integer> {
+	  private final String word;
+	  private final Integer frequency;
+
+	  private FrequencyEntry(String word, int frequency) {
+	    this.word = word;
+	    this.frequency = frequency;
+	  }
+	  
+    public String getKey() {
+      return word;
+    }
+
+    public Integer getValue() {
+      return frequency;
+    }
+
+    public Integer setValue(Integer value) {
+      throw new UnsupportedOperationException();
+    }
+	}
+	
 	/*****************************
 	 * 
 	 * @param begin_seq: the user input
@@ -293,10 +352,21 @@ public class TreeMapWordPredictor implements WordPredictor
 			Map<String,Integer> m=new HashMap<String,Integer>();
 			begin_seq=tokens[0];
 			end_seq=getUpperBound(begin_seq);
-			//built  suggestion list from unigram map
-			unigram_suggestions=findSuggestions(begin_seq, end_seq, numOfSuggestionsFound,(SortedMap)uniBD.map);
+			
+			// Try getting suggestions from the unigram cache first.
+			unigram_suggestions= findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, uniCache);
+			if (unigram_suggestions.length < numOfSuggestionsFound) {
+			  // Did not find enough suggestions, go to the real unigram lexicon.
+        unigram_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound,(SortedMap)uniBD.map);
+			}
 
-			dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, (SortedMap)dictBD.map);
+			// Try getting suggestions from the dictionary cache first.
+			dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, dictCache);
+			if (dictionary_suggestions.length < numOfSuggestionsFound) {
+			  // Did not find enough suggestions, go to the real dictionary lexicon.
+        dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, (SortedMap)dictBD.map);
+			}
+
 			numOfHints_unigram = Math.min(numOfSuggestionsFound, unigram_suggestions.length);
 			numOfHints_dictionary = Math.min(numOfSuggestionsFound, dictionary_suggestions.length);
 			//for suggestions from dictionary map and from uni-gram map
@@ -513,5 +583,5 @@ public class TreeMapWordPredictor implements WordPredictor
 //		for(String w:word)
 //		System.out.println(w);
 		return word;
-	}	
+	}
 }

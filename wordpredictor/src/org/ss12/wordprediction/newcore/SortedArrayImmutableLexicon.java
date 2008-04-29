@@ -44,7 +44,11 @@ public class SortedArrayImmutableLexicon implements ImmutableLexicon {
       throw new IllegalStateException(/* TODO */);
     }
 
-    return freqs.subList(getLowerBound(lowBound), getUpperBound(highBound));
+    int lowIndex = ((lowBound == null) || (lowBound.equals(""))) ?
+        0 : getLowerBound(lowBound);
+    int highIndex = (highBound == null) ?
+        freqs.size() : getUpperBound(highBound);
+    return freqs.subList(lowIndex, highIndex);
   }
 
   private int getLowerBound(String word) {
