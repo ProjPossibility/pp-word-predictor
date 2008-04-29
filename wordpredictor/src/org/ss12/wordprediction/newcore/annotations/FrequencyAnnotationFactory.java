@@ -11,7 +11,7 @@ import org.ss12.wordprediction.newcore.Scorer;
  */
 public class FrequencyAnnotationFactory implements
     AnnotationFactory<FrequencyAnnotation> {
-  public FrequencyAnnotation newAnnotation(String word) {
+  public FrequencyAnnotation newAnnotation(String word, int numPrecedingWords) {
     return new FrequencyAnnotation(word);
   }
 

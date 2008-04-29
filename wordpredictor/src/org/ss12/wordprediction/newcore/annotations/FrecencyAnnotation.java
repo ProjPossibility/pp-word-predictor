@@ -30,10 +30,10 @@ public class FrecencyAnnotation extends AnnotatedWord {
     queue.add(this);
   }
 
-  void shiftBucket(int prevBucket) {
-    if (prevBucket > 0) {
-      ++bucketCounts[prevBucket - 1];
+  void moveToBucket(int toBucket) {
+    --bucketCounts[toBucket - 1];
+    if (toBucket < bucketCounts.length) {
+      ++bucketCounts[toBucket];
     }
-    --bucketCounts[prevBucket];
   }
 }

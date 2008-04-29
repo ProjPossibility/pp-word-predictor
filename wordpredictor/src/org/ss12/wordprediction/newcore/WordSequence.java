@@ -75,10 +75,17 @@ public final class WordSequence implements Comparable<WordSequence>, Serializabl
   }
 
   /**
-   * @return the last words in the sequence of words
+   * @return the last word in the sequence of words, potentially a fragment
    */
   public String getLastWord() {
     return words.get(words.size() - 1);
+  }
+
+  /**
+   * @return the number of words in this sequence
+   */
+  public int size() {
+    return words.size();
   }
 
   public int compareTo(WordSequence wordSequence) {

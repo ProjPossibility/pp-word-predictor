@@ -11,7 +11,7 @@ import org.ss12.wordprediction.newcore.Scorer;
  */
 public class LastTimeUsedAnnotationFactory implements
     AnnotationFactory<LastTimeUsedAnnotation> {
-  public LastTimeUsedAnnotation newAnnotation(String word) {
+  public LastTimeUsedAnnotation newAnnotation(String word, int numPrecedingWords) {
     return new LastTimeUsedAnnotation(word);
   }
 
