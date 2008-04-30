@@ -106,16 +106,19 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		JCheckBoxMenuItem viewRecentText = new JCheckBoxMenuItem("Recent Text",true);
 		JMenuItem setFont = new JMenuItem("Font");
 		JCheckBoxMenuItem setLearn = new JCheckBoxMenuItem("Learn",isLearning);
+		JCheckBoxMenuItem setIntelligent = new JCheckBoxMenuItem("Intellitext");
 		viewPredictions.addActionListener(this);
 		viewKeyboard.addActionListener(this);
 		viewRecentText.addActionListener(this);
 		setFont.addActionListener(this);
 		setLearn.addActionListener(this);
+		setIntelligent.addActionListener(this);
 		view.add(viewPredictions);
 		view.add(viewKeyboard);
 		view.add(viewRecentText);
 		//settings.add(setFont);
 		settings.add(setLearn);
+		settings.add(setIntelligent);
 		menu.add(view);
 		menu.add(settings);
 
@@ -219,7 +222,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 					button = rightCtrlButton = new JToggleButton(keys[i]);
 			}
 			else if(keycode[i]==0){
-				button = new JButton(keys[i]);
+				button = new JButton("<html>"+keys[i]+"</html>");
 			}
 			else{
 				button = new KeyButton("<html>"+keys[i]+"</html>","<html>"+upperKeys[i]+"</html>",keycode[i]);
@@ -272,6 +275,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		if(arg0.getSource() instanceof KeyButton){
 			KeyButton key = ((KeyButton)arg0.getSource());
 			int keycode = key.getKeyCode();
+			String keyText = key.getText().replace("<html>", "").replace("</html>", "").replace("<body>","").replace("</body>", "");
 			if(keycode==KeyEvent.VK_BACK_SPACE){
 				String textTyped = text.getText();
 				if(textTyped.length()>0)
@@ -295,13 +299,14 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 					shift = storeShift;
 					press(keycode);
 					press(KeyEvent.VK_SPACE);
+					text.setText(textTyped.substring(0, length-1)+keyText+' ');
 					predict();
 					learn();
 					return;
 				}
 			}
 			else{
-				text.setText(text.getText()+key.getText().replace("<html>", "").replace("</html>", "").replace("<body>","").replace("</body>", ""));
+				text.setText(text.getText()+keyText);
 			}
 			press(keycode);
 			predict();
@@ -314,7 +319,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 				capslock = key.isSelected();
 				shift(shift);
 				press(KeyEvent.VK_CAPS_LOCK);
-			}
+			} 
 			else if(text.equals("Shift")){
 				shift(key.isSelected());
 				if(shift)
