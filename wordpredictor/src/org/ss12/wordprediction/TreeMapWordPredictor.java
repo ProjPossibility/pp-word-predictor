@@ -77,9 +77,12 @@ public class TreeMapWordPredictor implements WordPredictor
 		reader = new WordReader(this);
 		File uni,bi,tri,dict;
 		uni = new File(dir+"uni");
+		uni.mkdirs();
 		bi = new File(dir+"bi");
+		bi.mkdirs();
 		tri = new File(dir+"tri");
-		dict = new File(dir+"dict");
+		tri.mkdirs();
+//		dict = new File(dir+"dict");
 		wordCount = sumValues(words);
 		bigramCount = sumValues(bigrams);
 		trigramCount = sumValues(trigrams);
@@ -90,8 +93,8 @@ public class TreeMapWordPredictor implements WordPredictor
 		envConfig.setTransactional(false);
 		envConfig.setAllowCreate(true);
 		try {
-			dictBD = new BDBImmutableLexicon(new Environment(dict, envConfig));
-			dictCache = CachingImmutableLexicon.createCache(dictBD, CACHE_SIZE);
+//			dictBD = new BDBImmutableLexicon(new Environment(dict, envConfig));
+//			dictCache = CachingImmutableLexicon.createCache(dictBD, CACHE_SIZE);
 			uniBD = new BDBImmutableLexicon(new Environment(uni, envConfig));
 			uniCache = CachingImmutableLexicon.createCache(uniBD, CACHE_SIZE);
 			biBD = new BDBImmutableLexicon(new Environment(bi, envConfig));
