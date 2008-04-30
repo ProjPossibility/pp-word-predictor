@@ -22,6 +22,8 @@
 
 package org.ss12.wordprediction;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -48,8 +50,8 @@ import com.sleepycat.je.EnvironmentConfig;
 
 public class TreeMapWordPredictor implements WordPredictor
 {
-  private static final int CACHE_SIZE = 20000;
-  
+	private static final int CACHE_SIZE = 20000;
+
 	private Map<String, Integer> words;
 	private Map<String, Integer> unigrams;
 	private Map<String, Integer> bigrams;
@@ -92,12 +94,15 @@ public class TreeMapWordPredictor implements WordPredictor
 		EnvironmentConfig envConfig = new EnvironmentConfig();
 		envConfig.setTransactional(false);
 		envConfig.setAllowCreate(true);
+		envConfig.setLocking(false);
+		envConfig.setCachePercent(20);
 		try {
 //			dictBD = new BDBImmutableLexicon(new Environment(dict, envConfig));
 //			dictCache = CachingImmutableLexicon.createCache(dictBD, CACHE_SIZE);
 			uniBD = new BDBImmutableLexicon(new Environment(uni, envConfig));
 			uniCache = CachingImmutableLexicon.createCache(uniBD, CACHE_SIZE);
-			biBD = new BDBImmutableLexicon(new Environment(bi, envConfig));
+			Environment e = new Environment(bi, envConfig);
+			biBD = new BDBImmutableLexicon(e);
 			triBD = new BDBImmutableLexicon(new Environment(tri, envConfig));
 		} catch (DatabaseException e) {
 			// TODO Auto-generated catch block
@@ -109,9 +114,9 @@ public class TreeMapWordPredictor implements WordPredictor
 
 //		wp.tester();
 	}
-	
+
 	public TreeMapWordPredictor(SortedMap<String, Integer> sm) {
-		this(sm, new TreeMap<String, Integer>(), new TreeMap<String, Integer>(), new TreeMap<String, Integer>());
+		this(sm, new HashMap<String, Integer>(), new HashMap<String, Integer>(), new HashMap<String, Integer>());
 	}
 
 	public TreeMapWordPredictor(Map<String,Integer> sm,Map<String, Integer> uni,Map<String, Integer> bi,Map<String, Integer> tri)
@@ -136,33 +141,34 @@ public class TreeMapWordPredictor implements WordPredictor
 		trigramCount = sumValues(trigrams);
 		unigramCount = sumValues(unigrams);
 		EnvironmentConfig envConfig = new EnvironmentConfig();
+		envConfig.setCachePercent(30);
 		envConfig.setTransactional(false);
 		envConfig.setAllowCreate(true);
 		try {
 			Environment myEnv = new Environment(dictF, envConfig);
 			try{
-				myEnv.removeDatabase(null, "ImmutableLexicon");
+			myEnv.removeDatabase(null, "ImmutableLexicon");
 			}catch(DatabaseException e){}
 			dictBD = new BDBImmutableLexicon(myEnv);
-	    dictCache = CachingImmutableLexicon.createCache(dictBD, CACHE_SIZE);
+//			dictCache = CachingImmutableLexicon.createCache(dictBD, CACHE_SIZE);
 
-			myEnv = new Environment(uniF, envConfig);
-			try{
-				myEnv.removeDatabase(null, "ImmutableLexicon");
-			}catch(DatabaseException e){}
-			uniBD = new BDBImmutableLexicon(myEnv);
-	    uniCache = CachingImmutableLexicon.createCache(uniBD, CACHE_SIZE);
+//			Environment myEnv = new Environment(uniF, envConfig);
+//			try{
+//			myEnv.removeDatabase(null, "ImmutableLexicon");
+//			}catch(DatabaseException e){}
+//			uniBD = new BDBImmutableLexicon(myEnv);
+//			uniCache = CachingImmutableLexicon.createCache(uniBD, CACHE_SIZE);
 
-			myEnv = new Environment(biF, envConfig);
-			try{
-				myEnv.removeDatabase(null, "ImmutableLexicon");
-			}catch(DatabaseException e){}
-			biBD = new BDBImmutableLexicon(myEnv);
-			myEnv = new Environment(triF, envConfig);
-			try{
-				myEnv.removeDatabase(null, "ImmutableLexicon");
-			}catch(DatabaseException e){}
-			triBD = new BDBImmutableLexicon(myEnv);
+//			Environment myEnv = new Environment(biF, envConfig);
+//			try{
+//			myEnv.removeDatabase(null, "ImmutableLexicon");
+//			}catch(DatabaseException e){}
+//			biBD = new BDBImmutableLexicon(myEnv);
+//			myEnv = new Environment(triF, envConfig);
+//			try{
+//			myEnv.removeDatabase(null, "ImmutableLexicon");
+//			}catch(DatabaseException e){}
+//			triBD = new BDBImmutableLexicon(myEnv);
 		} catch (DatabaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,68 +231,68 @@ public class TreeMapWordPredictor implements WordPredictor
 		}
 		return suggestions;
 	}
-	
-	private Entry<String, Integer>[] findSuggestions(String beginSeq, String endSeq,
-	    int numSuggestions, ImmutableLexicon cacheLexicon) {
-	  // Build a list of all WordFrequencyPair instances from the cache.
-	  Iterable<WordFrequencyPair> freqs = cacheLexicon.getSignificance(beginSeq, endSeq);
-	  LinkedList<WordFrequencyPair> freqsList = new LinkedList<WordFrequencyPair>();
-	  for (WordFrequencyPair freq : freqs) {
-	    freqsList.add(freq);
-	  }
-	  if (freqsList.size() < numSuggestions) {
-	    // We can't return enough words from the cache, must go to the real lexicon.
-	    return new Entry[0];
-	  }
 
-	  WordFrequencyPair[] freqsArray = freqsList.toArray(new WordFrequencyPair[0]);
-	  TopElements.selectSmallest(freqsArray, numSuggestions,
-			  Collections.reverseOrder(WordFrequencyPair.COMPARATOR));
-	  Entry[] entries = new Entry[numSuggestions];
-	  for (int i = 0; i < numSuggestions; ++i) {
-	    entries[i] = new FrequencyEntry(freqsArray[i].word, freqsArray[i].significance);
-	  }
-	  return entries;
+	private Entry<String, Integer>[] findSuggestions(String beginSeq, String endSeq,
+			int numSuggestions, ImmutableLexicon cacheLexicon) {
+		// Build a list of all WordFrequencyPair instances from the cache.
+		Iterable<WordFrequencyPair> freqs = cacheLexicon.getSignificance(beginSeq, endSeq);
+		LinkedList<WordFrequencyPair> freqsList = new LinkedList<WordFrequencyPair>();
+		for (WordFrequencyPair freq : freqs) {
+			freqsList.add(freq);
+		}
+		if (freqsList.size() < numSuggestions) {
+			// We can't return enough words from the cache, must go to the real lexicon.
+			return new Entry[0];
+		}
+
+		WordFrequencyPair[] freqsArray = freqsList.toArray(new WordFrequencyPair[0]);
+		TopElements.selectSmallest(freqsArray, numSuggestions,
+				Collections.reverseOrder(WordFrequencyPair.COMPARATOR));
+		Entry[] entries = new Entry[numSuggestions];
+		for (int i = 0; i < numSuggestions; ++i) {
+			entries[i] = new FrequencyEntry(freqsArray[i].word, freqsArray[i].significance);
+		}
+		return entries;
 	}
 
 	// SUCH AN UGLY HACK.
 	private static final class FrequencyEntry implements Entry<String, Integer> {
-	  private final String word;
-	  private final Integer frequency;
+		private final String word;
+		private final Integer frequency;
 
-	  private FrequencyEntry(String word, int frequency) {
-	    this.word = word;
-	    this.frequency = frequency;
-	  }
-	  
-    public String getKey() {
-      return word;
-    }
+		private FrequencyEntry(String word, int frequency) {
+			this.word = word;
+			this.frequency = frequency;
+		}
 
-    public Integer getValue() {
-      return frequency;
-    }
+		public String getKey() {
+			return word;
+		}
 
-    public Integer setValue(Integer value) {
-      throw new UnsupportedOperationException();
-    }
-    
-    public boolean equals(Object obj) {
-      if (obj == this) {
-        return true;
-      } else if (obj instanceof Entry) {
-        Entry e = (Entry) obj;
-        return WordPredictorUtil.equals(word, e.getKey()) &&
-            WordPredictorUtil.equals(frequency, e.getValue());
-      }
-      return false;
-    }
-    
-    public int hashCode() {
-      return WordPredictorUtil.hashCode(word, frequency);
-    }
+		public Integer getValue() {
+			return frequency;
+		}
+
+		public Integer setValue(Integer value) {
+			throw new UnsupportedOperationException();
+		}
+
+		public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			} else if (obj instanceof Entry) {
+				Entry e = (Entry) obj;
+				return WordPredictorUtil.equals(word, e.getKey()) &&
+				WordPredictorUtil.equals(frequency, e.getValue());
+			}
+			return false;
+		}
+
+		public int hashCode() {
+			return WordPredictorUtil.hashCode(word, frequency);
+		}
 	}
-	
+
 	/*****************************
 	 * 
 	 * @param begin_seq: the user input
@@ -373,19 +379,19 @@ public class TreeMapWordPredictor implements WordPredictor
 			Map<String,Integer> m=new HashMap<String,Integer>();
 			begin_seq=tokens[0];
 			end_seq=getUpperBound(begin_seq);
-			
+
 			// Try getting suggestions from the unigram cache first.
 			unigram_suggestions= findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, uniCache);
 			if (unigram_suggestions.length < numOfSuggestionsFound) {
-			  // Did not find enough suggestions, go to the real unigram lexicon.
-        unigram_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound,(SortedMap)uniBD.map);
+				// Did not find enough suggestions, go to the real unigram lexicon.
+				unigram_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound,(SortedMap)uniBD.map);
 			}
 
 			// Try getting suggestions from the dictionary cache first.
 			dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, dictCache);
 			if (dictionary_suggestions.length < numOfSuggestionsFound) {
-			  // Did not find enough suggestions, go to the real dictionary lexicon.
-        dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, (SortedMap)dictBD.map);
+				// Did not find enough suggestions, go to the real dictionary lexicon.
+				dictionary_suggestions = findSuggestions(begin_seq, end_seq, numOfSuggestionsFound, (SortedMap)dictBD.map);
 			}
 
 			numOfHints_unigram = Math.min(numOfSuggestionsFound, unigram_suggestions.length);
@@ -472,17 +478,20 @@ public class TreeMapWordPredictor implements WordPredictor
 		}
 		return suggestions;
 	}
-
+	String path = "resources/dictionaries/user/";
 	public void cleanup(){
+//		System.out.println("Saving...");
 //		try {
-//		saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
-//		saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
-//		saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
-//		saveMap(words,new FileOutputStream(path+"dict.dat"));
+////			saveMap(unigrams,new FileOutputStream(path+"uni.dat"));
+////			saveMap(bigrams,new FileOutputStream(path+"bi.dat"));
+////			saveMap(trigrams,new FileOutputStream(path+"tri.dat"));
+////			saveMap(words,new FileOutputStream(path+"dict.dat"));
 //		} catch (FileNotFoundException e) {
-//		e.printStackTrace();
+//			e.printStackTrace();
 //		}
+//		System.out.println("Done saving!");
 		System.out.println("cleaning up");
+
 		if(buffered){
 			flush();
 		}
@@ -492,7 +501,7 @@ public class TreeMapWordPredictor implements WordPredictor
 		dictBD.close();
 		System.out.println("cleaned up");
 	}
-	private void saveMap(SortedMap<String,Integer> sm,OutputStream os){
+	private void saveMap(Map<String,Integer> sm,OutputStream os){
 		ObjectOutputStream out = null;
 		try
 		{
@@ -545,15 +554,28 @@ public class TreeMapWordPredictor implements WordPredictor
 		Integer n;
 		if((n=sm.get(t))==null) n=0;
 		sm.put(t, n+1);
-		if(buffered && Runtime.getRuntime().freeMemory()<200000000){
+		if(buffered && Runtime.getRuntime().freeMemory()<300000000){
 			flush();
 		}
 	}
+	int count=0;
 	private void flush() {
 		System.out.println("FLUSH!!!!!");
+//		try {
+//			saveMap(trigrams,new FileOutputStream(path+"tri"+(count++)+".dat"));
+//			trigrams.clear();
+//			System.gc();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		System.out.println("Saving words");
 		dictBD.add(words);
+		System.out.println("Saving unigrams");
 		uniBD.add(unigrams);
+		System.out.println("Saving bigrams");
 		biBD.add(bigrams);
+		System.out.println("Saving trigrams");
 		triBD.add(trigrams);
 		System.out.println("Free memory:"+Runtime.getRuntime().freeMemory());
 	}

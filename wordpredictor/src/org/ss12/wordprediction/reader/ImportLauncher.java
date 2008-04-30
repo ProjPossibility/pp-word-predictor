@@ -39,23 +39,23 @@ public class ImportLauncher {
 			e.printStackTrace();
 		}
 		
-		FileImporter fi = new FileImporter(wl,false);//true to use SQLITE, false to use TreeMap
-		try{
-			File d = new File("resources/sample");
-			String[] files = d.list();
-			for(int j=0;j<files.length;j++){
-				if(files[j].charAt(0)=='.')
-					continue;
-//				if(files[j].compareTo("article00001000.txt")>=0)
-//					break;
-				System.out.println(d.getAbsolutePath()+"/"+files[j]);
-				File f = new File(d.getAbsolutePath()+"/"+files[j]);
-				fi.readFile(f);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		FileImporter fi = new FileImporter(wl,false);//true to use SQLITE, false to use HashMap
+//		try{
+//			File d = new File("C:/articles");
+//			String[] files = d.list();
+//			for(int j=0;j<files.length;j++){
+//				if(files[j].charAt(0)=='.')
+//					continue;
+////				if(files[j].compareTo("article00575344.txt")<=0)
+////					continue;
+//				System.out.println(d.getAbsolutePath()+"/"+files[j]);
+//				File f = new File(d.getAbsolutePath()+"/"+files[j]);
+//				fi.readFile(f);
+//			}
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}
 		fi.pm.cleanup();
-		System.out.println("Time elapsed: "+(float)(System.nanoTime()-t)/1000000000.0);
+		System.out.println("Time elapsed: "+(float)(System.nanoTime()-t)/1000000000.0 + " seconds");
 	}
 }
