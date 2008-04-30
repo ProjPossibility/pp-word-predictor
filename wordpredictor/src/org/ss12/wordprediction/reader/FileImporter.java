@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -52,7 +53,7 @@ public class FileImporter {
 		File bi = new File("resources/dictionaries/user/bi.dat");
 		File tri = new File("resources/dictionaries/user/tri.dat");
 		*/
-		pm = new TreeMapWordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
+		pm = new TreeMapWordPredictor(wl.getWords(),new HashMap<String,Integer>(),new HashMap<String,Integer>(),new HashMap<String,Integer>());
 		wr = new WordReader(pm);
 	}
 	public FileImporter(WordLoader wl, boolean useSQL){
@@ -60,7 +61,7 @@ public class FileImporter {
 		if(useSQL)
 			pm = new SQLITEWordPredictor();
 		else
-			pm = new TreeMapWordPredictor(wl.getWords(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>(),new TreeMap<String,Integer>());
+			pm = new TreeMapWordPredictor(wl.getWords(),new HashMap<String,Integer>(),new HashMap<String,Integer>(),new HashMap<String,Integer>());
 		wr = new WordReader(pm);
 	}
 	public boolean readFile(File f) throws FileNotFoundException{

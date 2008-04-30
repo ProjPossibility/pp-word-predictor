@@ -28,13 +28,12 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
-
-import com.sleepycat.je.Environment;
 
 /**
  * Allows loading the word-frequency pairs and the dictionary.
@@ -117,12 +116,12 @@ public class WordLoader {
 	 * @return the n-gram to frequency map
 	 */
 	@SuppressWarnings("unchecked")
-	public TreeMap<String, Integer> loadNgram(File file) {
-		TreeMap<String, Integer> retval = new TreeMap<String, Integer>();
+	public static HashMap<String, Integer> loadNgram(File file) {
+		HashMap<String, Integer> retval = new HashMap<String, Integer>();
 		try {
 			FileInputStream objReader = new FileInputStream(file);
 			ObjectInputStream in = new ObjectInputStream(objReader);
-			retval = (TreeMap<String, Integer>) in.readObject();
+			retval = (HashMap<String, Integer>) in.readObject();
 			in.close();
 		} catch (IOException e) {
 			System.out
@@ -132,6 +131,21 @@ public class WordLoader {
 			e.printStackTrace();
 		}
 		return retval;
+	}
+	public static void main(String args[]) throws Exception{
+		TreeMapWordPredictor wp = new TreeMapWordPredictor();
+		System.out.println("Trimmed: " + wp.biBD.trim(20));
+		System.out.println("Compressed: " + wp.biBD.compress());
+//		System.out.println("Loading file");
+//		Map<String, Integer> m = loadNgram(new File("resources/dictionaries/user/tri6.dat"));
+//		System.out.println("Adding file");
+//		wp.triBD.add(m);
+//		m = loadNgram(new File("resources/dictionaries/user/tri2.dat"));
+//		System.out.println("Adding file");
+//		wp.triBD.add(m);
+//		m = loadNgram(new File("resources/dictionaries/user/tri3.dat"));
+//		System.out.println("Adding file");
+//		wp.triBD.add(m);
 	}
 
 	public String toString() {

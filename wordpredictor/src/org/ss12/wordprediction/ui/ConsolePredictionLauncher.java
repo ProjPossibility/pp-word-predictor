@@ -22,7 +22,7 @@ public class ConsolePredictionLauncher {
 				String input = in.readLine();
 				String[] results = predictor.getSuggestionsGramBased(predictor.processString(input), 5);
 				// update unigram, bigram and trigram according to user input string
-				wordReader.nextWords(predictor.processString(input));
+//				wordReader.nextWords(predictor.processString(input));
 				for(String r:results) System.out.println(r);
 			} catch (IOException e) {
 				e.printStackTrace();

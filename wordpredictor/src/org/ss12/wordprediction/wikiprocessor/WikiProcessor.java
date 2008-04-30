@@ -71,7 +71,7 @@ public class WikiProcessor {
 	 * @return The plain text of the page
 	 */
 	private String removeWikiFormat(String text) {
-		if(text.length()<150)
+		if(text.length()<150 || text.length()>200000)
 			return "";
 		text = isolateTagContent("text", text);
 		text = text.replaceAll("=", "");
@@ -79,15 +79,25 @@ public class WikiProcessor {
 		text = text.replaceAll("\'\'", "");
 
 		//remove lines with image tags
-		while(text.indexOf("[[Image") > -1) {
-			int theIndex = text.indexOf("[[Image");
-			int nextNewLine = text.indexOf("\n", theIndex);
-			text = text.substring(0, theIndex) + text.substring(nextNewLine+1);
+		int theIndex,nextNewLine;
+		while((theIndex = text.indexOf("[[Image")) > -1 && (nextNewLine = text.indexOf("\n",theIndex)) > -1) {
+			//System.out.println("theIndex:"+theIndex+" nextNewLine:"+nextNewLine);
+			if(nextNewLine>theIndex)
+				text = text.substring(0, theIndex) + text.substring(nextNewLine+1);
+			else if((nextNewLine=text.indexOf("]]"))>theIndex){
+				text = text.substring(0, theIndex) + text.substring(nextNewLine+1);
+			}
+			else
+				text = text.replace("[[Image", "\n");
 		}
 
 		//remove {{ tags
-		while(text.indexOf("{{") > -1 && text.indexOf("}}") > -1) {
+		int counter=0;
+		while(text.indexOf("{{") > -1 && text.indexOf("}}") > -1 && counter<=1000) {
+//			System.out.println("Length: "+text.length());
 			text = removeTagContent("\\{\\{", "}}", text);
+			if(counter++>=1000)
+				text=text.replaceAll("\\{\\{", "").replaceAll("}}", "");
 		}
 
 		//handle bracket terms
@@ -211,19 +221,18 @@ public class WikiProcessor {
 		BufferedReader br = new BufferedReader(new FileReader(wikiDB));
 		int numToStart = 0;
 		String line = "";
-		while(br.ready() && numToStart <= articleStart){
-			line = br.readLine();
+		while((line=br.readLine())!=null && numToStart <= articleStart){
 			if(line.contains("<text "))
 				numToStart++;
 		}
 		int maxThreads=10;
-		BlockingQueue<Runnable> q = new ArrayBlockingQueue<Runnable>(50);
+		BlockingQueue<Runnable> q = new ArrayBlockingQueue<Runnable>(100,true);
 		ThreadPoolExecutor e = new ThreadPoolExecutor(maxThreads,maxThreads,0,TimeUnit.SECONDS,q,new ThreadPoolExecutor.CallerRunsPolicy());
 
 		//process articles
 		int numArticlesProcessed = 0;
 		StringBuffer article = new StringBuffer();
-		while(br.ready() && (numArticlesProcessed+articleStart) < articleEnd){
+		while(line!=null && (numArticlesProcessed+articleStart) < articleEnd){
 			article.append(line+"\n");
 			if(line.contains("</text>")){
 				String filename = ""+(numArticlesProcessed+articleStart);
@@ -232,15 +241,18 @@ public class WikiProcessor {
 				filename = "article"+filename+".txt";
 
 				e.execute(new ArticleWorkUnit(article.toString(),filename));
+				//new ArticleWorkUnit(article.toString(),filename).run();
 				numArticlesProcessed++;
 				article = new StringBuffer();
 			}
 			line = br.readLine();
 		}
 		Thread.yield();
+		System.out.println(br.readLine());
 		Thread.yield();
 		List<Runnable> l = e.shutdownNow();
-		Thread.yield();
+		while(!e.isTerminated())
+			Thread.yield();
 		if(l.size()>0){
 			System.out.println("The following articles failed: ");
 			for(Runnable r: l){
@@ -269,9 +281,10 @@ public class WikiProcessor {
 	public static void main(String[] args) {
 		final WikiProcessor w = new WikiProcessor();
 		try {
-			w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 390000, 400000);
-			for(int i=5;i<52;i++)
-				w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 100000*i, 100000*(i+1));
+//			w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 399000, 400000);
+			w.convertFile(new File("resources/unprocessed samples/enwiki-20080312-pages-articles.xml"), 714000, 5000000);
+			//for(int i=42;i<520;i++)
+				
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

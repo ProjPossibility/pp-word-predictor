@@ -2,9 +2,11 @@ package org.ss12.wordprediction.newcore;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.Map.Entry;
 
 import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.collections.StoredSortedMap;
@@ -50,13 +52,41 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		}
 		return l;
 	}
-	
+
 	public void add(Map<String, Integer> map) {
-		for (Map.Entry<String, Integer> e : map.entrySet()) {
+		System.out.println("Words to save: " + map.entrySet().size());
+		int count=0;
+		for (Iterator<Entry<String,Integer>> it = map.entrySet().iterator(); it.hasNext();) {
+//			if(count++<5000001){
+//				it.next();
+//				continue;
+//			}
+			if(count++%1000000==0){
+				System.out.println("Read "+count+" words so far");
+				System.gc();
+				try {
+					env.sync();
+				} catch (DatabaseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			Entry<String, Integer> e = it.next();
+//			if(e.getValue()>5)
 			incrementWord(e.getKey(), e.getValue());
+			it.remove();
 		}
+		System.out.println("All words saved");
 		map.clear();
-		System.gc();
+		try {
+			env.sync();
+		} catch (DatabaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		for(int i=0;i<10;i++)
+			System.out.println("gc: "+i);
+			System.gc();
 	}
 
 	public void incrementWord(String word){
@@ -148,6 +178,18 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		}
 		
 		return out;
+	}
+	
+	public int trim(int n) throws Exception{
+		int trimmed=0;
+		for (Iterator<Entry<String,Integer>> it = this.map.entrySet().iterator(); it.hasNext();) {
+			Entry<String,Integer> e = it.next();
+			if(e.getValue()<n){
+				trimmed++;
+				it.remove();
+			}
+		}
+		return trimmed;
 	}
 
 	public static void main(String[] args) throws Exception{
