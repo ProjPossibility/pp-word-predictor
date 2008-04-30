@@ -447,7 +447,7 @@ public class TreeMapWordPredictor implements WordPredictor
 				return new String[0];
 			suggestions[rank]=str_arr[str_arr.length-1];
 		}
-		if(numOfSuggestionsFound<numberOfSuggestionsRequested && tokens.length>1){
+		if(numOfSuggestionsFound < numberOfSuggestionsRequested && tokens.length>1){
 			String[] smaller = new String[tokens.length-1];
 			System.arraycopy(tokens, 1, smaller, 0, tokens.length-1);
 			String[] temp = this.getSuggestionsGramBased(smaller, numberOfSuggestionsRequested);
@@ -578,9 +578,9 @@ public class TreeMapWordPredictor implements WordPredictor
 		ind[0] = input.lastIndexOf(' ');
 		temp[0] = input.substring(ind[0]+1);
 		int i;
-		for(i=1;ind[i-1]>0 && i<numWords;i++){
+		for(i=1; ind[i-1]>0 && i<numWords; i++){
 			ind[i] = input.lastIndexOf(' ', ind[i-1]-1);
-			temp[i] = input.substring(ind[i]+1,ind[i-1]);
+			temp[i] = input.substring(ind[i]+1, ind[i-1]);
 		}
 		String word[] = new String[i];
 		for(int j=0;j<i;j++){
