@@ -80,7 +80,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	}
 	
 	public void tester() throws Exception{
-		for (int i = 0; i < 10000; ++i) {
+		for (int i = 0; i < 100000; ++i) {
 			TransactionWorker worker =  new IncrementWordCount("cat");
 			try{runner.run(worker);}
 			
@@ -96,9 +96,15 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	}
 
 	public void check() throws Exception{
-		Iterable<WordFrequencyPair> i = getSignificance(null, null);
+//		Iterable<WordFrequencyPair> i = getSignificance(null, null);
+//		
+//		System.out.println(i);
 		
-		System.out.println(i);
+		System.out.println("size: "+map.entrySet().size());
+		
+//		System.out.println("the: "+ map.get("the"));
+//		System.out.println("cat: "+ map.get("cat"));
+//		System.out.println("upside: "+ map.get("upside"));
 	}
 	
 	public class IncrementWordCount implements TransactionWorker{
@@ -124,11 +130,13 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		config.setConfigParam("je.cleaner.minUtilization", "90");
 		
 		env.setMutableConfig(config);
+		System.out.println(env.getConfig());
 		
 		boolean anyCleaned = false;
 		int i = env.cleanLog();
 		int out=i;
 		while (i > 0) {
+//			System.out.println("i: "+i);
 			anyCleaned = true;
 			i = env.cleanLog();
 			out+=i;
@@ -150,9 +158,10 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 		Environment myEnv = new Environment(new File(dir), envConfig);
 		BDBImmutableLexicon wp = new BDBImmutableLexicon(myEnv);
 
-		wp.tester();
+//		wp.tester();
 		wp.check();
 
+		System.out.println("compress out: "+wp.compress());
 		wp.close();
 	}
 	
@@ -180,10 +189,12 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 	public void close() {
 		try {
 			if (db != null) {
+//				System.out.println("now close db");
 				db.close();
 				db = null;
 			}
 			if (env != null) {
+//				System.out.println("now close env");
 				env.close();
 				env = null;
 			}
