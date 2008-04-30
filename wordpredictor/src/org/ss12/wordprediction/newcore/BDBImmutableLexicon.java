@@ -10,11 +10,13 @@ import com.sleepycat.bind.tuple.TupleBinding;
 import com.sleepycat.collections.StoredSortedMap;
 import com.sleepycat.collections.TransactionRunner;
 import com.sleepycat.collections.TransactionWorker;
+import com.sleepycat.je.CheckpointConfig;
 import com.sleepycat.je.Database;
 import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
+import com.sleepycat.je.EnvironmentMutableConfig;
 
 /**
  * @author Brad Fol
@@ -116,6 +118,29 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 			}
 		}
 	}
+	
+	public int compress() throws Exception{
+		EnvironmentMutableConfig config = env.getMutableConfig();
+		config.setConfigParam("je.cleaner.minUtilization", "90");
+		
+		env.setMutableConfig(config);
+		
+		boolean anyCleaned = false;
+		int i = env.cleanLog();
+		int out=i;
+		while (i > 0) {
+			anyCleaned = true;
+			i = env.cleanLog();
+			out+=i;
+		}
+		if (anyCleaned) {
+			CheckpointConfig force = new CheckpointConfig();
+			force.setForce(true);
+			env.checkpoint(force);
+		}
+		
+		return out;
+	}
 
 	public static void main(String[] args) throws Exception{
 		// environment is transactional
@@ -127,7 +152,7 @@ public class BDBImmutableLexicon implements ImmutableLexicon {
 
 		wp.tester();
 		wp.check();
-		
+
 		wp.close();
 	}
 	
