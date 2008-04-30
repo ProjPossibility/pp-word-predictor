@@ -20,6 +20,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
@@ -37,8 +39,8 @@ import javax.swing.JToggleButton;
 import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.gui.onscreenkeyboard.components.KeyButton;
 import org.ss12.wordprediction.model.WordPredictor;
-
-import com.sun.java.swing.SwingUtilities2;
+import org.ss12.wordprediction.servlet.JsonWordPredictor;
+import org.ss12.wordprediction.servlet.NewWordPredictorAdapter;
 
 public class KeyboardPrototype extends JFrame implements ActionListener, MouseListener, ComponentListener{
 	/**
@@ -64,11 +66,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	Font regularFont;
 	Color buttonColor = new javax.swing.plaf.ColorUIResource(0);
 
-	class NontruncatingSwingUtilities2 extends SwingUtilities2{
-
-	}
-
-	public KeyboardPrototype(Robot robot) {
+	public KeyboardPrototype(Robot robot, final boolean useWeb) {
 		super("Word Prediction On Screen Keyboard");
 		// Set Mac OS X to use the standard look and feel of Java and not the native Aqua user interface
 //		try {
@@ -88,7 +86,18 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 //		}
 		loading = new Thread(){
 			public void run(){
-				predictor = new TreeMapWordPredictor();
+			  if (useWeb) {
+			    try {
+	          predictor = new NewWordPredictorAdapter(new JsonWordPredictor(
+	              new URI("http://localhost:8080/predictservice")));
+			    } catch (URISyntaxException e) {
+			      // Should never happen.
+			      System.err.println("Invalid URI: " + e);
+			      System.exit(-1);
+			    }
+			  } else {
+	        predictor = new TreeMapWordPredictor();
+			  }
 				predict();
 				learn();
 			}
@@ -258,7 +267,14 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	 * @param args
 	 */
 	public static void main(String[] args) throws AWTException{
-		KeyboardPrototype gl = new KeyboardPrototype(new Robot());
+	  boolean useWeb = false;
+	  for (String arg : args) {
+	    if (arg.equals("web")) {
+	      useWeb = true;
+	    }
+	  }
+	  
+		KeyboardPrototype gl = new KeyboardPrototype(new Robot(), useWeb);
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setAlwaysOnTop(true);
 		gl.setSize(800, 300);

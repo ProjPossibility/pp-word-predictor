@@ -37,30 +37,28 @@ public class JsonWordPredictor implements WordPredictor {
   private URL makeRequestUrl(PredictionRequest request)
       throws MalformedURLException {
     StringBuilder sb = new StringBuilder(predictorUri.toString());
+    sb.append("?of=json");
     appendKeyValuePair(sb, HttpGetParams.INCOMPLETE_WORD, request
-        .getIncompleteWord(), true);
+        .getIncompleteWord());
     if (request.getPrevWord() != null) {
       appendKeyValuePair(sb, HttpGetParams.FIRST_PREV_WORD, request
-          .getPrevWord(), false);
+          .getPrevWord());
     }
     if (request.getPrevPrevWord() != null) {
       appendKeyValuePair(sb, HttpGetParams.SECOND_PREV_WORD, request
-          .getPrevPrevWord(), false);
+          .getPrevPrevWord());
     }
     return new URL(sb.toString());
   }
 
-  private void appendKeyValuePair(StringBuilder sb, String key, String value,
-      boolean isFirst) {
-    sb.append(isFirst ? '?' : '&').append(key).append('=').append(value);
+  private void appendKeyValuePair(StringBuilder sb, String key, String value) {
+    sb.append('&').append(key).append('=').append(value);
   }
 
   public List<String> getPredictions(PredictionRequest request) {
     // TODO(mgp): add a PredictorException type?
     try {
       URL predictorUrl = makeRequestUrl(request);
-      // XXX(mgp)
-      System.out.println("created URL: " + predictorUrl.toString());
       BufferedReader reader = new BufferedReader(new InputStreamReader(
           predictorUrl.openStream()));
 
