@@ -38,7 +38,7 @@ import org.ss12.wordprediction.TreeMapWordPredictor;
 import org.ss12.wordprediction.gui.onscreenkeyboard.components.KeyButton;
 import org.ss12.wordprediction.model.WordPredictor;
 
-import sun.swing.SwingUtilities2;
+import com.sun.java.swing.SwingUtilities2;
 
 public class KeyboardPrototype extends JFrame implements ActionListener, MouseListener, ComponentListener{
 	/**
@@ -106,7 +106,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		JCheckBoxMenuItem viewRecentText = new JCheckBoxMenuItem("Recent Text",true);
 		JMenuItem setFont = new JMenuItem("Font");
 		JCheckBoxMenuItem setLearn = new JCheckBoxMenuItem("Learn",isLearning);
-		JCheckBoxMenuItem setIntelligent = new JCheckBoxMenuItem("Intellitext");
+		JCheckBoxMenuItem setIntelligent = new JCheckBoxMenuItem("Intellitext",true);
 		viewPredictions.addActionListener(this);
 		viewKeyboard.addActionListener(this);
 		viewRecentText.addActionListener(this);
@@ -262,7 +262,6 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setAlwaysOnTop(true);
 		gl.setSize(800, 300);
-		gl.setFocusableWindowState(false);
 //		gl.getRootPane().setFocusable(false);
 
 
@@ -270,6 +269,7 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 //		UIManager.setLookAndFeel(new MotifLookAndFeel());
 //		} catch (UnsupportedLookAndFeelException e) {}
 		gl.setVisible(true);
+		gl.setFocusableWindowState(false);
 	}
 	public void actionPerformed(ActionEvent arg0) {
 		if(arg0.getSource() instanceof KeyButton){
