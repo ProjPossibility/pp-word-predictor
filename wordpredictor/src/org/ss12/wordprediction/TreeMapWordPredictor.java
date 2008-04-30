@@ -48,7 +48,7 @@ import com.sleepycat.je.EnvironmentConfig;
 
 public class TreeMapWordPredictor implements WordPredictor
 {
-  private static final int CACHE_SIZE = 10000;
+  private static final int CACHE_SIZE = 20000;
   
 	private Map<String, Integer> words;
 	private Map<String, Integer> unigrams;
