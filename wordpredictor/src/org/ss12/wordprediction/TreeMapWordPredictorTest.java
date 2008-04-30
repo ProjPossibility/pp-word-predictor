@@ -17,4 +17,8 @@ public class TreeMapWordPredictorTest extends TestCase {
 		System.out.print(s);
 	}
 
+	public void testlearn(){
+		TreeMapWordPredictor tmwp = new TreeMapWordPredictor();
+		System.out.println(tmwp.learn("hello world ? sh"));
+	}
 }
