@@ -7,18 +7,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.ss12.wordprediction.PredictionRequest;
-import org.ss12.wordprediction.newcore.annotations.FrecencyAnnotationFactory;
-import org.ss12.wordprediction.newcore.annotations.FrequencyAnnotationFactory;
-import org.ss12.wordprediction.newcore.annotations.LastTimeUsedAnnotationFactory;
 
 /**
  * A benchmark for {@link Scorer} implementations.
@@ -27,23 +22,9 @@ import org.ss12.wordprediction.newcore.annotations.LastTimeUsedAnnotationFactory
  */
 public class ScorerBenchmark {
   /**
-   * Assigns a descriptive name to an {@link AnnotationFactory} instance.
-   */
-  private static final class NameAnnotationPair {
-    final String name;
-    final AnnotationFactory<? extends AnnotatedWord> annotationFactory;
-
-    NameAnnotationPair(String name,
-        AnnotationFactory<? extends AnnotatedWord> annotationFactory) {
-      this.name = name;
-      this.annotationFactory = annotationFactory;
-    }
-  }
-
-  /**
    * The benchmark results for a single {@link Scorer}.
    */
-  private static final class BenchmarkResult {
+  public static final class BenchmarkResult {
     private final String name;
     int totalCharactersSaved;
     long totalTimeElapsed;
@@ -54,9 +35,30 @@ public class ScorerBenchmark {
       totalTimeElapsed = 0;
     }
 
-    public void increaseBy(int charactersSaved, long timeElapsed) {
+    void increaseBy(int charactersSaved, long timeElapsed) {
       totalCharactersSaved += charactersSaved;
       totalTimeElapsed += timeElapsed;
+    }
+
+    /**
+     * @return the descriptive name of this result
+     */
+    public String getName() {
+      return name;
+    }
+
+    /**
+     * @return the total number of characters saved
+     */
+    public long getTotalCharactersSaved() {
+      return totalCharactersSaved;
+    }
+
+    /**
+     * @return the total time elapsed
+     */
+    public long getTotalTimeElapsed() {
+      return totalTimeElapsed;
     }
 
     @Override
@@ -67,6 +69,42 @@ public class ScorerBenchmark {
       sb.append("timeElapsed=").append(totalTimeElapsed);
       return sb.toString();
     }
+  }
+
+  /**
+   * Compares two {@link BenchmarkResult} instances by their total characters
+   * saved.
+   */
+  public static final Comparator<BenchmarkResult> BENCHMARK_COMPARATOR =
+      new Comparator<BenchmarkResult>() {
+    public int compare(BenchmarkResult lhs, BenchmarkResult rhs) {
+      if (lhs.totalCharactersSaved == rhs.totalCharactersSaved) {
+        return 0;
+      }
+      return (lhs.totalCharactersSaved < rhs.totalCharactersSaved) ?
+          -1 : 1;
+    }
+  };
+
+  /**
+   * TODO
+   * 
+   * @param trainingContents
+   * @param benchmarkContents
+   * @param name
+   * @param annotationFactory
+   * @return
+   * @throws IOException
+   */
+  public static <T extends AnnotatedWord> BenchmarkResult run(
+      String[] trainingContents, List<String[]> benchmarkContents,
+      String name, AnnotationFactory<T> annotationFactory) throws IOException {
+    ScoringWordPredictor<? extends AnnotatedWord> wordPredictor =
+        createWordPredictor(annotationFactory);
+    trainWordPredictor(trainingContents, wordPredictor);
+    BenchmarkResult result = benchmarkWordPredictor(benchmarkContents,
+        name, wordPredictor);
+    return result;
   }
 
   /*
@@ -116,9 +154,11 @@ public class ScorerBenchmark {
   }
 
   /*
+   * TODO(mgp): make public
+   * 
    * Reads the entire training file into memory to avoid disk I/O later.
    */
-  public static String readEntireFileAsString(File f) throws IOException {
+  private static String readEntireFileAsString(File f) throws IOException {
     StringBuilder sb = new StringBuilder();
     BufferedReader reader = new BufferedReader(new FileReader(f));
     while (true) {
@@ -132,7 +172,10 @@ public class ScorerBenchmark {
     return sb.toString();
   }
 
-  public static String[] readEntireFileAsWords(File f) throws IOException {
+  /*
+   * TODO(mgp): make public? share parsing logic with SentenceReader?
+   */
+  private static String[] readEntireFileAsWords(File f) throws IOException {
     String fileContents = readEntireFileAsString(f);
     List<String> fileWords = new LinkedList<String>();
 
@@ -157,8 +200,7 @@ public class ScorerBenchmark {
    * Benchmarks the word predictor using each file.
    */
   private static BenchmarkResult benchmarkWordPredictor(List<String[]> benchmarkFiles,
-      String name, ScoringWordPredictor<? extends AnnotatedWord> wordPredictor)
-      throws IOException {
+      String name, ScoringWordPredictor<? extends AnnotatedWord> wordPredictor) {
     BenchmarkResult benchmarkResult = new BenchmarkResult(name);
     for (String[] benchmarkFile : benchmarkFiles) {
       benchmarkWordPredictor(benchmarkFile, wordPredictor, benchmarkResult);
@@ -171,7 +213,7 @@ public class ScorerBenchmark {
    */
   private static void benchmarkWordPredictor(String[] benchmarkFile,
       ScoringWordPredictor<? extends AnnotatedWord> wordPredictor,
-      BenchmarkResult benchmarkResult) throws IOException {
+      BenchmarkResult benchmarkResult) {
     int charactersSaved = 0;
     String prevPrevWord = null;
     String prevWord = null;
@@ -207,86 +249,14 @@ public class ScorerBenchmark {
     return 0;
   }
 
-  private static void verifyFilesExist(File[] files) {
-    for (File file : files) {
-      if (!file.exists()) {
-        throw new IllegalArgumentException("File does not exist: " + file);
-      }
-    }
-  }
-
-  private static void addFrecencyAnnotations(
-      List<NameAnnotationPair> nameAnnotationPairs, int numBuckets) {
-    Iterable<int[]> allBucketSizes = getAllBucketSizes(numBuckets);
-    Iterable<int[]> allWeights = getAllWeights(numBuckets);
-
-    for (int[] bucketSizes : allBucketSizes) {
-      for (int[] weights : allWeights) {
-        String name = makeFrecencyAnnotationName(bucketSizes, weights);
-        FrecencyAnnotationFactory annotationFactory =
-            new FrecencyAnnotationFactory(bucketSizes, weights);
-        nameAnnotationPairs.add(
-            new NameAnnotationPair(name, annotationFactory));
-      }
-    }
-  }
-
-  private static List<int[]> generate(int numBuckets,
-      int baseValue, float[] multipliers, float[] ratios) {
-    List<int[]> allValues = new LinkedList<int[]>();
-    for (float multiplier : multipliers) {
-      int adjustedValue = (int) Math.ceil(baseValue * multiplier);
-
-      for (float ratio : ratios) {
-        int[] values = new int[numBuckets];
-        values[0] = adjustedValue;
-        float product = adjustedValue;
-        for (int i = 1; i < numBuckets; ++i) {
-          product *= ratio;
-          values[i] = (int) Math.ceil(product);
-        }
-        
-        allValues.add(values);
-      }
-    }
-    return allValues;
-  }
-
-  private static Iterable<int[]> getAllBucketSizes(int numBuckets) {
-    float[] multipliers = { 1.5f, 3f, 5f, 7.5f, 10f };
-    // Bucket sizes are smaller for newer annotations, larger for older, 
-    float[] ratios = { 1/0.9f, 1/0.75f, 1/0.6f, 1/0.45f, 1/0.3f, 1/0.15f };
-    return generate(numBuckets, 100, multipliers, ratios);
-  }
-
-  private static Iterable<int[]> getAllWeights(int numBuckets) {
-    float[] multipliers = { 1.5f, 3f, 5f, 7.5f, 10f };
-    // Bucket sizes are larger for newer annotations, smaller for older.
-    float[] ratios = { 0.9f, 0.75f, 0.6f, 0.45f, 0.3f, 0.15f };
-    return generate(numBuckets, 10, multipliers, ratios);
-  }
-
-  private static String makeFrecencyAnnotationName(
-      int[] bucketSizes, int[] weights) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("frecency: ");
-    sb.append("b=").append(Arrays.toString(bucketSizes));
-    sb.append(", w=").append(Arrays.toString(weights));
-    return sb.toString();
-  }
-
-  private static final Comparator<BenchmarkResult> BENCHMARK_COMPARATOR =
-      new Comparator<BenchmarkResult>() {
-    public int compare(BenchmarkResult lhs, BenchmarkResult rhs) {
-      if (lhs.totalCharactersSaved == rhs.totalCharactersSaved) {
-        return 0;
-      }
-      return (lhs.totalCharactersSaved < rhs.totalCharactersSaved) ?
-          -1 : 1;
-    }
-  };
-
-  private static String[] readAllTrainingFiles(File[] trainingFiles)
+  /**
+   * TODO
+   * 
+   * @param trainingFiles
+   * @return
+   * @throws IOException
+   */
+  public static String[] readAllTrainingFiles(File[] trainingFiles)
       throws IOException {
     String[] trainingContents = new String[trainingFiles.length];
     for (int i = 0; i < trainingFiles.length; ++i) {
@@ -295,7 +265,14 @@ public class ScorerBenchmark {
     return trainingContents;
   }
 
-  private static List<String[]> readAllBenchmarkFiles(File[] benchmarkFiles)
+  /**
+   * TODO
+   * 
+   * @param benchmarkFiles
+   * @return
+   * @throws IOException
+   */
+  public static List<String[]> readAllBenchmarkFiles(File[] benchmarkFiles)
       throws IOException {
     List<String[]> benchmarkContents =
         new ArrayList<String[]>(benchmarkFiles.length);
@@ -303,82 +280,5 @@ public class ScorerBenchmark {
       benchmarkContents.add(readEntireFileAsWords(benchmarkFiles[i]));
     }
     return benchmarkContents;
-  }
-
-  public static void main(String[] args) throws IOException {
-    // Add all AnnotationFactory instances to benchmark.
-    List<NameAnnotationPair> nameAnnotationPairs =
-        new LinkedList<NameAnnotationPair>();
-    nameAnnotationPairs.add(new NameAnnotationPair("frequency",
-        new FrequencyAnnotationFactory()));
-    nameAnnotationPairs.add(new NameAnnotationPair("last time used",
-        new LastTimeUsedAnnotationFactory()));
-    final int numBuckets = 3;
-    addFrecencyAnnotations(nameAnnotationPairs, numBuckets);
-    int numNameAnnotationPairs = nameAnnotationPairs.size();
-
-    // Specify the files used to train the word predictor.
-    File[] trainingFiles = new File[] {
-        new File("./resources/books/bnw1.txt"),
-        new File("./resources/books/bnw2.txt"),
-        new File("./resources/books/bnw3.txt"),
-        new File("./resources/books/bnw4.txt"),
-        new File("./resources/books/bnw5.txt"),
-        new File("./resources/books/bnw6.txt"),
-        new File("./resources/books/bnw7.txt"),
-        new File("./resources/books/bnw8.txt"),
-        new File("./resources/books/bnw9.txt"),
-        new File("./resources/books/bnw10.txt"),
-        new File("./resources/books/bnw11.txt"),
-        new File("./resources/books/bnw12.txt"),
-        new File("./resources/books/bnw13.txt"),
-        new File("./resources/books/bnw14.txt"),
-        new File("./resources/books/bnw15.txt"),
-        new File("./resources/books/bnw16.txt"),
-        new File("./resources/books/bnw17.txt"),
-        new File("./resources/books/bnw18.txt"),
-        new File("./resources/books/af1.txt"),
-        new File("./resources/books/af2.txt"),
-        new File("./resources/books/af3.txt"),
-        new File("./resources/books/af4.txt"),
-        new File("./resources/books/af5.txt"),
-    };
-    // Specify the files used to benchmark the word predictor.
-    File[] benchmarkFiles = new File[] {
-        new File("./resources/books/af6.txt"),
-        new File("./resources/books/af7.txt"),
-        new File("./resources/books/af8.txt"),
-        new File("./resources/books/af9.txt"),
-        new File("./resources/books/af10.txt"),
-    };
-    verifyFilesExist(trainingFiles);
-    String[] trainingContents = readAllTrainingFiles(trainingFiles);
-    verifyFilesExist(benchmarkFiles);
-    List<String[]> benchmarkContents = readAllBenchmarkFiles(benchmarkFiles);
-
-    int annotationNum = 1;
-    List<BenchmarkResult> benchmarkResults =
-        new ArrayList<BenchmarkResult>(nameAnnotationPairs.size());
-    for (Iterator<NameAnnotationPair> i = nameAnnotationPairs.iterator();
-        i.hasNext(); ) {
-      // Remove after dequeueing for potential garbage collection later.
-      NameAnnotationPair nameAnnotationPair = i.next();
-      i.remove();
-
-      System.out.println("Benchmarking " + annotationNum + " of " +
-          numNameAnnotationPairs);
-      ScoringWordPredictor<? extends AnnotatedWord> wordPredictor =
-          createWordPredictor(nameAnnotationPair.annotationFactory);
-      trainWordPredictor(trainingContents, wordPredictor);
-      benchmarkResults.add(benchmarkWordPredictor(benchmarkContents,
-          nameAnnotationPair.name, wordPredictor));
-
-      ++annotationNum;
-    }
-
-    Collections.sort(benchmarkResults, BENCHMARK_COMPARATOR);
-    for (BenchmarkResult benchmarkResult : benchmarkResults) {
-      System.out.println(benchmarkResult);
-    }
   }
 }
