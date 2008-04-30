@@ -15,7 +15,7 @@ import java.util.Comparator;
  */
 public class TopElements {
   private TopElements() {
-    // Static utility methods only, do not allow instantation.
+    // Static utility methods only, do not allow instantiation.
   }
 
   /**
