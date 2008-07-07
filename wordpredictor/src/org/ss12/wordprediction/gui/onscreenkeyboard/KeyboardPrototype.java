@@ -86,18 +86,19 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 //		}
 		loading = new Thread(){
 			public void run(){
-			  if (useWeb) {
-			    try {
-	          predictor = new NewWordPredictorAdapter(new JsonWordPredictor(
-	              new URI("http://localhost:8080/predictservice")));
-			    } catch (URISyntaxException e) {
-			      // Should never happen.
-			      System.err.println("Invalid URI: " + e);
-			      System.exit(-1);
-			    }
-			  } else {
-	        predictor = new TreeMapWordPredictor();
-			  }
+				if (useWeb) {
+					try {
+						predictor = new NewWordPredictorAdapter(new JsonWordPredictor(
+								new URI("http://scecwork.dyndns.org:8080/predictservice")));
+						// new URI("http://localhost:8080/predictservice")));
+					} catch (URISyntaxException e) {
+						// Should never happen.
+						System.err.println("Invalid URI: " + e);
+						System.exit(-1);
+					}
+				} else {
+					predictor = new TreeMapWordPredictor();
+				}
 				predict();
 				learn();
 			}
@@ -267,13 +268,13 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 	 * @param args
 	 */
 	public static void main(String[] args) throws AWTException{
-	  boolean useWeb = false;
-	  for (String arg : args) {
-	    if (arg.equals("web")) {
-	      useWeb = true;
-	    }
-	  }
-	  
+		boolean useWeb = false;
+		for (String arg : args) {
+			if (arg.equals("web")) {
+				useWeb = true;
+			}
+		}
+
 		KeyboardPrototype gl = new KeyboardPrototype(new Robot(), useWeb);
 		gl.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		gl.setAlwaysOnTop(true);
@@ -304,9 +305,9 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 				text.setText(text.getText()+' ');
 			}
 			//if a character the denotes the end of a sentence
-			else if(keycode==KeyEvent.VK_PERIOD || 
-					shift && (keycode==KeyEvent.VK_SLASH || 
-							keycode==KeyEvent.VK_1)){
+			else if(keycode==KeyEvent.VK_PERIOD || keycode==KeyEvent.VK_COMMA || 
+					(shift && (keycode==KeyEvent.VK_SLASH || 
+							keycode==KeyEvent.VK_1))){
 				String textTyped = text.getText();
 				int length = textTyped.length();
 				if(length>0 && textTyped.charAt(length-1)==' '){
@@ -319,6 +320,9 @@ public class KeyboardPrototype extends JFrame implements ActionListener, MouseLi
 					predict();
 					learn();
 					return;
+				}
+				else{
+					text.setText(text.getText()+keyText);
 				}
 			}
 			else{
