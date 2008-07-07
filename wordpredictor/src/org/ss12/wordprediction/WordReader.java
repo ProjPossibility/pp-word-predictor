@@ -89,10 +89,10 @@ public class WordReader {
 			}
 			//System.out.print(words[i] + " ");
 			// System.out.println(wp);
-//			wp.addUnigram(words[i]);
-//			if (preWord != null)
-//				wp.addBigram(preWord, words[i]);
-//
+			wp.addUnigram(words[i]);
+			if (preWord != null)
+				wp.addBigram(preWord, words[i]);
+
 			if (prePreWord != null && preWord != null)
 				wp.addTrigram(prePreWord, preWord, words[i]);
 
