@@ -1,0 +1,1 @@
+java -mx512m -jar WordPrediction.jar

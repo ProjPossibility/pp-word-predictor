@@ -1,0 +1,1 @@
+@java -Xmx512M -cp "%~dp0\src;%~dp0\bin;lib/gwt-user.jar;lib/gwt-dev-windows.jar" com.google.gwt.dev.GWTShell -out "%~dp0\www" %* org.ss12.wordprediction.GWTGUI/GWTGUI.html

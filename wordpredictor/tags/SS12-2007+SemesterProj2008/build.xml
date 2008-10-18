@@ -1,0 +1,105 @@
+<!-- An ANT build file for Word Prediction application-->
+
+<!-- $Id: build.xml,v 1.4 2007/07/19 22:18:27 dlrichar Exp $ -->
+
+<!-- David Richardson -->
+<!-- Created on December 3, 2007 -->
+
+<project name="wordpredictor" default="all" basedir=".">
+	<property name="wordpredictor.name" value="wordpredictor" />
+	<property name="wordpredictor.version" value="0.1.0" />
+	<property name="builddir" value="${basedir}/build" />
+	<property name="src" value="${basedir}/src" />
+	<property name="dest" value="${basedir}/bin" />
+    <property name="dist" value="${basedir}/dist" />
+
+	<path id="build.classpath">
+		<pathelement location="bin"/>	
+	</path>
+	<path id="run.classpath">
+		<pathelement location="lib/sqlitejdbc-v043-nested.jar"/>
+		<pathelement location="bin"/>	
+	</path>
+	<path id="server.classpath">
+		<pathelement location="bin"/>
+		<pathelement location="lib/gwt-dev-windows.jar"/>
+		<pathelement location="lib/gwt-user.jar"/>
+	</path>
+
+	<!-- Initialization -->
+	<!-- Mostly unnecessary for now; will eventually use for more complex builds -->
+	<target name="init" description="Initialize required settings">
+		<tstamp />
+	</target>
+
+	<!-- ALL -->
+	<target name="all" description="Will perform all build tasks">
+	</target>
+
+	<!-- RUN -->
+	<target name="run.gui">
+		<java classname="org.ss12.wordprediction.gui.GuiLauncher" classpathref="run.classpath" fork="true">
+			<jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+			<jvmarg value='-Djava.library.path=lib/'/>
+		</java>
+	</target>
+    <target name="run.gui.osk">
+        <java classname="org.ss12.wordprediction.gui.onscreenkeyboard.KeyboardPrototype" classpathref="run.classpath" fork="true">
+            <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+            <jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
+	<!--    
+	<target name="run.console">
+        <java classname="org.ss12.wordprediction.ui.ConsolePredictionLauncher" classpathref="run.classpath" fork="false">
+            <jvmarg value="-mx512m"/>
+        	<jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
+    -->
+   <!-- IMPORT -->
+    <target name="import.samples">
+        <java classname="org.ss12.wordprediction.reader.ImportLauncher" classpathref="run.classpath" fork="true">
+            <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+            <jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
+    <target name="convert.wikipedia">
+        <java classname="org.ss12.wordprediction.wikiprocessor.WikiProcessor" classpathref="run.classpath" fork="true">
+            <jvmarg value="-mx512m"/><!-- All your ram are belong to us -->
+            <jvmarg value='-Djava.library.path=lib/'/>
+        </java>
+    </target>
+	<!-- Compile without eclipse -->
+	<target name="compile" description="Compile the word predictor">
+		<javac srcdir="${src}" destdir="${dest}" classpathref="build.classpath"/>
+	</target>
+	<target name="build.dist" depends="init" description="Assembles an OSK distribution">
+
+        <!-- create a temp build directory -->
+        <mkdir dir="${builddir}" />
+
+	   	<!-- copy the source -->
+        <copy todir="${builddir}">
+            <fileset dir="${basedir}/bin" />
+        </copy>
+        <copy todir="${dist}/lib/">
+            <fileset dir="${basedir}/lib" />
+        </copy>
+        <copy todir="${dist}/resources/">
+            <fileset dir="${basedir}/resources" />
+        </copy>
+	        
+        <!-- make the jar -->
+        <jar jarfile="${dist}/WordPrediction.jar"
+            basedir="${builddir}" 
+            index="false" 
+            manifest="MANIFEST.MF"/>
+        <copy todir="${dist}" file="keyboard.bat" />
+        
+        <!-- delete the temp directory -->
+        <delete dir="${builddir}" />
+
+    </target>
+
+</project>
