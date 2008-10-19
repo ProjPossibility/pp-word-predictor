@@ -22,7 +22,7 @@ results obtained from use of this software.
 
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/utsname.h>
+//#include <sys/utsname.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -318,7 +318,7 @@ void main (int argc, char **argv) {
 
   int counter;
 
-  struct utsname uname_info;
+  //struct utsname uname_info;
   char *temp_file_root;
   char *temp_file_ext;
   char *host_name;
@@ -388,13 +388,13 @@ void main (int argc, char **argv) {
     }
   }
 
-  uname(&uname_info);
+  //uname(&uname_info);
 
-  host_name = salloc(uname_info.nodename);
+  //host_name = salloc(uname_info.nodename);
 
-  proc_id = getpid();
+  //proc_id = getpid();
 
-  sprintf(temp_word,"%s%s.%d.",TEMP_FILE_ROOT,host_name,proc_id);
+  sprintf(temp_word,"%s%s.%d.",TEMP_FILE_ROOT,"hooost",111111);
 
   temp_file_root = salloc(temp_word);
 

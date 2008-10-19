@@ -31,10 +31,10 @@ CC              = gcc
 OPT_FLAG	= -O
 #GDB_FLAG	= -ggdb
 #BNDS_CHK_FLAG	= -fbounds-checking
-#WARNINGS_FLAG	= -Wall
+WARNINGS_FLAG	= -Wall
 #ANSI_FLAG	= -Aa
 #POSIX_FLAG	= -D_INCLUDE_POSIX_SOURCE
-#BYTESWAP_FLAG	= -DSLM_SWAP_BYTES
+BYTESWAP_FLAG	= -DSLM_SWAP_BYTES
 #FIX_PROT_FLAG 	= -D__USE_FIXED_PROTOTYPES__ 
 
 CFLAGS		= $(OPT_FLAG) $(GDB_FLAG) $(BNDS_CHK_FLAG) $(WARNINGS_FLAG) $(ANSI_FLAG) $(POSIX_FLAG) $(BYTESWAP_FLAG) $(FIX_PROT_FLAG)
@@ -89,7 +89,8 @@ $(EXECS): $(LIB)
 $(LIB): $(OBJS)
 	rm -f $(LIB)
 	ar r $(LIB) $(OBJS)
-	if [ `uname` = SunOS -o `uname` = Linux ] ; then ranlib $(LIB) ; fi
+	ranlib $(LIB)
+#	if [ `uname` = SunOS -o `uname` = Linux ] ; then ranlib $(LIB) ; fi
 
 install: $(EXECS)
 	for i in $(EXECS); do \

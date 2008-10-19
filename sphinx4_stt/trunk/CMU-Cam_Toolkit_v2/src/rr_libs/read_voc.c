@@ -25,8 +25,29 @@ results obtained from use of this software.
 
 #include <stdio.h>
 #include <strings.h>
+#include <string.h>
 #include "general.h"
 #include "sih.h"
+
+char *
+rindex(const char *p, int ch)
+{
+        union {
+                const char *cp;
+                char *p;
+        } u;
+        char *save;
+
+        u.cp = p;
+        for (save = NULL;; ++u.p) {
+                if (*u.p == ch)
+                        save = u.p;
+                if (!*u.p)
+                        return(save);
+        }
+        /* NOTREACHED */
+}
+
 
 void read_voc(char *filename, int verbosity,   
 	      sih_t *p_vocab_ht, char ***p_vocab, 
