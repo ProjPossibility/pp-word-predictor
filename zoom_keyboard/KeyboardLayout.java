@@ -19,6 +19,9 @@ public class KeyboardLayout
     int matrix_x;
     int matrix_y;
     
+    int max_width = 0;
+    int max_height = 0;
+    
     public ArrayList< ArrayList<KeyPosition> > theList;
     //private int width;
     //private int height;
@@ -103,7 +106,7 @@ public class KeyboardLayout
 
     public ArrayList KeySizeCalc(int i,int j) // i(x axis) and j(y axis) are the indexes on the grid
     {
-        final int SIZE_1=100, SIZE_2=50,SIZE_3=25;   //s1,s2,s3 are the three new sizes of the keys
+        final int SIZE_1=100, SIZE_2=70,SIZE_3=50;   //s1,s2,s3 are the three new sizes of the keys
         
         // sentinel for null object
         KeyPosition kpSentinel = new KeyPosition(99, 99, 99, 99,99, 99, 99);
@@ -166,6 +169,7 @@ public class KeyboardLayout
         
         // calculate top and left for the array list
         int curr_top=0, curr_left=0, next_top=0; //next vars
+        int biggest_width = 0;
         KeyPosition kpLoc;
         for (int index_j=0; index_j < 5; index_j++) // height(y)
         {
@@ -186,7 +190,12 @@ public class KeyboardLayout
             }
             
             curr_top = next_top;
+            if (biggest_width < curr_left)
+            	biggest_width = curr_left;
         }
+        
+        max_height = curr_top;
+        max_width = biggest_width;
         
         
         
@@ -207,6 +216,14 @@ public class KeyboardLayout
          * */
         
         return returnArray;
+    }
+    
+    public int getMaxWidth() {
+    	return max_width;
+    }
+    
+    public int getMaxHeight() {
+    	return max_height;
     }
 
 
