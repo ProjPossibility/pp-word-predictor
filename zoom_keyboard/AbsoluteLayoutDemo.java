@@ -130,7 +130,7 @@ public class AbsoluteLayoutDemo {
 		KeyboardDraw(KeyboardLayoutArray.get(1));
 
 		//Size and display the window.   
-		frame.setSize(920, 300);
+		frame.setSize(1020, 380);
 		frame.setVisible(true);
 	}
 
